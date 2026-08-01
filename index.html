@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Vialback</title>
+<meta name="theme-color" content="#0b1211">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Vialback">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="favicon.png">
+<script>window.VIALBACK_PUBLIC=true;</script>
+</head>
+<body><title>Vialback — Peptide Protocol Tracker</title>
+<style>
+  :root{
+    --bg:#f2f5f3;--panel:#fff;--panel2:#eef2f0;--ink:#0e1a18;--ink2:#4a5a56;--ink3:#7a8a86;
+    --line:#dde5e2;--line2:#c8d4cf;--accent:#0f9e8f;--accent-soft:#d6efeb;--accent-ink:#0a6b60;
+    --good:#2f9e6b;--good-soft:#dcefe4;--warn:#c67d16;--warn-soft:#f7ead2;--crit:#cf4b3c;--crit-soft:#f8ddd8;
+    --gold:#b8842a;--shadow:0 1px 2px rgba(14,26,24,.06),0 6px 20px rgba(14,26,24,.05);
+    --mono:ui-monospace,"Cascadia Code","SF Mono","JetBrains Mono",Consolas,Menlo,monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#0b1211;--panel:#111b19;--panel2:#0e1615;--ink:#e6efec;--ink2:#a4b4af;--ink3:#6f807b;
+    --line:#1e2c29;--line2:#2a3b37;--accent:#2dd4bf;--accent-soft:#123430;--accent-ink:#7ff0e2;
+    --good:#43c489;--good-soft:#123027;--warn:#e0a13a;--warn-soft:#33280f;--crit:#e2685a;--crit-soft:#361b18;
+    --gold:#e0b25a;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 26px rgba(0,0,0,.35);}}
+  :root[data-theme="light"]{--bg:#f2f5f3;--panel:#fff;--panel2:#eef2f0;--ink:#0e1a18;--ink2:#4a5a56;--ink3:#7a8a86;--line:#dde5e2;--line2:#c8d4cf;--accent:#0f9e8f;--accent-soft:#d6efeb;--accent-ink:#0a6b60;--good:#2f9e6b;--good-soft:#dcefe4;--warn:#c67d16;--warn-soft:#f7ead2;--crit:#cf4b3c;--crit-soft:#f8ddd8;--gold:#b8842a;--shadow:0 1px 2px rgba(14,26,24,.06),0 6px 20px rgba(14,26,24,.05);}
+  :root[data-theme="dark"]{--bg:#0b1211;--panel:#111b19;--panel2:#0e1615;--ink:#e6efec;--ink2:#a4b4af;--ink3:#6f807b;--line:#1e2c29;--line2:#2a3b37;--accent:#2dd4bf;--accent-soft:#123430;--accent-ink:#7ff0e2;--good:#43c489;--good-soft:#123027;--warn:#e0a13a;--warn-soft:#33280f;--crit:#e2685a;--crit-soft:#361b18;--gold:#e0b25a;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 26px rgba(0,0,0,.35);}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.45}
+  button{font-family:inherit;cursor:pointer}
+  input,select,textarea{font-family:inherit}
+  .tnum{font-variant-numeric:tabular-nums}.mono{font-family:var(--mono)}
+  .app{max-width:900px;margin:0 auto;min-height:100vh;padding:0 0 84px}
+  @media(min-width:860px){.app{padding-left:88px;padding-bottom:0}}
+  .top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:11px 15px}
+  .brand{display:flex;align-items:center;gap:10px}
+  .logo{width:28px;height:28px;flex:0 0 auto}
+  .brand h1{font-size:16px;margin:0;letter-spacing:-.02em;font-weight:700}
+  .brand .sub{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);margin-top:1px}
+  .brand .spacer{flex:1}
+  .iconbtn{background:var(--panel);border:1px solid var(--line);color:var(--ink2);width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:15px}
+  .iconbtn:hover{border-color:var(--line2);color:var(--ink)}
+  .avatar{background:var(--accent-soft);border:1px solid transparent;color:var(--accent-ink);font-weight:700;font-size:13px}
+  main{padding:15px}
+  .view{display:none;animation:fade .26s ease}.view.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .vhead{display:flex;align-items:center;gap:10px;margin:2px 2px 13px}
+  .vhead h2{font-size:15px;margin:0;letter-spacing:-.01em}.vhead .spacer{flex:1}
+  .lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3)}
+  /* banner */
+  .banner{display:flex;align-items:center;gap:10px;background:var(--crit-soft);border:1px solid var(--crit);border-radius:12px;padding:11px 13px;margin-bottom:13px;font-size:13px;color:var(--ink)}
+  .banner.warn{background:var(--warn-soft);border-color:var(--warn)}
+  .banner b{color:var(--crit)}.banner.warn b{color:var(--warn)}
+  /* cards */
+  .cards{display:flex;flex-direction:column;gap:11px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;position:relative}
+  .card .stripe{position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--line2)}
+  .card.ok .stripe{background:var(--good)}.card.warn .stripe{background:var(--warn)}.card.crit .stripe{background:var(--crit)}
+  .card.off{border-color:var(--crit);background:color-mix(in srgb,var(--crit-soft) 55%,var(--panel))}
+  .card.off .stripe{background:var(--crit)}
+  .chead{display:flex;align-items:center;gap:12px;padding:13px 14px 13px 17px}
+  .cmain{flex:1;min-width:0}
+  .cname{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .cname .nm{font-weight:650;font-size:14.5px;letter-spacing:-.01em}
+  .chip{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border-radius:6px;background:var(--panel2);color:var(--ink3);border:1px solid var(--line)}
+  .chip.off{background:var(--crit-soft);color:var(--crit);border-color:transparent}
+  .cmeta{display:flex;align-items:center;gap:10px;margin-top:5px;flex-wrap:wrap}
+  .dose{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--accent)}
+  .timing{font-size:11.5px;color:var(--ink3)}
+  /* vial gauge */
+  .vial{display:flex;align-items:center;gap:12px;padding:0 14px 13px 17px}
+  .ring{--p:0;width:52px;height:52px;flex:0 0 auto;border-radius:50%;display:grid;place-items:center;
+    background:conic-gradient(var(--gc) calc(var(--p)*1%),var(--panel2) 0);position:relative}
+  .ring::before{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--panel)}
+  .ring .rt{position:relative;font-family:var(--mono);font-size:11px;font-weight:700}
+  .vinfo{flex:1;min-width:0;font-size:12px;color:var(--ink2)}
+  .vinfo .big{font-family:var(--mono);font-size:13px;color:var(--ink);font-weight:700}
+  .vinfo .recon{color:var(--accent-ink);font-family:var(--mono);font-size:11px;margin-top:3px}
+  .vacts{display:flex;gap:6px;align-items:center}
+  .needle{border:0;border-radius:11px;background:var(--accent);color:#04201d;font-weight:700;font-size:13px;padding:10px 14px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .needle:active{transform:scale(.94)}
+  .rbtn{border:1px solid var(--line2);background:var(--panel);color:var(--ink2);width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:16px}
+  .rbtn:hover{color:var(--ink);border-color:var(--accent)}
+  .cbody{border-top:1px dashed var(--line);padding:11px 14px 13px 17px;display:flex;gap:7px;flex-wrap:wrap}
+  .mini{font-family:var(--mono);font-size:11px;letter-spacing:.03em;color:var(--ink2);background:transparent;border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+  .mini:hover{border-color:var(--accent);color:var(--accent)}
+  .mini.danger:hover{border-color:var(--crit);color:var(--crit)}
+  .infobtn{background:transparent;border:1px solid var(--line);color:var(--ink3);width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex:0 0 auto;align-self:flex-start}
+  .infobtn:hover{border-color:var(--accent);color:var(--accent)}
+  .bx{background:transparent;border:0;color:var(--crit);font-size:20px;padding:0 2px;margin-left:auto;line-height:1;align-self:center}
+  .tip2{position:fixed;z-index:90;transform:translate(-50%,-100%);background:var(--ink);color:var(--bg);font-size:11px;font-weight:600;padding:5px 9px;border-radius:7px;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow)}
+  .istat{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);font-size:13px}
+  .istat:first-child{border-top:0}.istat .k{color:var(--ink2)}.istat .v{font-family:var(--mono);font-weight:700;text-align:right}
+  .reccard{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:13px;text-align:center}
+  .recbig{font-size:14px;color:var(--ink2)}.recbig b{font-family:var(--mono);font-size:26px;color:var(--accent);font-weight:800}
+  .syr{width:100%;max-width:250px;height:40px;margin:8px auto;display:block}
+  .recmeta{display:flex;justify-content:center;gap:18px;font-size:12px;color:var(--ink3)}
+  .recmeta b{color:var(--ink);font-family:var(--mono)}
+  .recsug{font-size:11.5px;color:var(--accent-ink);margin-top:8px}
+  .chip2{font-family:var(--mono);font-size:12px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);border-radius:99px;padding:7px 13px}
+  .chip2:hover{border-color:var(--accent)}
+  /* FAB + button */
+  .fab{position:fixed;right:18px;bottom:98px;z-index:25;width:56px;height:56px;border-radius:18px;border:0;background:var(--accent);color:#04201d;font-size:28px;font-weight:400;box-shadow:0 8px 24px rgba(15,158,143,.4);display:grid;place-items:center}
+  @media(min-width:860px){.fab{bottom:24px}}
+  .fab:active{transform:scale(.93)}
+  /* dropdown / modal */
+  .modal{position:fixed;inset:0;z-index:50;background:rgba(4,10,9,.5);display:none;align-items:flex-end;justify-content:center}
+  .modal.on{display:flex;animation:fade .2s ease}
+  @media(min-width:600px){.modal{align-items:center}}
+  .sheet{background:var(--panel);border:1px solid var(--line);border-radius:18px 18px 0 0;width:100%;max-width:520px;max-height:86vh;overflow-y:auto;padding:16px 16px 22px;box-shadow:0 -8px 40px rgba(0,0,0,.3)}
+  @media(min-width:600px){.sheet{border-radius:18px}}
+  .sheet h3{margin:0 0 3px;font-size:15px}
+  .msub{font-family:var(--mono);font-size:10px;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:13px}
+  .srch{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--ink);font-size:14px;margin-bottom:10px}
+  .catlist{display:flex;flex-direction:column;gap:1px}
+  .catrow{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:9px;cursor:pointer}
+  .catrow:hover{background:var(--panel2)}
+  .catrow .cn{flex:1;font-size:13.5px;font-weight:550}
+  .catrow .cc{font-family:var(--mono);font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
+  .sizes{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+  .szbtn{font-family:var(--mono);font-size:12px;border:1px solid var(--line2);background:var(--panel);color:var(--ink);border-radius:8px;padding:7px 11px}
+  .szbtn:hover{border-color:var(--accent);color:var(--accent)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .fld{display:flex;flex-direction:column;gap:4px}
+  .fld label{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+  .fld input,.fld select,.fld textarea{font-size:13.5px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 10px;color:var(--ink);width:100%}
+  .fld input.mono{font-family:var(--mono)}
+  .primary{margin-top:14px;width:100%;background:var(--accent);color:#04201d;border:0;border-radius:11px;padding:12px;font-weight:700;font-size:13.5px}
+  .primary:active{transform:scale(.99)}
+  .ghost{width:100%;margin-top:8px;text-align:center;background:transparent;border:1px solid var(--line);border-radius:10px;padding:10px;color:var(--ink2);font-size:12.5px}
+  .ghost:hover{border-color:var(--line2);color:var(--ink)}
+  .ghost.danger{color:var(--crit);border-color:var(--crit)}
+  /* tip popover */
+  .tip{position:fixed;left:50%;transform:translateX(-50%);bottom:150px;z-index:70;max-width:300px;background:var(--ink);color:var(--bg);border-radius:12px;padding:12px 14px;font-size:12.5px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+  .tip button{margin-top:8px;background:var(--accent);color:#04201d;border:0;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700}
+  /* guide */
+  .guide{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:15px;margin-bottom:11px}
+  .guide h3{margin:0 0 3px;font-size:15px}
+  .guide .what{font-size:12.5px;color:var(--ink2);margin:2px 0 10px}
+  .guide .gt{font-family:var(--mono);font-size:11px;color:var(--accent-ink);margin-bottom:11px}
+  .nut{border-top:1px solid var(--line);padding:10px 0}
+  .nut .nn{font-weight:600;font-size:13px;display:flex;justify-content:space-between;gap:8px}
+  .nut .nn .amt{font-family:var(--mono);font-size:11px;color:var(--accent);font-weight:700;text-align:right}
+  .nut .food{font-size:12px;color:var(--ink3);margin-top:3px}
+  .nut .note{font-size:12px;color:var(--ink2);margin-top:3px}
+  .warns{margin-top:11px;background:var(--warn-soft);border-radius:10px;padding:10px 12px;border-left:3px solid var(--warn)}
+  .warns .wl{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--warn);margin-bottom:5px}
+  .warns li{font-size:12px;color:var(--ink);margin:3px 0}
+  .bwork{font-size:11.5px;color:var(--ink3);margin-top:10px;font-style:italic}
+  /* calendar */
+  .cal{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:14px}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .dow{font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;color:var(--ink3);text-align:center;padding-bottom:6px;text-transform:uppercase}
+  .day{aspect-ratio:1;border-radius:9px;border:1px solid var(--line);background:var(--panel2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:2px;cursor:pointer}
+  .day.empty{background:transparent;border:0;cursor:default}
+  .day .num{font-family:var(--mono);font-size:12px;color:var(--ink2)}
+  .day.today{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+  .day.today .num{color:var(--accent);font-weight:700}
+  .day .cnt{font-family:var(--mono);font-size:9px;color:var(--good);font-weight:700}
+  .dots{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;max-width:32px}
+  .dot{width:5px;height:5px;border-radius:99px;background:var(--good)}
+  /* stats */
+  .statgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-bottom:12px}
+  @media(min-width:520px){.statgrid{grid-template-columns:repeat(4,1fr)}}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;box-shadow:var(--shadow)}
+  .stat .k{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+  .stat .v{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-top:3px}
+  .stat .v small{font-size:12px;color:var(--ink3);font-weight:600}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:15px;margin-bottom:11px}
+  .seg{display:flex;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:3px;margin-bottom:13px}
+  .seg button{flex:1;border:0;background:transparent;color:var(--ink3);font-size:12.5px;font-weight:600;padding:8px;border-radius:8px}
+  .seg button.on{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
+  .row{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--line)}
+  .row:first-child{border-top:0}
+  .row .ri{flex:1;min-width:0}.row .rp{font-weight:600;font-size:13.5px}
+  .row .rm{font-family:var(--mono);font-size:11px;color:var(--ink3);margin-top:2px}
+  .row .rv{text-align:right;font-family:var(--mono)}
+  .pill{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:7px;font-weight:600}
+  .pill.good{background:var(--good-soft);color:var(--good)}.pill.warn{background:var(--warn-soft);color:var(--warn)}
+  .pill.crit{background:var(--crit-soft);color:var(--crit)}.pill.na{background:var(--panel2);color:var(--ink3)}
+  .src{font-size:12px;color:var(--ink2);background:var(--panel2);border-radius:9px;padding:9px 11px;margin-top:9px;line-height:1.5}
+  .src .rec{color:var(--accent-ink);font-weight:600}
+  .del{background:transparent;border:0;color:var(--ink3);font-size:18px;padding:4px 6px;border-radius:7px}
+  .del:hover{color:var(--crit);background:var(--crit-soft)}
+  .empty-note{text-align:center;color:var(--ink3);font-size:13px;padding:26px 10px;font-family:var(--mono);letter-spacing:.03em}
+  .settbl{display:flex;flex-direction:column}
+  .setrow{display:flex;align-items:center;gap:11px;padding:11px 0;border-top:1px solid var(--line)}
+  .setrow:first-child{border-top:0}
+  .cbx{width:22px;height:22px;flex:0 0 auto;border-radius:6px;border:2px solid var(--line2);display:grid;place-items:center;color:transparent;font-size:14px;font-weight:800}
+  .cbx.on{background:var(--accent);border-color:var(--accent);color:#04201d}
+  .toggle{width:46px;height:27px;border-radius:99px;background:var(--line2);position:relative;flex:0 0 auto;transition:background .2s}
+  .toggle.on{background:var(--accent)}
+  .toggle::after{content:"";position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:left .2s}
+  .toggle.on::after{left:22px}
+  /* nav */
+  .nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;padding:5px 4px calc(5px + env(safe-area-inset-bottom));overflow-x:auto;scrollbar-width:none}
+  .nav::-webkit-scrollbar{display:none}
+  .nav button{flex:1 0 auto;min-width:58px;background:transparent;border:0;color:var(--ink3);display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 2px;border-radius:10px;font-family:var(--mono);font-size:9px;letter-spacing:.03em;text-transform:uppercase}
+  .nav button svg{width:20px;height:20px}
+  .nav button.on{color:var(--accent)}
+  .nav .ni{width:40px;height:26px;border-radius:9px;display:grid;place-items:center;transition:background .2s}
+  .nav button.on .ni{background:var(--accent-soft)}
+  @media(min-width:860px){.nav{top:0;bottom:0;right:auto;width:88px;flex-direction:column;justify-content:flex-start;padding:14px 8px;border-top:0;border-right:1px solid var(--line);gap:4px;overflow:visible}.nav button{flex:0 0 auto;min-width:0}}
+  .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);z-index:80;background:var(--ink);color:var(--bg);font-size:12.5px;font-weight:600;padding:10px 16px;border-radius:99px;opacity:0;transition:.3s;pointer-events:none;box-shadow:var(--shadow)}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+
+<div class="app">
+  <div class="top">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <rect x="14" y="3" width="12" height="7" rx="2" fill="var(--accent)"/>
+        <path d="M15 10h10v20a5 5 0 0 1-5 5 5 5 0 0 1-5-5V10Z" fill="none" stroke="var(--accent)" stroke-width="2.4"/>
+        <path d="M15 24h10" stroke="var(--accent)" stroke-width="2.4"/>
+        <rect x="17.5" y="27" width="5" height="6" rx="1.6" fill="var(--accent)" opacity=".55"/>
+      </svg>
+      <div><h1>Vialback</h1><div class="sub" id="topSub">Track</div></div>
+      <div class="spacer"></div>
+      <button class="iconbtn" id="themeBtn" title="Theme" aria-label="Toggle theme">◐</button>
+      <button class="iconbtn avatar" id="profileBtn" title="Settings" aria-label="Settings">R</button>
+    </div>
+  </div>
+
+  <main>
+    <section class="view on" id="v-track"></section>
+    <section class="view" id="v-guide"></section>
+    <section class="view" id="v-cal"></section>
+    <section class="view" id="v-buy"></section>
+    <section class="view" id="v-sales"></section>
+    <section class="view" id="v-settings"></section>
+  </main>
+
+  <button class="fab" id="fab" aria-label="Add peptide">+</button>
+
+  <nav class="nav" id="nav">
+    <button data-tab="track" class="on"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 3l8 8-9 9-4 1 1-4 9-9" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 6l4 4" stroke-linecap="round"/></svg></span>Track</button>
+    <button data-tab="guide"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 012-2h12v18H6a2 2 0 01-2-2V5Z"/><path d="M8 3v18M12 8h4M12 12h4" stroke-linecap="round"/></svg></span>Guide</button>
+    <button data-tab="cal"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4" stroke-linecap="round"/></svg></span>Log</button>
+    <button data-tab="buy"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h2l2.2 11.2a1.5 1.5 0 001.5 1.2h7.6a1.5 1.5 0 001.5-1.2L21 8H7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="20.5" r="1.1" fill="currentColor" stroke="none"/><circle cx="18" cy="20.5" r="1.1" fill="currentColor" stroke="none"/></svg></span>Buy</button>
+    <button data-tab="sales"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V9M10 19V5M16 19v-6M22 19H2" stroke-linecap="round"/></svg></span>Sales</button>
+  </nav>
+</div>
+
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+<input type="file" id="importFile" accept="application/json,.json" style="display:none">
+
+<script>
+"use strict";
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const DAY=86400000,WD=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const iso=d=>{const x=new Date(d);x.setMinutes(x.getMinutes()-x.getTimezoneOffset());return x.toISOString().slice(0,10);};
+const parseISO=s=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d);};
+const money=n=>"$"+(Math.round(n*100)/100).toLocaleString("en-US",{maximumFractionDigits:2});
+const round=(n,d=2)=>{const f=10**d;return Math.round(n*f)/f;};
+
+/* ---------- Lucky catalog (for the + dropdown) ---------- */
+const LUCKY={
+"Retatrutide":{c:"GLP-1",s:[5,10,15,20,30,40,50,60]},"Tirzepatide":{c:"GLP-1",s:[5,10,15,20,30,40,50,60,80,100]},
+"Semaglutide":{c:"GLP-1",s:[2,5,10,15,20,30,40,50]},"Cagrilintide":{c:"GLP-1",s:[5,10]},"Cagri+Sema":{c:"GLP-1",s:[5,10]},
+"Tesamorelin":{c:"GH axis",s:[5,10,15,20]},"Sermorelin":{c:"GH axis",s:[5,10]},"Ipamorelin":{c:"GH axis",s:[2,5,10]},
+"CJC-1295 no DAC":{c:"GH axis",s:[2,5,10]},"CJC-1295 DAC":{c:"GH axis",s:[2,5]},"CJC/Ipamorelin":{c:"GH axis",s:[10]},
+"GHRP-2":{c:"GH axis",s:[5,10,15]},"GHRP-6":{c:"GH axis",s:[5,10]},"Hexarelin":{c:"GH axis",s:[2,5]},"MK-677":{c:"GH axis",s:[5]},
+"IGF-1 LR3":{c:"GH axis",s:[1]},"MOTS-c":{c:"Mitochondria",s:[10,15,20,40]},"SS-31":{c:"Mitochondria",s:[5,10,50]},
+"NAD+":{c:"Mitochondria",s:[100,500,1000]},"5-Amino-1MQ":{c:"Metabolic",s:[5,10,50]},"AICAR":{c:"Metabolic",s:[50,100]},
+"L-Carnitine":{c:"Fat-ox",s:[400,600,1200]},"AOD-9604":{c:"Fat loss",s:[2,5,10]},"Adipotide":{c:"Fat loss",s:[2,5,10]},
+"GHK-Cu":{c:"Recovery/skin",s:[50,100]},"AHK-Cu":{c:"Recovery/skin",s:[100]},"BPC-157":{c:"Recovery",s:[2,5,10]},
+"TB-500":{c:"Recovery",s:[2,5,10]},"BPC-157/TB-500":{c:"Recovery",s:[10,20]},"KLOW":{c:"Recovery blend",s:[80]},
+"GLOW":{c:"Recovery blend",s:[50,70]},"KPV":{c:"Gut/skin",s:[5,10]},"Glutathione":{c:"Detox",s:[400,500,600,1500]},
+"Thymosin Alpha-1":{c:"Immune",s:[5,10]},"Thymalin":{c:"Immune",s:[10]},"LL-37":{c:"Immune",s:[5]},
+"Epithalon":{c:"Longevity",s:[10,50]},"Pinealon":{c:"Longevity",s:[10]},"DSIP":{c:"Sleep",s:[2,5,10]},
+"Selank":{c:"Nootropic",s:[5,10]},"Semax":{c:"Nootropic",s:[5,10]},"Dihexa":{c:"Nootropic",s:[5,10]},
+"Kisspeptin-10":{c:"Hormone",s:[5,10]},"PT-141":{c:"Hormone",s:[10]},"Oxytocin":{c:"Hormone",s:[2,5,10]},
+"MT-2":{c:"Tanning",s:[10]},"Ara-290":{c:"Nerve",s:[10,16]},"Cerebrolysin":{c:"Nerve",s:[60]},"VIP":{c:"Anti-inflam",s:[5,10]},
+"Melatonin":{c:"Sleep",s:[10]},"HCG":{c:"Hormone",s:[2000,5000,10000],u:"iu"},"Lemon Bottle":{c:"Aesthetic",s:[10],u:"ml"},
+"Bac water":{c:"Supply",s:[3,10],u:"ml"},"Acetic acid":{c:"Supply",s:[3,10],u:"ml"}};
+
+/* ---------- nutrient reference (low-range, food + supplement) ---------- */
+const N={
+protein:{n:"Protein",f:"eggs, chicken, fish, Greek yogurt, whey",a:"~0.7-1 g/lb bodyweight daily"},
+zinc:{n:"Zinc",f:"oysters, beef, pumpkin seeds",a:"food first; if supp 10-15 mg (never over 40)"},
+copper:{n:"Copper",f:"beef liver, cashews, dark chocolate",a:"1-2 mg; keep ~10:1 zinc:copper"},
+mag:{n:"Magnesium",f:"pumpkin seeds, spinach, almonds, dark chocolate",a:"200-300 mg glycinate at night"},
+vitc:{n:"Vitamin C",f:"bell pepper, citrus, kiwi, broccoli",a:"500 mg-1 g daily"},
+iron:{n:"Iron",f:"red meat, lentils, spinach",a:"FOOD ONLY - never supplement without bloodwork, overload is toxic"},
+coq10:{n:"CoQ10",f:"organ meat, sardines, mackerel",a:"100 mg/day ubiquinol"},
+ala:{n:"Alpha-lipoic acid",f:"broccoli, spinach, organ meat",a:"300-600 mg/day"},
+nac:{n:"NAC",f:"(precursor to glutathione)",a:"600 mg/day"},
+b:{n:"B-complex",f:"eggs, meat, leafy greens, legumes",a:"1 balanced B-complex daily"},
+b12:{n:"Vitamin B12",f:"meat, eggs, dairy, clams",a:"start low; test if vegetarian"},
+vitd:{n:"Vitamin D3",f:"sunlight, salmon, egg yolk",a:"1,000-2,000 IU/day; test your level"},
+tmg:{n:"TMG (betaine)",f:"beets, spinach, whole grains",a:"500 mg-1 g with your NAD dose"},
+glut:{n:"L-Glutamine",f:"beef, eggs, cabbage, whey",a:"5 g/day"},
+thea:{n:"L-theanine",f:"green tea",a:"100-200 mg at night"},
+gly:{n:"Glycine",f:"bone broth, gelatin",a:"3 g at night"},
+coll:{n:"Collagen/glycine",f:"bone broth, collagen powder",a:"10-15 g/day"},
+sel:{n:"Selenium",f:"Brazil nuts (1-2/day)",a:"100-200 mcg/day"},
+electro:{n:"Electrolytes",f:"salt, potassium (avocado, potato), magnesium",a:"daily, especially eating less"},
+fiber:{n:"Fiber",f:"chia, oats, beans, veg",a:"25-35 g/day"},
+acar:{n:"Acetyl-L-carnitine",f:"red meat",a:"500 mg-1 g/day"},
+api:{n:"Apigenin",f:"chamomile, parsley, celery",a:"50 mg/day"}};
+
+/* ---------- guides (only shown for tracked peptides) ---------- */
+const GUIDES={
+reta:{what:"Triple agonist (GLP-1/GIP/glucagon) for appetite, fat loss and glucose control.",t:"Weekly, subq.",
+ pair:["protein","electro","fiber","b"],extra:[["Hydration","GLP-1 blunts thirst, drink more than usual"]],
+ warn:["Nausea is common, titrate slowly.","In a deficit you can lose muscle, keep protein high and lift.","Never stack with another GLP-1 at the same time."]},
+tesa:{what:"GHRH analog that targets visceral fat and lifts the GH pulse.",t:"Daily, fasted, before bed.",
+ pair:["protein"],extra:[["Fasted dosing","No carbs ~2h around it, insulin blunts GH"]],
+ warn:["Can raise blood sugar and IGF-1, that's a key bloodwork marker.","Water retention and joint aches show up at higher doses, stay low."]},
+ss31:{what:"Mitochondrial (cardiolipin) peptide for cellular energy and oxidative repair.",t:"Daily, AM.",
+ pair:["coq10","ala","b"],warn:["Fast-burning cycle item, keep refrigerated once mixed."]},
+mots:{what:"Mitochondrial-derived peptide for insulin sensitivity and metabolism.",t:"On training days, pre-workout.",
+ pair:["ala"],extra:[["Exercise","Dose before training to stack the effect"]],warn:[]},
+nad:{what:"Cellular energy and repair cofactor.",t:"AM, push slowly.",
+ pair:["tmg","api","b"],warn:["Fast push causes flushing and chest pressure, go SLOW."]},
+amino:{what:"NNMT inhibitor, raises NAD and energy expenditure, supports fat loss.",t:"Subq, fasted AM.",
+ pair:["tmg","b"],warn:["Newer compound with thin human data, keep it low and slow."]},
+klow:{what:"Recovery blend: BPC-157 + GHK-Cu + TB-500 + KPV in one shot.",t:"Daily, one injection.",
+ pair:["vitc","zinc","copper","coll","glut"],extra:[["Acetic acid","Reconstitute with it so the blend doesn't gel"]],
+ warn:["GHK adds copper, keep zinc and copper balanced."]},
+gluta:{what:"Master antioxidant, supports liver and kidney.",t:"Daily, with vitamin C.",
+ pair:["nac","vitc","ala","sel"],warn:["Take with vitamin C, it recycles glutathione back to active form."]},
+ta1:{what:"Thymosin Alpha-1, immune T-cell modulation.",t:"2x per week.",pair:["vitd","zinc","vitc"],warn:[]},
+epi:{what:"Epithalon, telomerase and pineal support, anti-aging.",t:"Night, short 10-20 day cycle.",
+ pair:["mag"],extra:[["Cycle","Pulse it 1-2x per year, not continuous"]],warn:[]},
+pineal:{what:"Pinealon, pineal peptide for cognition and rhythm.",t:"Night, short cycle.",
+ pair:["mag"],warn:["Limited human data, keep to short cycles."]},
+dsip:{what:"Delta Sleep-Inducing Peptide for deeper sleep.",t:"Before bed.",
+ pair:["mag","thea","gly"],warn:["Response varies a lot person to person."]},
+ara:{what:"Ara-290 (Cibinetide) for nerve repair and inflammation.",t:"Daily.",pair:["ala","acar","b12"],warn:[]},
+kiss:{what:"Kisspeptin-10, upstream HPG hormone signal.",t:"2-3x per week MAX.",
+ pair:["zinc","vitd"],warn:["More often desensitizes the axis, cap at 2-3x per week."]},
+lcar:{what:"L-Carnitine, shuttles fatty acids into the mitochondria to be burned.",t:"Pre fasted cardio.",pair:["ala"],warn:[]},
+aod:{what:"AOD-9604, GH fat-loss fragment with no IGF-1 or glucose effect.",t:"Fasted AM or pre-cardio.",
+ pair:[],extra:[["Fasted only","Works when insulin is low"]],warn:[]}};
+
+/* ---------- vendor sourcing for the Buy tab (box price for a reorder) ---------- */
+const SRC={
+reta:{l:["RT30",250],p:["RT30",165]},tesa:{l:["TSM10",206],p:["TSM10",169]},ss31:{l:["2S50",413],p:["2S50",400]},
+mots:{l:["MS10",73],p:["MS10",59]},nad:{l:["NJ500",83],p:["NJ500",59]},amino:{l:["10AM",79],p:["50AM",106]},
+klow:{l:["KLOW80",267],p:["KLOW80",250]},gluta:{l:["LW150",84],p:["GTT1500",59]},ta1:{l:["TA5",94],p:["TA5",94]},
+epi:{l:["ET10",47],p:["ET10",42]},pineal:{l:["PIN10",68],p:["PI10",60]},dsip:{l:["DS5",45],p:["DS5",38]},
+ara:{l:["ARA10",68],p:["RA10",73]},kiss:{l:["KS5",64],p:["KS5",52]},lcar:{l:["LC600",59],p:["LC600",50]},aod:{l:["2AD",63],p:["5AD",94]}};
+
+/* ---------- default tracked stack (all editable) ---------- */
+const DEF=[
+ mk("reta","Retatrutide","GLP-1",1,"mg",{t:"week",days:[1]},30,30,"Weekly, AM"),
+ mk("tesa","Tesamorelin","GH axis",.5,"mg",{t:"daily"},10,10,"Fasted, before bed"),
+ mk("ss31","SS-31","Mitochondria",2,"mg",{t:"daily"},50,30,"AM, 12-wk cycle"),
+ mk("mots","MOTS-c","Mitochondria",3,"mg",{t:"week",days:[1,3,5]},10,10,"Pre-workout"),
+ mk("nad","NAD+","Mitochondria",50,"mg",{t:"week",days:[2,4,6]},500,500,"AM, slow push"),
+ mk("amino","5-Amino-1MQ","Metabolic",1,"mg",{t:"daily"},10,10,"Subq, fasted AM"),
+ mk("klow","KLOW","Recovery",4,"mg",{t:"daily"},80,80,"Daily, 1 pin",true),
+ mk("gluta","Glutathione","Detox",200,"mg",{t:"daily"},1500,1500,"With vitamin C"),
+ mk("ta1","Thymosin Alpha-1","Immune",1.6,"mg",{t:"week",days:[1,4]},5,5,"2x per week"),
+ mk("epi","Epithalon","Longevity",10,"mg",{t:"daily"},10,10,"Night, short cycle"),
+ mk("pineal","Pinealon","Longevity",2,"mg",{t:"daily"},10,10,"Night, short cycle"),
+ mk("dsip","DSIP","Sleep",.2,"mg",{t:"daily"},5,5,"Before bed"),
+ mk("ara","Ara-290","Nerve",3,"mg",{t:"daily"},10,10,"Daily"),
+ mk("kiss","Kisspeptin-10","Hormone",.05,"mg",{t:"week",days:[1,4]},5,5,"2-3x per week"),
+ mk("lcar","L-Carnitine","Fat-ox",500,"mg",{t:"daily"},600,600,"Pre fasted cardio","off"),
+ mk("aod","AOD-9604","Fat loss",.3,"mg",{t:"daily"},2,2,"Fasted AM","off")];
+function mk(id,name,cat,dose,unit,sched,vial,rem,timing,flag){
+  return{id,name,cat,dose,unit,sched,vialMg:vial,remaining:rem,bacMl:2,mixDate:iso(new Date()),
+    timing,label:flag===true?"1 pin (~4mg blend)":null,status:flag==="off"?"off":"active"};
+}
+
+/* ---------- state ---------- */
+const KEY="vialback_v2";
+let S=load();
+function load(){
+  let v={};try{v=JSON.parse(localStorage.getItem(KEY))||{};}catch(e){}
+  return{
+    track:v.track||DEF.map(p=>({...p})),
+    archive:v.archive||[],
+    log:v.log||{},sales:v.sales||[],resale:v.resale||[],weights:v.weights||[],
+    settings:v.settings||{notify:true,theme:null,seenTip:false}
+  };
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));syncNative();}catch(e){}}
+function pById(id){return S.track.find(p=>p.id===id);}
+function activeTrack(){return S.track.filter(p=>p.status==="active");}
+
+/* push low-stock summary to the Android shell (no-op in a browser) */
+function syncNative(){try{
+  if(window.AndroidBridge&&AndroidBridge.syncState){
+    const low=S.track.filter(p=>p.status==="active").map(p=>({n:p.name,d:daysLeft(p)}))
+      .filter(x=>x.d!=null&&x.d<=7);
+    AndroidBridge.syncState(JSON.stringify({notify:!!S.settings.notify,low}));
+  }
+}catch(e){}}
+
+/* ---------- theme ---------- */
+function applyTheme(){const t=S.settings.theme;if(t)document.documentElement.setAttribute("data-theme",t);else document.documentElement.removeAttribute("data-theme");}
+$("#themeBtn").onclick=()=>{const c=S.settings.theme||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light");S.settings.theme=c==="dark"?"light":"dark";applyTheme();save();};
+applyTheme();
+
+/* ---------- schedule math ---------- */
+function dueOn(p,d){const s=p.sched;if(p.status!=="active")return false;
+  if(s.t==="daily")return true;if(s.t==="week")return s.days.includes(new Date(d).getDay());return false;}
+function doseMg(p){return p.unit==="mcg"?p.dose/1000:p.dose;}
+function weeklyMg(p){const s=p.sched,d=doseMg(p);if(s.t==="daily")return d*7;if(s.t==="week")return d*s.days.length;return d;}
+function daysLeft(p){const w=weeklyMg(p);if(!w)return null;return Math.floor(p.remaining/(w/7));}
+function doseLabel(p){return p.label||`${p.dose} ${p.unit}`;}
+function reconUnits(p){if(!p.bacMl||!p.vialMg)return null;const conc=p.vialMg/p.bacMl;return round(doseMg(p)/conc*100,1);}
+/* pick a bac-water volume that lands the dose on a clean, even unit mark */
+function suggestBac(vialMg,doseMg){const opts=[0.5,1,1.5,2,2.5,3,4,5];let best=null;
+  opts.forEach(b=>{const u=doseMg*b/vialMg*100,r=Math.round(u);let sc=0;
+    if(Math.abs(u-r)<0.06)sc+=2;if(r%10===0)sc+=3;else if(r%5===0)sc+=2;
+    if(u>=15&&u<=90)sc+=2;else if(u<8||u>100)sc-=4;
+    if(!best||sc>best.sc||(sc===best.sc&&Math.abs(u-50)<Math.abs(best.u-50)))best={b,u,sc};});
+  return best||{b:2,u:doseMg*2/vialMg*100};}
+function syrSVG(units){const u=Math.max(0,Math.min(100,units)),x0=16,w=178;
+  let t="";for(let i=0;i<=100;i+=10)t+=`<line x1="${x0+w*i/100}" y1="11" x2="${x0+w*i/100}" y2="15" stroke="var(--ink3)" stroke-width="1"/>`;
+  return `<svg class="syr" viewBox="0 0 220 40" fill="none"><rect x="${x0-9}" y="9" width="9" height="20" rx="2" fill="var(--line2)"/>
+    <rect x="${x0}" y="12" width="${w}" height="14" rx="3" fill="var(--panel)" stroke="var(--line2)"/>
+    <rect x="${x0}" y="12" width="${w*u/100}" height="14" rx="3" fill="var(--accent)" opacity="0.85"/>${t}
+    <line x1="${x0+w}" y1="19" x2="216" y2="19" stroke="var(--ink3)" stroke-width="2"/>
+    <line x1="${x0+w*u/100}" y1="7" x2="${x0+w*u/100}" y2="31" stroke="var(--accent-ink)" stroke-width="2"/></svg>`;}
+
+/* ============ TRACK ============ */
+function renderTrack(){
+  const el=$("#v-track");
+  const active=activeTrack(),off=S.track.filter(p=>p.status==="off");
+  const low=active.filter(p=>{const d=daysLeft(p);return p.remaining<=0||(d!=null&&d<=7);});
+  let html="";
+  if(low.length && S.settings.bannerDismiss!==iso(new Date())) html+=`<div class="banner"><span>⚠</span><div><b>Restock:</b> ${low.map(p=>p.name+" ("+(p.remaining<=0?"out":daysLeft(p)+"d")+")").join(", ")}. Head to the Buy tab.</div><button class="bx" data-banx aria-label="Dismiss for today">×</button></div>`;
+  // yellow (about to run out) on top, then green, then red (empty or deactivated) at the bottom
+  const yellow=[],green=[],red=[];
+  active.forEach(p=>{const d=daysLeft(p);if(p.remaining<=0)red.push(p);else if(d!=null&&d<=14)yellow.push(p);else green.push(p);});
+  const byDays=(a,b)=>(daysLeft(a)??999)-(daysLeft(b)??999);
+  yellow.sort(byDays);green.sort(byDays);off.forEach(p=>red.push(p));
+  html+=`<div class="cards">`;
+  [...yellow,...green,...red].forEach(p=>html+=trackCard(p));
+  html+=`</div>`;
+  if(!S.track.length) html=`<div class="empty-note">Tap + to add your first peptide.</div>`;
+  el.innerHTML=html;
+  $$("[data-needle]",el).forEach(b=>b.onclick=()=>inject(b.dataset.needle));
+  $$("[data-refill]",el).forEach(b=>b.onclick=()=>refill(b.dataset.refill));
+  $$("[data-edit]",el).forEach(b=>b.onclick=()=>editVial(b.dataset.edit));
+  $$("[data-off]",el).forEach(b=>b.onclick=()=>toggleOff(b.dataset.off));
+  $$("[data-info]",el).forEach(b=>b.onclick=()=>infoPop(b.dataset.info));
+  const bx=$("[data-banx]",el);if(bx)bx.onclick=()=>{S.settings.bannerDismiss=iso(new Date());save();renderTrack();};
+}
+function infoPop(id){
+  const p=pById(id);if(!p)return;
+  let total=0,mo=0,last=null,s30=0,d30=0;const mk=iso(new Date()).slice(0,7);
+  Object.keys(S.log).forEach(k=>{if(S.log[k][id]){total++;if(k.slice(0,7)===mk)mo++;if(!last||k>last)last=k;}});
+  for(let i=0;i<30;i++){const d=new Date(Date.now()-i*DAY),k=iso(d);if(dueOn(p,d))s30++;if(S.log[k]&&S.log[k][id])d30++;}
+  const adher=s30?Math.round(Math.min(100,d30/s30*100)):null;
+  const dl=daysLeft(p),rec=reconUnits(p);
+  const st=(k,v)=>`<div class="istat"><span class="k">${k}</span><span class="v">${v}</span></div>`;
+  $("#sheet").innerHTML=`<h3>${p.name}</h3><div class="msub">${p.cat} · your stats</div>
+    ${st("Dose",doseLabel(p))}
+    ${st("Schedule",p.sched.t==="daily"?"Every day":p.sched.days.map(d=>WD[d]).join(", "))}
+    ${st("Timing",p.timing||"—")}
+    ${p.status==="off"?st("Status","deactivated"):st("Vial left",`${round(p.remaining,2)} / ${p.vialMg} ${p.unit}${dl!=null?` · ${dl}d`:""}`)}
+    ${rec!=null&&p.status!=="off"?st("Per-dose",`${rec} units (U-100, ${p.bacMl}mL)`):""}
+    ${st("Last taken",last?`${WD[parseISO(last).getDay()]} ${last}`:"never")}
+    ${st("Doses logged",`${total} total · ${mo} this month`)}
+    ${st("Adherence 30d",adher!=null?adher+"%":"—")}
+    <button class="primary" id="ipEdit">Edit this peptide</button>
+    <button class="ghost" id="ipClose">Close</button>`;
+  $("#modal").classList.add("on");
+  $("#ipEdit").onclick=()=>{closeModal();editVial(id);};
+  $("#ipClose").onclick=closeModal;
+}
+function trackCard(p){
+  const off=p.status==="off",d=daysLeft(p),empty=!off&&p.remaining<=0;
+  const pct=p.vialMg?Math.max(0,Math.min(100,p.remaining/p.vialMg*100)):0;
+  const cls=off?"off":empty?"crit":(d!=null&&d<=14)?"warn":"ok";
+  const gc=off?"var(--crit)":empty?"var(--crit)":(d!=null&&d<=14)?"var(--warn)":"var(--good)";
+  const rec=reconUnits(p);
+  return `<div class="card ${cls}"><div class="stripe"></div>
+    <div class="chead"><div class="cmain">
+      <div class="cname"><span class="nm">${p.name}</span><span class="chip ${off?"off":""}">${off?"deactivated":p.cat}</span></div>
+      <div class="cmeta"><span class="dose">${doseLabel(p)}</span><span class="timing">${p.timing}</span></div>
+    </div><button class="infobtn" data-info="${p.id}" aria-label="Peptide info"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6M10 3v6l-4.2 8.4A2 2 0 007.6 20h8.8a2 2 0 001.8-2.6L14 9V3" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 12.4v3.2" stroke-linecap="round"/><circle cx="12" cy="10.4" r="0.7" fill="currentColor" stroke="none"/></svg></button></div>
+    ${off?"":`<div class="vial">
+      <div class="ring" style="--p:${pct};--gc:${gc}"><span class="rt">${Math.round(pct)}%</span></div>
+      <div class="vinfo"><span class="big">${round(p.remaining,2)}</span> / ${p.vialMg} ${p.unit} left${d!=null?` · <b>${d} days</b>`:""}
+        ${rec!=null?`<div class="recon">= ${rec} units on a U-100 syringe (${p.bacMl}mL mix)</div>`:""}</div>
+      <div class="vacts">
+        <button class="rbtn" data-refill="${p.id}" data-tip="Undo — refill vial to full" aria-label="Undo, refill vial">↺</button>
+        <button class="needle" data-needle="${p.id}">💉 Inject</button>
+      </div></div>`}
+    <div class="cbody">
+      <button class="mini" data-edit="${p.id}">✎ Edit</button>
+      <button class="mini danger" data-off="${p.id}">${off?"↑ Reactivate":"⨯ Deactivate"}</button>
+    </div></div>`;
+}
+function inject(id){const p=pById(id);if(!p)return;
+  p.remaining=Math.max(0,round(p.remaining-doseMg(p),3));
+  const k=iso(new Date());S.log[k]=S.log[k]||{};S.log[k][id]={dose:p.dose,unit:p.unit,at:Date.now()};
+  save();renderTrack();
+  const d=daysLeft(p);toast(d!=null&&d<=7?`${p.name} injected · ${d} days left, restock soon`:`${p.name} injected`);
+}
+function refill(id){const p=pById(id);if(!p)return;p.remaining=p.vialMg;p.mixDate=iso(new Date());save();renderTrack();toast(`${p.name} vial refilled to ${p.vialMg}${p.unit}`);}
+function toggleOff(id){const p=pById(id);if(!p)return;p.status=p.status==="off"?"active":"off";save();renderTrack();toast(p.status==="off"?`${p.name} deactivated`:`${p.name} reactivated`);}
+
+/* ============ ADD (catalog dropdown) ============ */
+$("#fab").onclick=openAdd;
+function openAdd(){
+  const names=Object.keys(LUCKY).sort();
+  $("#sheet").innerHTML=`<h3>Add a peptide</h3><div class="msub">From Lucky's catalog</div>
+    <input class="srch" id="catSearch" placeholder="Search peptides..." autocomplete="off">
+    <div class="catlist" id="catList"></div>`;
+  $("#modal").classList.add("on");
+  const draw=q=>{const list=$("#catList");list.innerHTML="";
+    names.filter(n=>n.toLowerCase().includes(q.toLowerCase())).forEach(n=>{
+      const it=LUCKY[n];const row=document.createElement("div");row.className="catrow";
+      row.innerHTML=`<div class="cn">${n}</div><div class="cc">${it.c}</div>`;
+      row.onclick=()=>pickSize(n);list.appendChild(row);});};
+  draw("");
+  $("#catSearch").oninput=e=>draw(e.target.value);
+  $("#catSearch").focus();
+  if(!S.settings.seenTip){S.settings.seenTip=true;save();setTimeout(showTip,350);}
+}
+function showTip(){
+  const t=document.createElement("div");t.className="tip";
+  t.innerHTML=`Too many peptides here? You can hide the ones you don't use in <b>Settings</b> (tap your avatar, top right).<br><button>Got it</button>`;
+  document.body.appendChild(t);t.querySelector("button").onclick=()=>t.remove();
+  setTimeout(()=>t.parentNode&&t.remove(),9000);
+}
+function pickSize(name){
+  const it=LUCKY[name],unit=it.u||"mg";
+  $("#sheet").innerHTML=`<h3>${name}</h3><div class="msub">Pick your vial size</div>
+    <div class="sizes" id="szList">${it.s.map(sz=>`<button class="szbtn" data-sz="${sz}">${sz} ${unit}</button>`).join("")}</div>
+    <button class="ghost" id="backCat">‹ Back</button>`;
+  $("#backCat").onclick=openAdd;
+  $$("[data-sz]").forEach(b=>b.onclick=()=>{const sz=+b.dataset.sz;if(unit!=="mg")addFinal(name,sz,unit,1,unit,0);else reconStep(name,sz);});
+}
+function reconStep(name,size){
+  const arch=S.archive.find(a=>a.name===name);
+  let dose=arch?arch.dose:(size>=50?round(size*0.02,2):0.25),du=arch?arch.unit:"mg";
+  let bac=arch?(arch.bacMl||2):(suggestBac(size,du==="mcg"?dose/1000:dose).b||2);
+  $("#sheet").innerHTML=`<h3>${name} · ${size} mg</h3><div class="msub">Reconstitution &amp; dose${arch?" · restored from archive":", no napkin math"}</div>
+    <div id="recOut" class="reccard"></div>
+    <div class="grid2"><div class="fld"><label>Vial amount (mg)</label><input class="mono" id="rcVial" type="number" inputmode="decimal" value="${size}"></div>
+      <div class="fld"><label>Bac water (mL)</label><input class="mono" id="rcBac" type="number" inputmode="decimal" value="${bac}"></div></div>
+    <div class="fld" style="margin-top:9px"><label>Desired dose</label>
+      <div style="display:flex;gap:8px"><input class="mono" id="rcDose" type="number" inputmode="decimal" value="${dose}" style="flex:1">
+        <div class="seg" style="margin:0;flex:0 0 112px"><button id="uMg" class="${du==='mg'?'on':''}">mg</button><button id="uMcg" class="${du==='mcg'?'on':''}">mcg</button></div></div></div>
+    <div class="sizes" style="margin-top:9px"><button class="chip2" data-dv="0.25">250mcg</button><button class="chip2" data-dv="0.5">500mcg</button><button class="chip2" data-dv="1">1mg</button><button class="chip2" data-dv="2">2mg</button></div>
+    <button class="primary" id="rcAdd">Add to my stack</button>
+    <button class="ghost" id="rcBack">‹ Back to sizes</button>`;
+  $("#modal").classList.add("on");
+  const draw=()=>{const v=parseFloat($("#rcVial").value)||size,b=parseFloat($("#rcBac").value)||1,d=parseFloat($("#rcDose").value)||0;
+    const dm=du==="mcg"?d/1000:d,conc=v/b,vol=dm/conc,units=vol*100,sug=suggestBac(v,dm||0.001);
+    $("#recOut").innerHTML=`<div class="recbig">Draw to <b>${round(units,1)}</b> units</div>${syrSVG(units)}
+      <div class="recmeta"><span>Conc <b>${round(conc,2)} mg/mL</b></span><span>Vol <b>${round(vol,3)} mL</b></span></div>
+      <div class="recsug">${Math.abs(units-Math.round(units))<.06&&Math.round(units)%5===0?"Lands on a clean "+Math.round(units)+"-unit mark ✓":"Tip: "+sug.b+" mL bac water = a clean "+Math.round(sug.u)+"-unit draw"}</div>`;};
+  ["rcVial","rcBac","rcDose"].forEach(i=>$("#"+i).oninput=draw);
+  $("#uMg").onclick=()=>{du="mg";$("#uMg").classList.add("on");$("#uMcg").classList.remove("on");draw();};
+  $("#uMcg").onclick=()=>{du="mcg";$("#uMcg").classList.add("on");$("#uMg").classList.remove("on");draw();};
+  $$("[data-dv]").forEach(b=>b.onclick=()=>{du="mg";$("#uMg").classList.add("on");$("#uMcg").classList.remove("on");$("#rcDose").value=b.dataset.dv;$("#rcBac").value=suggestBac(parseFloat($("#rcVial").value)||size,parseFloat(b.dataset.dv)).b;draw();});
+  $("#rcAdd").onclick=()=>addFinal(name,parseFloat($("#rcVial").value)||size,"mg",parseFloat($("#rcDose").value)||0.25,du,parseFloat($("#rcBac").value)||2);
+  $("#rcBack").onclick=()=>pickSize(name);
+  draw();
+}
+function addFinal(name,size,vialUnit,dose,du,bac){
+  const it=LUCKY[name];const arch=S.archive.find(a=>a.name===name);
+  const id=name.toLowerCase().replace(/[^a-z0-9]+/g,"")+"_"+Date.now().toString().slice(-4);
+  const guideId=Object.keys(GUIDES).find(k=>name.toLowerCase().startsWith(k))||null;
+  const p={id,name,cat:it.c,dose:dose||0.25,unit:du||vialUnit||"mg",sched:arch?arch.sched:{t:"daily"},vialMg:size,remaining:size,
+    bacMl:bac||2,mixDate:iso(new Date()),timing:arch?arch.timing:"Daily",label:arch?arch.label:null,status:"active",guideKey:guideId};
+  if(arch)S.archive=S.archive.filter(a=>a.name!==name);
+  S.track.push(p);save();closeModal();setTab("track");toast(name+" added");
+}
+
+/* ============ EDIT VIAL (dose, size, water, schedule) ============ */
+function editVial(id,isNew){
+  const p=pById(id);if(!p)return;const s=p.sched;
+  const days=[0,1,2,3,4,5,6].map(d=>`<button type="button" class="szbtn dchk" data-d="${d}" style="${s.t==='week'&&s.days.includes(d)?'border-color:var(--accent);color:var(--accent)':''}">${WD[d]}</button>`).join("");
+  $("#sheet").innerHTML=`<h3>${p.name}</h3><div class="msub">${isNew?"Set it up":"Edit"} · everything here is editable</div>
+    <div class="grid2">
+      <div class="fld"><label>Dose</label><input class="mono" id="eDose" type="number" inputmode="decimal" value="${p.dose}"></div>
+      <div class="fld"><label>Unit</label><select id="eUnit"><option ${p.unit==='mg'?'selected':''}>mg</option><option ${p.unit==='mcg'?'selected':''}>mcg</option><option ${p.unit==='iu'?'selected':''}>iu</option><option ${p.unit==='ml'?'selected':''}>ml</option></select></div>
+      <div class="fld"><label>Vial size (max)</label><input class="mono" id="eVial" type="number" inputmode="decimal" value="${p.vialMg}"></div>
+      <div class="fld"><label>Remaining now</label><input class="mono" id="eRem" type="number" inputmode="decimal" value="${p.remaining}"></div>
+      <div class="fld"><label>Bac water (mL)</label><input class="mono" id="eBac" type="number" inputmode="decimal" value="${p.bacMl||2}"></div>
+      <div class="fld"><label>Timing note</label><input id="eTime" type="text" value="${p.timing||""}"></div>
+      <div class="fld" style="grid-column:1/3"><label>Frequency</label>
+        <select id="eFreq"><option value="daily" ${s.t==='daily'?'selected':''}>Every day</option><option value="week" ${s.t==='week'?'selected':''}>Specific weekdays</option></select></div>
+    </div>
+    <div id="eWeek" style="margin-top:10px;${s.t==='week'?'':'display:none'}"><label class="lbl">Days</label><div class="sizes" style="margin-top:6px">${days}</div></div>
+    <div class="src" id="reconLive"></div>
+    <button class="primary" id="eSave">Save</button>
+    ${isNew?"":`<button class="ghost" id="eArch">Archive — park it with these settings</button><button class="ghost danger" id="eDel">Remove permanently</button>`}`;
+  $("#modal").classList.add("on");
+  let sel=s.t==='week'?[...s.days]:[];
+  const upd=()=>{const dose=parseFloat($("#eDose").value)||0,vial=parseFloat($("#eVial").value)||0,bac=parseFloat($("#eBac").value)||0;
+    const u=(vial&&bac)?round(dose/(vial/bac)*100,1):null;
+    $("#reconLive").innerHTML=u!=null?`Recon: at ${vial}${$("#eUnit").value} in ${bac}mL, your ${dose}${$("#eUnit").value} dose = <b class="rec">${u} units</b> on a U-100 insulin syringe.`:"Enter vial size and bac water for the syringe-units calc.";};
+  ["eDose","eVial","eBac","eUnit"].forEach(i=>$("#"+i).oninput=upd);upd();
+  $("#eFreq").onchange=e=>$("#eWeek").style.display=e.target.value==='week'?'':'none';
+  $$(".dchk").forEach(b=>b.onclick=()=>{const d=+b.dataset.d;if(sel.includes(d)){sel=sel.filter(x=>x!==d);b.style.borderColor='';b.style.color='';}else{sel.push(d);b.style.borderColor='var(--accent)';b.style.color='var(--accent)';}});
+  $("#eSave").onclick=()=>{
+    p.dose=parseFloat($("#eDose").value)||p.dose;p.unit=$("#eUnit").value;
+    p.vialMg=parseFloat($("#eVial").value)||p.vialMg;p.remaining=parseFloat($("#eRem").value);if(isNaN(p.remaining))p.remaining=p.vialMg;
+    p.bacMl=parseFloat($("#eBac").value)||2;p.timing=$("#eTime").value;
+    p.sched=$("#eFreq").value==='week'?{t:'week',days:sel.length?sel.sort():[1]}:{t:'daily'};
+    if(p.label&&p.dose)p.label=null;
+    save();closeModal();renderTrack();toast(p.name+" saved");};
+  if($("#eArch"))$("#eArch").onclick=()=>archivePep(id);
+  if($("#eDel"))$("#eDel").onclick=()=>{S.track=S.track.filter(x=>x.id!==id);save();closeModal();renderTrack();toast(p.name+" removed");};
+}
+function archivePep(id){const p=pById(id);if(!p)return;
+  S.archive=S.archive.filter(a=>a.name!==p.name);
+  S.archive.push({...p,status:"archived"});
+  S.track=S.track.filter(x=>x.id!==id);
+  save();closeModal();renderTrack();toast(p.name+" archived · settings saved for next time");}
+function restoreArch(name){const a=S.archive.find(x=>x.name===name);if(!a)return;
+  const id=name.toLowerCase().replace(/[^a-z0-9]+/g,"")+"_"+Date.now().toString().slice(-4);
+  S.track.push({...a,id,status:"active"});S.archive=S.archive.filter(x=>x.name!==name);save();renderSettings();toast(name+" restored");}
+
+/* ============ GUIDE ============ */
+function renderGuide(){
+  const el=$("#v-guide");const active=activeTrack();
+  let html=`<div class="vhead"><h2>Guide</h2><div class="spacer"></div><span class="chip">tracked only</span></div>`;
+  if(!active.length){el.innerHTML=html+`<div class="empty-note">Add peptides to see their guides.</div>`;return;}
+  active.forEach(p=>{
+    const g=GUIDES[p.guideKey||p.id];
+    if(!g){html+=`<div class="guide"><h3>${p.name}</h3><div class="what">No detailed guide yet for this one. General tip: dose at the low end, hydrate, and confirm with bloodwork.</div></div>`;return;}
+    html+=`<div class="guide"><h3>${p.name}</h3><div class="what">${g.what}</div><div class="gt">◷ ${g.t}</div>`;
+    (g.pair||[]).forEach(k=>{const nn=N[k];if(!nn)return;
+      html+=`<div class="nut"><div class="nn"><span>${nn.n}</span><span class="amt">${nn.a}</span></div><div class="food">Food: ${nn.f}</div></div>`;});
+    (g.extra||[]).forEach(x=>html+=`<div class="nut"><div class="nn"><span>${x[0]}</span></div><div class="note">${x[1]}</div></div>`);
+    if(g.warn&&g.warn.length)html+=`<div class="warns"><div class="wl">Warnings</div><ul style="margin:0;padding-left:16px">${g.warn.map(w=>`<li>${w}</li>`).join("")}</ul></div>`;
+    html+=`<div class="bwork">Amounts are pitched low on purpose. Your end-of-August bloodwork will make these precise.</div></div>`;
+  });
+  el.innerHTML=html;
+}
+
+/* ============ CALENDAR (retroactive) ============ */
+let calDate=new Date();
+function renderCal(){
+  const el=$("#v-cal");const y=calDate.getFullYear(),m=calDate.getMonth();
+  const first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),td=iso(new Date());
+  let cells="";for(let i=0;i<first;i++)cells+=`<div class="day empty"></div>`;
+  for(let d=1;d<=days;d++){const k=iso(new Date(y,m,d)),n=Object.keys(S.log[k]||{}).length;
+    cells+=`<div class="day ${k===td?"today":""}" data-day="${k}"><span class="num">${d}</span>${n?`<div class="dots">${Array(Math.min(n,6)).fill('<span class="dot"></span>').join("")}</div><span class="cnt">${n}</span>`:""}</div>`;}
+  el.innerHTML=`<div class="vhead"><div class="seg" style="flex:1;margin:0">
+      <button id="calPrev">‹</button><button style="flex:2" class="on">${calDate.toLocaleDateString("en-US",{month:"long",year:"numeric"})}</button><button id="calNext">›</button></div></div>
+    <div class="cal"><div class="cal-grid"><div class="dow">Sun</div><div class="dow">Mon</div><div class="dow">Tue</div><div class="dow">Wed</div><div class="dow">Thu</div><div class="dow">Fri</div><div class="dow">Sat</div>${cells}</div>
+      <div class="lbl" style="margin-top:12px">Tap any day to add or edit what you logged, even in the past</div></div>`;
+  $("#calPrev").onclick=()=>{calDate=new Date(y,m-1,1);renderCal();};
+  $("#calNext").onclick=()=>{calDate=new Date(y,m+1,1);renderCal();};
+  $$("[data-day]",el).forEach(c=>c.onclick=()=>editDay(c.dataset.day));
+}
+function editDay(key){
+  const logd=S.log[key]||{};
+  const rows=S.track.map(p=>{const on=!!logd[p.id];
+    return `<div class="setrow"><div class="cbx ${on?"on":""}" data-tog="${p.id}">${on?"✓":""}</div>
+      <div style="flex:1"><div style="font-weight:600;font-size:13.5px">${p.name}</div><div class="rm mono">${doseLabel(p)}</div></div></div>`;}).join("");
+  $("#sheet").innerHTML=`<h3>${WD[parseISO(key).getDay()]} · ${key}</h3><div class="msub">Check what you took, retroactively</div>
+    <div class="settbl">${rows}</div><button class="primary" id="dDone">Done</button>`;
+  $("#modal").classList.add("on");
+  $$("[data-tog]").forEach(b=>b.onclick=()=>{const id=b.dataset.tog;S.log[key]=S.log[key]||{};
+    if(S.log[key][id]){delete S.log[key][id];b.classList.remove("on");b.textContent="";}
+    else{const p=pById(id);S.log[key][id]={dose:p.dose,unit:p.unit,at:Date.now()};b.classList.add("on");b.textContent="✓";}
+    if(!Object.keys(S.log[key]).length)delete S.log[key];});
+  $("#dDone").onclick=()=>{save();closeModal();setTab(tab);};
+}
+
+/* ============ PROGRESS ============ */
+function renderProgress(){
+  const el=$("#v-progress");const td=new Date();
+  let done7=0,exp7=0;
+  for(let i=0;i<7;i++){const d=new Date(+td-i*DAY),k=iso(d);const due=activeTrack().filter(p=>dueOn(p,d)).length;
+    exp7+=due;done7+=Object.keys(S.log[k]||{}).length;}
+  const adher=exp7?Math.round(Math.min(100,done7/exp7*100)):0;
+  let streak=0;for(let i=0;i<400;i++){const k=iso(new Date(+td-i*DAY));if(Object.keys(S.log[k]||{}).length){streak++;}else if(i>0)break;}
+  const moKey=iso(td).slice(0,7);let moDoses=0;Object.keys(S.log).forEach(k=>{if(k.slice(0,7)===moKey)moDoses+=Object.keys(S.log[k]).length;});
+  const ws=[...S.weights].sort((a,b)=>a.date.localeCompare(b.date));
+  const lastW=ws.length?ws[ws.length-1]:null;
+  el.innerHTML=`<div class="vhead"><h2>Progress</h2></div>
+    <div class="statgrid">
+      <div class="stat"><div class="k">Adherence 7d</div><div class="v">${adher}<small>%</small></div></div>
+      <div class="stat"><div class="k">Log streak</div><div class="v">${streak}<small> d</small></div></div>
+      <div class="stat"><div class="k">Doses this mo</div><div class="v">${moDoses}</div></div>
+      <div class="stat"><div class="k">Latest weight</div><div class="v">${lastW?lastW.weight:"–"}<small>${lastW?" lb":""}</small></div></div>
+    </div>
+    <div class="panel"><div class="lbl" style="margin-bottom:10px">Log weight / note (for your bloodwork check-in)</div>
+      <div class="grid2"><div class="fld"><label>Weight (lb)</label><input class="mono" id="wV" type="number" inputmode="decimal"></div>
+        <div class="fld"><label>Date</label><input class="mono" id="wD" type="date" value="${iso(td)}"></div></div>
+      <div class="fld" style="margin-top:9px"><label>Note</label><input id="wN" type="text" placeholder="energy, sleep, sides..."></div>
+      <button class="primary" id="wAdd">+ Add entry</button></div>
+    <div class="panel"><div class="lbl" style="margin-bottom:8px">History</div>
+      ${ws.length?[...ws].reverse().map(w=>`<div class="row"><div class="ri"><div class="rp">${w.weight?w.weight+" lb":"note"}</div><div class="rm">${w.date}${w.note?" · "+w.note:""}</div></div><button class="del" data-wdel="${w.id}">×</button></div>`).join(""):`<div class="empty-note">No entries yet.</div>`}</div>`;
+  $("#wAdd").onclick=()=>{const v=parseFloat($("#wV").value),n=$("#wN").value.trim();if(!v&&!n){toast("Enter a weight or note");return;}
+    S.weights.push({id:Date.now()+"",weight:v||"",note:n,date:$("#wD").value||iso(td)});save();renderProgress();toast("Logged");};
+  $$("[data-wdel]",el).forEach(b=>b.onclick=()=>{S.weights=S.weights.filter(w=>w.id!==b.dataset.wdel);save();renderProgress();});
+}
+
+/* ============ BUY (admin personal restock + vendor) ============ */
+function renderBuy(){
+  const el=$("#v-buy");const list=activeTrack().slice().sort((a,b)=>(daysLeft(a)??999)-(daysLeft(b)??999));
+  let html=`<div class="vhead"><h2>Buy</h2><div class="spacer"></div><span class="chip">${PUBLIC?"restock":"your restock"}</span></div>
+    <div class="src" style="margin-top:0;margin-bottom:12px">${PUBLIC?"What's running low. Refill or reorder before you run out.":"Admin view: your personal supply. When something's low, here's the cheaper vendor to reorder from. You've ordered from <b>Lucky</b>, not <b>Peptide Source</b> yet."}</div>`;
+  list.forEach(p=>{const d=daysLeft(p),src=SRC[p.guideKey||p.id];
+    const cls=d==null?"na":d<=7?"crit":d<=21?"warn":"good";
+    const pill=d==null?`<span class="pill na">no rate</span>`:`<span class="pill ${cls}">${d}d left</span>`;
+    let rec="";if(src&&!PUBLIC){const cheaper=src.p[1]<=src.l[1]?"Peptide Source":"Lucky";
+      rec=`<div class="src"><b>Reorder:</b> Lucky ${src.l[0]} ${money(src.l[1])} · Peptide Source ${src.p[0]} ${money(src.p[1])}<br><span class="rec">→ ${cheaper} is cheaper${cheaper==="Peptide Source"?" (still untested for you)":""}</span></div>`;}
+    html+=`<div class="panel"><div class="row" style="border:0;padding:0"><div class="ri"><div class="rp">${p.name}</div><div class="rm">${round(p.remaining,1)}/${p.vialMg}${p.unit} · ${doseLabel(p)}</div></div>${pill}</div>${rec}</div>`;});
+  el.innerHTML=html;
+}
+
+/* ============ SALES (separate resale inventory + log) ============ */
+let salesTab="stock";
+function renderSales(){
+  const el=$("#v-sales");
+  const mo=iso(new Date()).slice(0,7);let rev=0,cost=0;
+  S.sales.forEach(s=>{if((s.date||"").slice(0,7)===mo){rev+=s.qty*s.price;cost+=s.qty*s.cost;}});
+  let body="";
+  if(salesTab==="stock"){
+    body=`<div class="panel"><div class="lbl" style="margin-bottom:10px">Add stock for resale</div>
+      <div class="grid2"><div class="fld" style="grid-column:1/3"><label>Product</label><input id="rName" list="rNames" placeholder="e.g. Retatrutide 30mg"><datalist id="rNames">${Object.keys(LUCKY).map(n=>`<option>${n}</option>`).join("")}</datalist></div>
+        <div class="fld"><label>Vials on hand</label><input class="mono" id="rQty" type="number" inputmode="decimal" value="10"></div>
+        <div class="fld"><label>Your cost / vial</label><input class="mono" id="rCost" type="number" inputmode="decimal" placeholder="0"></div>
+        <div class="fld"><label>Ask price / vial</label><input class="mono" id="rAsk" type="number" inputmode="decimal" placeholder="0"></div></div>
+      <button class="primary" id="rAdd">+ Add to stock</button></div>
+      <div class="panel"><div class="lbl" style="margin-bottom:8px">In stock</div>
+      ${S.resale.length?S.resale.map(r=>`<div class="row"><div class="ri"><div class="rp">${r.name} <span class="mono" style="color:var(--ink3);font-weight:600">×${r.qty}</span></div><div class="rm">cost ${money(r.cost)} · ask ${money(r.ask)} · margin ${money(r.ask-r.cost)}/vial</div></div><button class="del" data-rdel="${r.id}">×</button></div>`).join(""):`<div class="empty-note">No resale stock yet.</div>`}</div>`;
+  }else{
+    body=`<div class="statgrid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat"><div class="k">Revenue mo</div><div class="v">${money(rev)}</div></div>
+      <div class="stat"><div class="k">Cost mo</div><div class="v">${money(cost)}</div></div>
+      <div class="stat"><div class="k">Profit mo</div><div class="v" style="color:var(--good)">${money(rev-cost)}</div></div></div>
+      <div class="panel"><div class="lbl" style="margin-bottom:10px">Record a sale</div>
+      <div class="grid2"><div class="fld" style="grid-column:1/3"><label>Product</label><select id="sProd">${S.resale.length?S.resale.map(r=>`<option value="${r.id}">${r.name} (${r.qty} left)</option>`).join(""):`<option value="">add stock first</option>`}</select></div>
+        <div class="fld"><label>Vials sold</label><input class="mono" id="sQty" type="number" value="1"></div>
+        <div class="fld"><label>Price / vial</label><input class="mono" id="sPrice" type="number" inputmode="decimal"></div>
+        <div class="fld"><label>Buyer</label><input id="sBuyer" type="text"></div>
+        <div class="fld"><label>Where / channel</label><input id="sChan" type="text"></div></div>
+      <button class="primary" id="sAdd">+ Record sale</button></div>
+      <div class="panel"><div class="lbl" style="margin-bottom:8px">Sales log</div>
+      ${S.sales.length?[...S.sales].sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(s=>`<div class="row"><div class="ri"><div class="rp">${s.name} <span class="mono" style="color:var(--ink3);font-weight:600">×${s.qty}</span></div><div class="rm">${s.date}${s.buyer?" · "+s.buyer:""}${s.chan?" · "+s.chan:""}</div></div><div class="rv"><div style="font-weight:700">${money(s.qty*s.price)}</div><div style="font-size:10.5px;color:var(--good)">+${money(s.qty*(s.price-s.cost))}</div></div><button class="del" data-sdel="${s.id}">×</button></div>`).join(""):`<div class="empty-note">No sales logged yet.</div>`}</div>`;
+  }
+  el.innerHTML=`<div class="vhead"><h2>Sales</h2></div>
+    <div class="seg"><button data-st="stock" class="${salesTab==='stock'?'on':''}">Resale stock</button><button data-st="log" class="${salesTab==='log'?'on':''}">Sales log</button></div>${body}`;
+  $$("[data-st]",el).forEach(b=>b.onclick=()=>{salesTab=b.dataset.st;renderSales();});
+  if(salesTab==="stock"){
+    $("#rAdd").onclick=()=>{const nm=$("#rName").value.trim();if(!nm){toast("Name the product");return;}
+      S.resale.push({id:Date.now()+"",name:nm,qty:parseFloat($("#rQty").value)||0,cost:parseFloat($("#rCost").value)||0,ask:parseFloat($("#rAsk").value)||0});save();renderSales();toast("Added to stock");};
+    $$("[data-rdel]",el).forEach(b=>b.onclick=()=>{S.resale=S.resale.filter(r=>r.id!==b.dataset.rdel);save();renderSales();});
+  }else{
+    $("#sAdd").onclick=()=>{const rid=$("#sProd").value,r=S.resale.find(x=>x.id===rid);if(!r){toast("Add resale stock first");return;}
+      const qty=parseFloat($("#sQty").value)||0,price=parseFloat($("#sPrice").value)||0;if(!qty||!price){toast("Enter vials and price");return;}
+      S.sales.push({id:Date.now()+"",name:r.name,qty,price,cost:r.cost,date:iso(new Date()),buyer:$("#sBuyer").value.trim(),chan:$("#sChan").value.trim()});
+      r.qty=Math.max(0,r.qty-qty);save();renderSales();toast("Sale recorded");};
+    $$("[data-sdel]",el).forEach(b=>b.onclick=()=>{S.sales=S.sales.filter(s=>s.id!==b.dataset.sdel);save();renderSales();});
+  }
+}
+
+/* ============ SETTINGS ============ */
+function renderSettings(){
+  const el=$("#v-settings");
+  const rows=S.track.map(p=>`<div class="setrow"><div class="cbx ${p.status!=='removed'?'on':''}" data-keep="${p.id}">${p.status!=='removed'?'✓':''}</div>
+      <div style="flex:1"><div style="font-weight:600;font-size:13.5px">${p.name} ${p.status==='off'?'<span class="chip off">off</span>':''}</div><div class="rm mono">${doseLabel(p)} · ${p.cat}</div></div>
+      <button class="del" data-remove="${p.id}">×</button></div>`).join("");
+  const days=Object.keys(S.log).sort((a,b)=>b.localeCompare(a));
+  const hist=days.length?days.map(k=>{const items=Object.keys(S.log[k]).map(id=>{const p=pById(id),e=S.log[k][id];return (p?p.name:id)+" "+e.dose+(e.unit||"");});
+    return `<div class="row" data-hist="${k}"><div class="ri"><div class="rp">${WD[parseISO(k).getDay()]} · ${k}</div><div class="rm">${items.join(" · ")}</div></div><span class="chip">${items.length}</span></div>`;}).join(""):`<div class="empty-note">Nothing logged yet.</div>`;
+  const ws=[...S.weights].sort((a,b)=>b.date.localeCompare(a.date));
+  const arch=S.archive.length?S.archive.map(a=>`<div class="row"><div class="ri"><div class="rp">${a.name}</div><div class="rm">${doseLabel(a)} · ${a.vialMg}mg vial · ${a.bacMl||2}mL</div></div><button class="mini" data-restore="${a.name}">Restore</button><button class="del" data-adel="${a.name}">×</button></div>`).join(""):`<div class="empty-note">Nothing archived. Archive a peptide from its Edit screen to park it here with its settings.</div>`;
+  el.innerHTML=`<div class="vhead"><h2>Settings</h2></div>
+    <div class="panel"><div class="lbl" style="margin-bottom:10px">Profile · weigh-ins</div>
+      <div class="grid2"><div class="fld"><label>Weight (lb)</label><input class="mono" id="wV" type="number" inputmode="decimal"></div><div class="fld"><label>Date</label><input class="mono" id="wD" type="date" value="${iso(new Date())}"></div></div>
+      <div class="fld" style="margin-top:9px"><label>Note</label><input id="wN" type="text" placeholder="energy, sleep, sides..."></div>
+      <button class="primary" id="wAdd">+ Add weigh-in</button>
+      <div style="margin-top:6px">${ws.length?ws.map(w=>`<div class="row"><div class="ri"><div class="rp">${w.weight?w.weight+" lb":"note"}</div><div class="rm">${w.date}${w.note?" · "+w.note:""}</div></div><button class="del" data-wdel="${w.id}">×</button></div>`).join(""):`<div class="empty-note">No weigh-ins yet.</div>`}</div></div>
+    <div class="panel"><div class="lbl" style="margin-bottom:8px">Archive</div><div class="lbl" style="text-transform:none;letter-spacing:0;color:var(--ink3);font-family:var(--sans);margin-bottom:8px">Parked peptides keep their settings. Adding one again from + preloads them.</div>${arch}</div>
+    <div class="panel"><div class="lbl" style="margin-bottom:6px">Tracking history</div><div class="lbl" style="text-transform:none;letter-spacing:0;color:var(--ink3);font-family:var(--sans);margin-bottom:8px">Everything you've logged. Tap a day to edit it, even in the past.</div>${hist}</div>
+    <div class="panel"><div class="setrow" style="border:0"><div style="flex:1"><div style="font-weight:600;font-size:13.5px">Restock notifications</div><div class="rm">Warn me when under a week of doses is left</div></div><div class="toggle ${S.settings.notify?'on':''}" id="notifTog"></div></div></div>
+    <div class="panel"><div class="lbl" style="margin-bottom:6px">My peptides</div><div class="lbl" style="text-transform:none;letter-spacing:0;color:var(--ink3);font-family:var(--sans);margin-bottom:8px">Uncheck to hide, × to remove. Deactivate from a card to redden it and drop it to the bottom; archive from Edit to park it with its settings.</div>
+      <div class="settbl">${rows}</div></div>
+    <div class="panel"><div class="lbl" style="margin-bottom:10px">Data</div>
+      <button class="primary" id="setExport">↓ Export backup (.json)</button>
+      <button class="ghost" id="setImport">↑ Import backup</button>
+      <button class="ghost danger" id="setReset">Reset everything to defaults</button>
+      <div class="lbl" style="text-transform:none;letter-spacing:0;color:var(--ink3);font-family:var(--sans);margin-top:10px">Saved on this device. Export to back up or move to another phone. Cloud sync is planned.</div></div>`;
+  $("#wAdd").onclick=()=>{const v=parseFloat($("#wV").value),n=$("#wN").value.trim();if(!v&&!n){toast("Enter a weight or note");return;}S.weights.push({id:Date.now()+"",weight:v||"",note:n,date:$("#wD").value||iso(new Date())});save();renderSettings();toast("Logged");};
+  $$("[data-wdel]",el).forEach(b=>b.onclick=()=>{S.weights=S.weights.filter(w=>w.id!==b.dataset.wdel);save();renderSettings();});
+  $$("[data-restore]",el).forEach(b=>b.onclick=()=>restoreArch(b.dataset.restore));
+  $$("[data-adel]",el).forEach(b=>b.onclick=()=>{S.archive=S.archive.filter(a=>a.name!==b.dataset.adel);save();renderSettings();});
+  $("#notifTog").onclick=()=>{S.settings.notify=!S.settings.notify;save();renderSettings();};
+  $$("[data-keep]",el).forEach(b=>b.onclick=()=>{const p=pById(b.dataset.keep);p.status=p.status==='removed'?'active':'removed';save();renderSettings();});
+  $$("[data-remove]",el).forEach(b=>b.onclick=()=>{S.track=S.track.filter(x=>x.id!==b.dataset.remove);save();renderSettings();toast("Removed");});
+  $$("[data-hist]",el).forEach(b=>b.onclick=()=>editDay(b.dataset.hist));
+  $("#setExport").onclick=exportData;$("#setImport").onclick=()=>$("#importFile").click();
+  $("#setReset").onclick=()=>{if(confirm("Reset all data to defaults? Logs and sales will be cleared.")){localStorage.removeItem(KEY);S=load();applyTheme();renderAll();setTab("track");toast("Reset");}};
+}
+
+/* ============ export / import ============ */
+async function exportData(){const data=JSON.stringify(S,null,2);
+  if(window.claude&&window.claude.downloads){try{await window.claude.downloads.save({filename:`vialback-backup-${iso(new Date())}.json`,data});toast("Backup saved");}
+    catch(err){if(err&&err.code==="declined")toast("Cancelled");else if(err&&err.code==="rate_limited")toast("Try again shortly");else fbExport(data);}}
+  else fbExport(data);}
+function fbExport(data){const url=URL.createObjectURL(new Blob([data],{type:"application/json"}));const a=document.createElement("a");a.href=url;a.download=`vialback-backup-${iso(new Date())}.json`;a.click();URL.revokeObjectURL(url);toast("Backup downloaded");}
+$("#importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const d=JSON.parse(r.result);if(d.track)S.track=d.track;if(d.archive)S.archive=d.archive;if(d.log)S.log=d.log;if(d.sales)S.sales=d.sales;if(d.resale)S.resale=d.resale;if(d.weights)S.weights=d.weights;if(d.settings)S.settings=d.settings;save();applyTheme();renderAll();setTab("track");toast("Imported");}catch(err){toast("Couldn't read that file");}};
+  r.readAsText(f);e.target.value="";};
+
+/* ============ nav / shell ============ */
+const SUBS={track:"Track",guide:"Guide",cal:"Log",buy:"Buy",sales:"Sales",settings:"Settings"};
+let tab="track";
+function setTab(t){tab=t;$$(".view").forEach(v=>v.classList.remove("on"));$("#v-"+t).classList.add("on");
+  $$("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
+  $("#topSub").textContent=SUBS[t]||"";$("#fab").style.display=t==="track"?"grid":"none";
+  ({track:renderTrack,guide:renderGuide,cal:renderCal,buy:renderBuy,sales:renderSales,settings:renderSettings}[t]||(()=>{}))();
+  window.scrollTo({top:0,behavior:"smooth"});}
+$$("#nav button").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+$("#profileBtn").onclick=()=>setTab("settings");
+function closeModal(){$("#modal").classList.remove("on");}
+$("#modal").onclick=e=>{if(e.target.id==="modal")closeModal();};
+function renderAll(){renderTrack();}
+let tT;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(tT);tT=setTimeout(()=>t.classList.remove("on"),1900);}
+
+/* tooltips: hover on desktop, press-and-hold on touch */
+let tipEl;
+function showTipFor(el){hideTip();const r=el.getBoundingClientRect();tipEl=document.createElement("div");tipEl.className="tip2";tipEl.textContent=el.dataset.tip;document.body.appendChild(tipEl);tipEl.style.left=(r.left+r.width/2)+"px";tipEl.style.top=(r.top-6)+"px";}
+function hideTip(){if(tipEl){tipEl.remove();tipEl=null;}}
+function initTips(){
+  document.addEventListener("mouseover",e=>{const t=e.target.closest("[data-tip]");if(t)showTipFor(t);});
+  document.addEventListener("mouseout",e=>{if(e.target.closest("[data-tip]"))hideTip();});
+  document.addEventListener("touchstart",e=>{const t=e.target.closest("[data-tip]");if(t){t._held=false;t._timer=setTimeout(()=>{t._held=true;showTipFor(t);},350);}},{passive:true});
+  document.addEventListener("touchend",e=>{const t=e.target.closest("[data-tip]");if(t){clearTimeout(t._timer);if(t._held){e.preventDefault();setTimeout(hideTip,1000);}}},{passive:false});
+}
+
+/* public build (hosted for others) hides the Sales / resale business tab */
+const PUBLIC=!!window.VIALBACK_PUBLIC;
+if(PUBLIC){const sb=document.querySelector('#nav button[data-tab="sales"]');if(sb)sb.remove();const sv=document.getElementById('v-sales');if(sv)sv.remove();}
+
+/* init */
+initTips();renderTrack();syncNative();
+</script>
+
+</body>
+</html>
