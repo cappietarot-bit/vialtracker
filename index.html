@@ -110,6 +110,10 @@
   .fab{position:fixed;right:18px;bottom:98px;z-index:25;width:56px;height:56px;border-radius:18px;border:0;background:var(--accent);color:#04201d;font-size:28px;font-weight:400;box-shadow:0 8px 24px rgba(15,158,143,.4);display:grid;place-items:center}
   @media(min-width:860px){.fab{bottom:24px}}
   .fab:active{transform:scale(.93)}
+  .install{position:fixed;left:12px;right:12px;bottom:94px;z-index:28;background:var(--panel);border:1px solid var(--accent);border-radius:12px;padding:10px 12px;display:none;align-items:center;gap:10px;box-shadow:var(--shadow)}
+  .install.on{display:flex}
+  .install .it{flex:1;font-size:12.5px;line-height:1.4}
+  @media(min-width:860px){.install{left:auto;right:18px;max-width:330px;bottom:18px}}
   /* dropdown / modal */
   .modal{position:fixed;inset:0;z-index:50;background:rgba(4,10,9,.5);display:none;align-items:flex-end;justify-content:center}
   .modal.on{display:flex;animation:fade .2s ease}
@@ -240,6 +244,7 @@
   </main>
 
   <button class="fab" id="fab" aria-label="Add peptide">+</button>
+  <div class="install" id="installBar"></div>
 
   <nav class="nav" id="nav">
     <button data-tab="track" class="on"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 3l8 8-9 9-4 1 1-4 9-9" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 6l4 4" stroke-linecap="round"/></svg></span>Track</button>
@@ -381,7 +386,7 @@ let S=load();
 function load(){
   let v={};try{v=JSON.parse(localStorage.getItem(KEY))||{};}catch(e){}
   return{
-    track:v.track||DEF.map(p=>({...p})),
+    track:v.track||(window.VIALBACK_PUBLIC?[]:DEF.map(p=>({...p}))),
     archive:v.archive||[],
     log:v.log||{},sales:v.sales||[],resale:v.resale||[],weights:v.weights||[],
     settings:v.settings||{notify:true,theme:null,seenTip:false}
@@ -839,12 +844,23 @@ function initTips(){
   document.addEventListener("touchend",e=>{const t=e.target.closest("[data-tip]");if(t){clearTimeout(t._timer);if(t._held){e.preventDefault();setTimeout(hideTip,1000);}}},{passive:false});
 }
 
+/* add-to-home-screen hint for iOS Safari (Android's own install is already simple) */
+function standalone(){return matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;}
+function showInstall(){
+  const bar=$("#installBar");if(!bar||standalone()||localStorage.getItem("vb_install_x"))return;
+  if(!/iphone|ipad|ipod/i.test(navigator.userAgent))return;
+  bar.innerHTML=`<div class="it">To install: tap <b>Share</b> ⬆ at the bottom of Safari, then <b>Add to Home Screen</b>.</div><button class="bx" id="instX" aria-label="Dismiss">×</button>`;
+  bar.classList.add("on");
+  $("#instX").onclick=()=>{bar.classList.remove("on");localStorage.setItem("vb_install_x","1");};
+}
+
 /* public build (hosted for others) hides the Sales / resale business tab */
 const PUBLIC=!!window.VIALBACK_PUBLIC;
 if(PUBLIC){const sb=document.querySelector('#nav button[data-tab="sales"]');if(sb)sb.remove();const sv=document.getElementById('v-sales');if(sv)sv.remove();}
 
 /* init */
 initTips();renderTrack();syncNative();
+if(PUBLIC)setTimeout(showInstall,1400);
 </script>
 
 </body>
