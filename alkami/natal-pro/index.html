@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alkami Natal Pro - 100% Professional Assembly</title>
+    <!-- Use Professional CDNs for absolute reliability -->
+    <script src="https://cdn.jsdelivr.net/npm/@astrodraw/astrochart@3.0.2/dist/astrochart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
+    
+    <style>
+        :root {
+            --midnight: #0a041a;
+            --gold: #d4af37;
+            --fire: #FF9800; --earth: #4CAF50; --air: #B0C4DE; --water: #2196F3;
+        }
+        body { background: var(--midnight); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .config-panel { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; max-width: 600px; margin-bottom: 20px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        label { display: block; font-size: 0.8rem; color: var(--gold); margin-bottom: 5px; text-transform: uppercase; }
+        input, select { width: 100%; padding: 10px; background: #000; border: 1px solid #333; color: white; border-radius: 6px; }
+        #chart-container { width: 100%; max-width: 600px; aspect-ratio: 1/1; background: #fff; border-radius: 50%; overflow: hidden; margin-bottom: 30px; }
+        .card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 8px; width: 100%; max-width: 800px; margin-top: 20px; }
+        .btn-generate { width: 100%; padding: 15px; background: var(--gold); color: black; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        #log { font-size: 0.7rem; color: #888; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="config-panel">
+        <h2 style="color: var(--gold); margin: 0 0 20px 0;">Natal Pro Build</h2>
+        <div class="form-row">
+            <div><label>Date</label><input type="date" id="date" value="1995-06-15"></div>
+            <div><label>Time</label><input type="time" id="time" value="08:30"></div>
+        </div>
+        <div style="margin-bottom: 15px; position: relative;">
+            <label>Birth Location</label>
+            <input type="text" id="city-search" placeholder="Type city..." oninput="searchCities()" autocomplete="off">
+            <div id="city-results" style="display:none; position:absolute; top:100%; left:0; right:0; background:#000; border:1px solid #333; z-index:1000; max-height:200px; overflow-y:auto;"></div>
+        </div>
+        <input type="hidden" id="lat"><input type="hidden" id="lon">
+        <div class="form-row">
+            <div><label>System</label><select id="zodiac"><option value="tropical">Tropical</option><option value="sidereal">Sidereal</option></select></div>
+            <div><label>Houses</label><select id="house-system"><option value="P">Placidus</option><option value="W">Whole Sign</option><option value="E">Equal</option></select></div>
+        </div>
+        <button class="btn-generate" onclick="generateProChart()">Generate 100% Professional Chart</button>
+    </div>
+
+    <div id="chart-container"></div>
+    <div class="card"><h3 style="color:var(--gold);">Raw Data</h3><div id="output">Waiting for generation...</div></div>
+    <div id="log"></div>
+
+    <script type="module">
+        // IMPORT THE LOGIC SYSTEM (SYSTEM 2) DIRECTLY
+        import { Origin, Horoscope } from 'https://cdn.jsdelivr.net/npm/circular-natal-horoscope-js@1.1.0/dist/index.js';
+
+        window.generateProChart = () => {
+            const dateStr = document.getElementById('date').value;
+            const timeStr = document.getElementById('time').value;
+            const lat = parseFloat(document.getElementById('lat').value);
+            const lon = parseFloat(document.getElementById('lon').value);
+            const zodiac = document.getElementById('zodiac').value;
+            const houseSys = document.getElementById('house-system').value;
+
+            if (isNaN(lat)) { alert("Search and select a city first."); return; }
+
+            // 1. DATA CALCULATION (SYSTEM 2)
+            // 100% Official logic call
+            const origin = new Origin({
+                year: parseInt(dateStr.split('-')[0]),
+                month: parseInt(dateStr.split('-')[1]) - 1,
+                date: parseInt(dateStr.split('-')[2]),
+                hour: parseInt(timeStr.split(':')[0]),
+                minute: parseInt(timeStr.split(':')[1]),
+                latitude: lat,
+                longitude: lon
+            });
+
+            const horoscope = new Horoscope({
+                origin: origin,
+                houseSystem: houseSys,
+                zodiac: zodiac,
+                aspectPoints: ['bodies', 'points', 'angles'],
+                aspectWithPoints: ['bodies', 'points', 'angles'],
+                aspectTypes: ['major'],
+                customCelestialBodies: []
+            });
+
+            // Format for the visual library
+            const data = {
+                planets: {},
+                cusps: horoscope.houses.map(h => h.longitude)
+            };
+            horoscope.celestialBodies.forEach(p => {
+                data.planets[p.label] = [p.longitude];
+            });
+
+            // 2. VISUAL RENDERING (SYSTEM 1)
+            // 100% Official visual call
+            document.getElementById('chart-container').innerHTML = "";
+            const chart = new astrochart.Chart('chart-container', 600, 600, {
+                SYMBOL_SCALE: 1,
+                COLOR_ARIES: "#FF9800", COLOR_TAURUS: "#4CAF50", COLOR_GEMINI: "#B0C4DE",
+                COLOR_CANCER: "#2196F3", COLOR_LEO: "#FF9800", COLOR_VIRGO: "#4CAF50",
+                COLOR_LIBRA: "#B0C4DE", COLOR_SCORPIO: "#2196F3", COLOR_SAGITTARIUS: "#FF9800",
+                COLOR_CAPRICORN: "#4CAF50", COLOR_AQUARIUS: "#B0C4DE", COLOR_PISCES: "#2196F3",
+                COLOR_TRINE: "#FFD700", COLOR_SQUARE: "#FF4500", COLOR_OPPOSITION: "#FF0000",
+                COLOR_SEXTILE: "#00FFFF", COLOR_CONJUNCTION: "#FFFFFF"
+            });
+
+            const radix = chart.radix(data);
+            
+            // Draw aspects
+            const aspects = {};
+            horoscope.aspects.forEach(a => {
+                if (!aspects[a.point1.label]) aspects[a.point1.label] = [];
+                aspects[a.point1.label].push(a.point2.label);
+            });
+            radix.aspects(aspects);
+
+            // Display data
+            document.getElementById('output').innerHTML = horoscope.celestialBodies.map(p => `
+                <div style="padding:5px; border-bottom:1px solid #222;">
+                    <b>${p.label}:</b> ${p.longitude.toFixed(2)}° in ${p.sign.label}
+                </div>
+            `).join('');
+            
+            console.log("Chart Generated 100% via Libraries.");
+        };
+
+        // Standard City Search
+        window.searchCities = async () => {
+            const query = document.getElementById('city-search').value;
+            if (query.length < 3) return;
+            const resp = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5`);
+            const data = await resp.json();
+            const resDiv = document.getElementById('city-results');
+            resDiv.innerHTML = data.features.map(f => {
+                const p = f.properties;
+                const name = `${p.name || p.city}, ${p.state || p.country}`;
+                return `<div style="padding:10px; cursor:pointer; border-bottom:1px solid #222;" onclick="selectCity('${name.replace(/'/g, "\\'")}', ${f.geometry.coordinates[1]}, ${f.geometry.coordinates[0]})">${name}</div>`;
+            }).join('');
+            resDiv.style.display = 'block';
+        };
+
+        window.selectCity = (name, lat, lon) => {
+            document.getElementById('city-search').value = name;
+            document.getElementById('lat').value = lat;
+            document.getElementById('lon').value = lon;
+            document.getElementById('city-results').style.display = 'none';
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Alkami">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#030108">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-180.png">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <title>Alkami - Alchemize Your Life</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lora:ital,wght@0,400;1,400&family=Montserrat:wght@300;400;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="stars-container"></div>
+    <div class="nebula-global"></div>
+    
+    <header style="position: relative; padding-bottom: 25px;">
+        <div class="logo-container" onclick="showPage('news')" style="cursor: pointer;">
+            <div class="logo-text">ALKAMI</div>
+            <div class="logo-tagline">ALCHEMIZE LIFE</div>
+        </div>
+        <div id="header-subtitle" style="display: none; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; letter-spacing: 1.5px; color: var(--gold); font-weight: 700; font-family: 'Cinzel', serif; text-shadow: 0 0 8px rgba(212, 175, 55, 0.4);"></div>
+        <div class="header-action" onclick="toggleLanguage()" style="cursor: pointer;">
+            <span id="lang-toggle-text">EN</span> 🌙
+        </div>
+    </header>
+
+    <main id="app">
+        <section id="news-page" class="page active nebula-horsehead">
+            <div class="dashboard-header">
+                <div class="user-info" id="user-info-display">
+                    <div class="user-avatar" id="user-avatar-display">👤</div>
+                    <div class="user-greeting">
+                        <h2 id="welcome-header">Welcome, Seeker</h2>
+                        <p id="dashboard-date">Today's Date</p>
+                    </div>
+                </div>
+            </div>
+
+            <h1 data-i18n="newsTitle" style="text-align: left; padding: 0 20px; font-size: 1.3rem;">Today's Horoscope</h1>
+            <div class="sign-filter glass">
+                <label data-i18n="filterLabel">Your Zodiac Sign:</label>
+                <select id="sign-selector" onchange="renderNews()">
+                    <option value="all">ALL</option>
+                    <option value="aries">Aries</option>
+                    <option value="taurus">Taurus</option>
+                    <option value="gemini">Gemini</option>
+                    <option value="cancer">Cancer</option>
+                    <option value="leo">Leo</option>
+                    <option value="virgo">Virgo</option>
+                    <option value="libra">Libra</option>
+                    <option value="scorpio">Scorpio</option>
+                    <option value="sagittarius">Sagittarius</option>
+                    <option value="capricorn">Capricorn</option>
+                    <option value="aquarius">Aquarius</option>
+                    <option value="pisces">Pisces</option>
+                </select>
+            </div>
+            <div id="news-list" class="news-container"></div>
+        </section>
+
+        <section id="natal-page" class="page nebula-carina">
+            <div class="profile-card glass">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="user-avatar-display-profile">👤</div>
+                    <div class="profile-main-info" style="text-align: left;">
+                        <h2 id="profile-name-display" style="margin: 0; color: var(--gold-bright); font-size: 1.2rem; font-weight: 700;">Seeker</h2>
+                        <p style="margin: 4px 0 0 0; font-size: 0.8rem; color: #888;"><span data-i18n="joinedLabel">Member since:</span> <span id="join-date">---</span></p>
+                    </div>
+                </div>
+
+                <!-- Google Auth Button (Visible when logged out) -->
+                <div id="google-login-container" class="profile-section" style="margin-top: 20px;">
+                    <button id="google-login-btn" class="gold-btn" style="width: 100%; justify-content: flex-start; gap: 15px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); text-transform: none; letter-spacing: normal; color: white; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" style="width: 20px; height: 20px;">
+                        <span data-i18n="googleBtn">Sign in with Google</span>
+                    </button>
+                </div>
+
+                <!-- Setup Natal Chart Inputs -->
+                <div id="natal-setup-section" class="profile-section" style="margin-top: 20px; border-top: 1px solid var(--glass-border); padding-top: 20px;">
+                    <h3 style="color: var(--gold); margin-top: 0; margin-bottom: 15px; font-size: 0.9rem; text-transform: uppercase;">Set Up Your Natal Chart</h3>
+                    
+                    <div class="form-group">
+                        <label for="birth-date">Birth Date</label>
+                        <input type="date" id="birth-date" value="1995-06-15" onchange="autoSaveBirthDetails()">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="birth-time">Birth Time</label>
+                        <input type="time" id="birth-time" value="08:30" onchange="autoSaveBirthDetails()">
+                    </div>
+
+                    <div class="form-group" style="position: relative;">
+                        <label for="city-search">Birth Location</label>
+                        <input type="text" id="city-search" placeholder="Type city name..." oninput="searchCities()" autocomplete="off" value="New York, United States">
+                        <div id="city-results" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--midnight); border: 1px solid var(--glass-border); border-radius: 8px; max-height: 200px; overflow-y: auto; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.8);"></div>
+                    </div>
+
+                    <!-- Coordinate Backing (Hidden by default unless toggled) -->
+                    <input type="hidden" id="birth-lat" value="40.7128">
+                    <input type="hidden" id="birth-lon" value="-74.0060">
+                    <input type="hidden" id="birth-tz" value="America/New_York">
+
+                    <div style="text-align: right; margin-bottom: 16px; margin-top: -8px;">
+                        <span onclick="toggleManualCoords()" style="font-size: 0.7rem; color: var(--gold); cursor: pointer; text-decoration: underline;">Or enter coordinates manually</span>
+                    </div>
+
+                    <div id="custom-coords" class="form-group" style="display: none; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label for="custom-lat">Latitude</label>
+                            <input type="number" id="custom-lat" value="40.7128" step="0.0001" oninput="syncManualCoords()">
+                        </div>
+                        <div>
+                            <label for="custom-lon">Longitude</label>
+                            <input type="number" id="custom-lon" value="-74.0060" step="0.0001" oninput="syncManualCoords()">
+                        </div>
+                    </div>
+
+                    <button class="btn-calc btn-calc-main" onclick="calculateChart()" style="margin-top: 10px;">Generate Chart</button>
+                </div>
+
+                <!-- Logout and Deletion (Bottom of Profile Card) -->
+                <div id="logout-section" class="profile-section" style="margin-top: 20px; border-top: 1px solid var(--glass-border); padding-top: 20px; text-align: center; display: none;">
+                    <button onclick="logout()" class="gold-btn" style="background: rgba(255, 68, 68, 0.1); border: 1px solid rgba(255, 68, 68, 0.3); color: #ff4444; width: 100%; margin-bottom: 10px;">Logout</button>
+                    <span style="color: #666; font-size: 0.75rem; cursor: pointer; text-decoration: underline;" onclick="requestDataDeletion()">Delete My Data (30-day retention)</span>
+                </div>
+            </div>
+
+            <!-- Dynamic Natal Chart Output Display (Initially Hidden) -->
+            <div id="natal-results-section" style="display: none; margin-top: 20px;">
+                <h2 style="font-size: 1rem; color: var(--gold); margin-bottom: 15px; text-transform: uppercase;">Your Astrological Core</h2>
+
+                <!-- Natal Chart Wheel -->
+                <div class="glass-card" id="chart-wheel-card" style="display: flex; justify-content: center; padding: 16px;">
+                    <div id="chart-wheel-container" style="width: 100%; max-width: 360px;"></div>
+                </div>
+
+                <!-- Big Three Dashboard Grid -->
+                <div class="big-three-grid" style="margin-top: 20px;">
+                    <div class="big-three-box" onclick="focusInterpretation('Sun')">
+                        <h3>Sun</h3>
+                        <div id="sun-name" class="sign-name">---</div>
+                        <div id="sun-deg" class="deg">---</div>
+                    </div>
+                    <div class="big-three-box" onclick="focusInterpretation('Moon')">
+                        <h3>Moon</h3>
+                        <div id="moon-name" class="sign-name">---</div>
+                        <div id="moon-deg" class="deg">---</div>
+                    </div>
+                    <div class="big-three-box" onclick="focusInterpretation('Ascendant')">
+                        <h3>Rising</h3>
+                        <div id="asc-name" class="sign-name">---</div>
+                        <div id="asc-deg" class="deg">---</div>
+                    </div>
+                </div>
+
+                <!-- Complete Placements Table -->
+                <div class="glass-card" style="margin-top: 20px;">
+                    <h3 class="details-title">Planetary Placements</h3>
+                    <table class="details-table">
+                        <thead>
+                            <tr>
+                                <th>Body</th>
+                                <th>Zodiac Sign</th>
+                                <th>Position</th>
+                                <th>House</th>
+                            </tr>
+                        </thead>
+                        <tbody id="planet-details-body">
+                            <!-- Filled dynamically by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- House Cusps Table -->
+                <div class="glass-card" style="margin-top: 20px;">
+                    <h3 class="details-title">House Cusps</h3>
+                    <table class="details-table">
+                        <thead>
+                            <tr>
+                                <th>House</th>
+                                <th>Zodiac Sign</th>
+                                <th>Position</th>
+                            </tr>
+                        </thead>
+                        <tbody id="house-cusps-body">
+                            <!-- Filled dynamically by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Aspects Table -->
+                <div class="glass-card" style="margin-top: 20px;">
+                    <h3 class="details-title">Aspects</h3>
+                    <table class="details-table">
+                        <thead>
+                            <tr>
+                                <th>Pair</th>
+                                <th>Aspect</th>
+                                <th>Orb</th>
+                            </tr>
+                        </thead>
+                        <tbody id="aspects-body">
+                            <!-- Filled dynamically by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Cosmic Interpretations Accordion -->
+                <div class="glass-card" style="margin-top: 20px;">
+                    <h3 class="details-title">Personal Interpretations</h3>
+                    <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px;">Discover the specific strengths, weaknesses, and relationship/sexual tendencies of your chart. Click any alignment to view.</p>
+                    <div id="interpretations-container">
+                        <!-- Filled dynamically by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="achievements-list" class="profile-section achievements-section">
+                <!-- Achievements rendered by JS -->
+            </div>
+        </section>
+
+        <section id="psychics-page" class="page nebula-orion">
+            <h1 data-i18n="psychicTitle">Elite Guides</h1>
+            <div id="psychic-list" class="card-grid"></div>
+        </section>
+
+        <section id="tarot-page" class="page nebula-lagoon">
+            <h1 data-i18n="tarotTitle">The Oracle</h1>
+            <div class="tarot-container">
+                <div id="tarot-deck" class="deck" onclick="drawTarot()">
+                    <div class="card-back">
+                        <img src="https://sc02.alicdn.com/kf/A4860a95afe814202a4b566c006c7c71fa.png" alt="Alkami Tarot Deck">
+                    </div>
+                </div>
+                <div id="tarot-result" class="result hidden">
+                    <div id="tarot-card-image" class="card-front"></div>
+                    <h2 id="tarot-card-name"></h2>
+                    <p id="tarot-card-meaning"></p>
+                    <button class="gold-btn glow" onclick="resetTarot()" data-i18n="drawAgain">Draw Again</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="books-page" class="page nebula-orion">
+            <h1 data-i18n="booksTitle">Recommended Reads</h1>
+            <div class="books-grid">
+                <div class="book-card glass">
+                    <img src="https://m.media-amazon.com/images/P/B0GWWJZY5M.01._SCLZZZZZZZ_SX500_.jpg" alt="Tarot Blasfemia" class="book-cover">
+                    <h3>Tarot Blasfemia</h3>
+                    <p>Numerology, Astrology, and the mystical journey by Ryan Borges.</p>
+                    <a href="https://www.amazon.com/Es-Tarot-Blasfemia-Numerologia-Astrologia/dp/B0GWWJZY5M" target="_blank" class="gold-btn glow">Buy on Amazon</a>
+                </div>
+                <div class="book-card glass">
+                    <img src="https://m.media-amazon.com/images/P/B0DS9Q1RMT.01._SCLZZZZZZZ_SX500_.jpg" alt="Encuentra Calma" class="book-cover">
+                    <h3>Encuentra Calma</h3>
+                    <p>Practical methods to manage anxiety and balance the mind by Ashley Toledo.</p>
+                    <a href="https://www.amazon.com/Encuentra-Calma-pr%C3%A1cticos-ansiedad-equilibrar/dp/B0DS9Q1RMT?ie=UTF8" target="_blank" class="gold-btn glow">Buy on Amazon</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="bottom-nav">
+        <button onclick="showPage('news')" class="nav-active">
+            <span class="nav-icon">♈</span>
+            <span class="nav-label" data-i18n="navHoroscope">Horoscope</span>
+        </button>
+        <button onclick="showPage('tarot')">
+            <span class="nav-icon">🃏</span>
+            <span class="nav-label" data-i18n="navTarot">Tarot</span>
+        </button>
+        <button onclick="showPage('natal')">
+            <span class="nav-icon">🗺️</span>
+            <span class="nav-label" data-i18n="navNatal">Natal</span>
+        </button>
+        <button onclick="showPage('books')">
+            <span class="nav-icon">📚</span>
+            <span class="nav-label" data-i18n="navBooks">Books</span>
+        </button>
+        <button onclick="showPage('psychics')">
+            <span class="nav-icon">🔮</span>
+            <span class="nav-label" data-i18n="navPsychics">Psychics</span>
+        </button>
+    </nav>
+
+    <div id="transit-modal" class="modal hidden">
+        <div class="modal-content glass">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
+    <script src="capacitor.js"></script>
+    <script src="tarotData.js"></script>
+    <script src="transitData.js"></script>
+    <script src="natalEngine.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
