@@ -3798,13 +3798,47 @@ function insightsPop(){
   $("#inClose").onclick=closeModal;
 }
 
+
+/* ---------- guide translations ----------
+   GTR[lang][guideKey.field.index] = translated string. Anything missing falls
+   back to the English, one string at a time, so a partially translated
+   language is usable rather than broken. */
+const GTR={"es":{"tirz.what":"Agonista dual de incretinas, más eficaz que la semaglutida en comparación directa.","tirz.mech":"Añade el agonismo del receptor GIP al de GLP-1. El brazo GIP parece mejorar la tolerabilidad y aportar un beneficio metabólico más allá del que da el GLP-1 por sí solo.","tirz.dose":"Se escala desde 2,5 mg semanales hasta 15 mg.","tirz.anec":"Se describe ampliamente como más llevadero para el estómago que la semaglutida a efecto equivalente, lo que encaja con la teoría de que el brazo GIP mejora la tolerabilidad. La mejora del sueño es un reporte frecuente, probablemente secundario a la pérdida de peso.","tirz.t":"Semanal, subcutáneo.","tirz.cls":"Agonista dual — GIP / GLP-1","tirz.good.0":"Supera a la semaglutida en comparación directa","tirz.good.1":"Aprobado, con una base de ensayos amplia","tirz.good.2":"El brazo GIP puede mejorar la tolerancia digestiva","tirz.bad.0":"El mismo perfil de efectos digestivos que los fármacos GLP-1","tirz.bad.1":"Las mismas dudas sobre pérdida de músculo y reganancia","tirz.bad.2":"Caro","tirz.key.0":"Las mismas reglas que con cualquier GLP-1: proteína, pesas, agua y sal.","tirz.key.1":"Busca la dosis mínima eficaz en lugar de subir hasta el máximo.","tirz.key.2":"Avisa a tu médico antes de una cirugía o una sedación.","tirz.warn.0":"Busca la dosis más baja que te funcione en lugar de subir al siguiente escalón.","tirz.warn.1":"Levanta pesas y mantén la proteína alta, o perderás músculo junto con la grasa.","tirz.warn.2":"Vigila el agua y la sal — comer menos significa menos sodio, y eso es lo que causa la mayor parte del cansancio y de los dolores de cabeza.","tirz.warn.3":"Avisa a tu médico antes de una cirugía o una sedación, por el vaciado gástrico lento.","tirz.ev.0":"SURMOUNT-1: 2.539 adultos con obesidad, 72 semanas. Pérdida media de peso del 20,9% con 15 mg frente al 3,1% con placebo — el resultado que convirtió a un agonista dual en el estándar.","tirz.ev.1":"SURMOUNT-5, comparación directa frente a semaglutida en 751 adultos: 20,2% frente a 13,7% a las 72 semanas, con la tirzepatida superior en cinco variables secundarias clave y con el 31,6% de sus participantes perdiendo al menos una cuarta parte de su peso corporal.","tirz.ev.2":"Diabetes: el programa SURPASS mostró reducciones de HbA1c mayores que las de los comparadores, incluida la semaglutida de 1 mg, con una proporción importante de participantes alcanzando cifras de HbA1c no diabéticas.","tirz.ev.3":"Apnea del sueño: SURMOUNT-OSA produjo grandes reducciones del índice de apnea-hipopnea en personas con obesidad y apnea obstructiva del sueño de moderada a grave, y llevó a la aprobación de la FDA para esa indicación — un uso genuinamente aparte, no un beneficio colateral de la pérdida de peso.","tirz.ev.4":"Insuficiencia cardíaca: el ensayo SUMMIT, en insuficiencia cardíaca con fracción de eyección preservada asociada a la obesidad, redujo la muerte cardiovascular y los episodios de empeoramiento.","tirz.ev.5":"Aprobado para diabetes tipo 2, para obesidad y para apnea obstructiva del sueño, con varios años de uso poscomercialización a sus espaldas.","tirz.ev.6":"Hígado: el ensayo de fase 2 SYNERGY-NASH encontró que la tirzepatida resolvió la esteatohepatitis asociada a disfunción metabólica sin empeorar la fibrosis en una proporción de pacientes muy superior a la del placebo a las 52 semanas, la misma dirección que siguió la semaglutida antes de su aprobación para MASH.","tirz.ev.7":"En la práctica se reporta de forma constante una mejor tolerabilidad que con semaglutida a efecto comparable, que es la observación clínica que el mecanismo GIP descrito abajo se propuso para explicar.","tirz.ev.8":"El brazo GIP está genuinamente sin resolver, y conviene saberlo antes de creerse cualquier explicación limpia al respecto. Tanto los agonistas como los antagonistas del receptor GIP producen pérdida de peso en modelos animales. Eso no debería ser posible si el mecanismo fuera sencillo, y es uno de los problemas realmente abiertos de la farmacología metabólica.","tirz.ev.9":"La explicación agonista dominante: los receptores GIP del hipotálamo se suman a la supresión del apetito, y los del área postrema parecen suprimir las náuseas y el vómito en lugar de provocarlos. Si eso es correcto, el brazo GIP es en parte un antiemético acoplado a un fármaco GLP-1, y por eso la tirzepatida puede llevarse a dosis que producen más pérdida de peso sin más vómitos.","tirz.ev.10":"La explicación antagonista va en sentido contrario: la estimulación crónica del receptor GIP podría desensibilizarlo, de modo que un agonista de acción prolongada acabe funcionando como un antagonista funcional. Ambos bandos tienen datos. Nadie lo ha zanjado.","tirz.ev.11":"En el tejido graso el GIP hace algo que el GLP-1 no hace. Aumenta el flujo sanguíneo del tejido adiposo y la retirada de triglicéridos hacia los adipocitos, mejorando el amortiguamiento lipídico — la capacidad del tejido graso de absorber la grasa de una comida en lugar de dejarla circulando. Un amortiguamiento lipídico deficiente es uno de los mecanismos que ligan la obesidad a la resistencia a la insulina, así que esta es una vía plausible de mejora metabólica independiente del peso.","tirz.ev.12":"Hay un detalle a nivel de receptor que puede importar más que el marketing: la tirzepatida es un agonista sesgado del receptor GLP-1, que favorece la señalización por cAMP frente al reclutamiento de beta-arrestina. Menos beta-arrestina significa menos internalización del receptor y menos desensibilización, así que el brazo GLP-1 sigue funcionando en vez de desvanecerse. Esa es una diferencia estructural respecto a la semaglutida, no una diferencia de dosis.","tirz.ev.13":"El brazo GLP-1 se comporta como se describe para la semaglutida: acceso circunventricular al circuito del apetito, activación de POMC y supresión de AgRP, liberación de insulina dependiente de glucosa, vaciado gástrico enlentecido y señal de recompensa mesolímbica amortiguada.","tirz.ev.14":"La masa magra es el mismo problema sin resolver que con cualquier fármaco de esta clase. El mecanismo genera déficit energético; nada en él defiende el músculo. La ingesta de proteína y el entrenamiento de fuerza son las únicas palancas que tienes contra eso.","tirz.nutr.0":"No hay fuente dietética — es un agonista dual sintético.","tirz.nutr.1":"Proteína y fibra soluble. El brazo GIP suele ser más suave con el intestino que el GLP-1 solo, pero se aplican las mismas reglas de electrolitos y proteína.","tirz.nutr.2":"No. La comida eleva tus propias incretinas de forma modesta; esto es de otro orden de magnitud.","tirz.cyc.0":"Continuo","tirz.cyc.1":"Sin descanso previsto","tirz.cyc.2":"El mismo patrón que el resto de los GLP-1 — continuo, no cíclico. Los ensayos duraron 72 semanas."}};
+function gtCount(lc){return Object.keys(GTR[lc]||{}).length;}
+/* a translated view of one guide — same shape, translated where available */
+function guideView(p){
+  const g=guideFor(p);
+  if(!g)return null;
+  const lc=curLang();
+  if(lc==="en")return g;
+  const d=GTR[lc];
+  if(!d)return g;
+  const key=(p&&p.guideKey)||guideKeyFor(p&&p.name)||"";
+  const S=(f,i)=>{const v=d[key+"."+f+(i==null?"":"."+i)];return v==null?null:v;};
+  const o=Object.assign({},g);
+  ["what","mech","dose","anec","danger","t","kn","cls"].forEach(f=>{
+    const v=S(f);if(v!=null)o[f]=v;});
+  ["good","bad","key","warn"].forEach(f=>{
+    if(!Array.isArray(g[f]))return;
+    o[f]=g[f].map((x,i)=>{const v=S(f,i);return v!=null?v:x;});});
+  ["ev","prac"].forEach(f=>{
+    if(!Array.isArray(g[f]))return;
+    o[f]=g[f].map((x,i)=>{const v=S(f,i);return v!=null?[x[0],v]:x;});});
+  ["nutr","cyc"].forEach(f=>{
+    if(!g[f]||typeof g[f]!=="object")return;
+    const n=Object.assign({},g[f]);
+    Object.keys(g[f]).forEach((k,i)=>{const v=S(f,i);if(v!=null)n[k]=v;});
+    o[f]=n;});
+  return o;
+}
+
 /* ---------- deep dive ----------
    The long-form page for one peptide: what's actually established, what's only
    suggested, and what nobody knows yet — kept out of the card so the list stays
    scannable. Findings are grouped by the evidence grade stored on each entry. */
 function deepDive(id){
   const p=pById(id);if(!p)return;
-  const g=guideFor(p);if(!g)return;
+  const g=guideView(p);if(!g)return;
   const ev=g.ev||[];
   const bucket=t=>ev.filter(e=>e[0]===t).map(e=>e[1]);
   const known=bucket("human"),sugg=bucket("pre"),unknown=bucket("none");
@@ -5197,7 +5231,7 @@ function renderGuide(){
     if(bd!==band){band=bd;
       const n=list.filter(x=>bandOf(x)===bd).length;
       html+=`<div class="pband ${bd}"><span class="pbn">${BANDN[bd]}</span><i class="pbl"></i><span class="pbc">${n}</span></div>`;}
-    const off=p.status==="off",g=guideFor(p),open=openGuide===p.id;
+    const off=p.status==="off",g=guideView(p),open=openGuide===p.id;
     const out=runOutDate(p),pct=p.vialMg?Math.max(0,Math.min(100,p.remaining/p.vialMg*100)):0;
     const sub=off?"deactivated":`${doseLabel(p)} · ${p.sched.t==="daily"?"daily":p.sched.days.map(d=>WD[d]).join(", ")}`;
     html+=`<div class="gcard ${open?'open':''} ${off?'goff':''} ${g&&g.danger?'grisk':''} ${_r===0?'gdue':_r===1?'gtaken':''}"
@@ -5908,7 +5942,10 @@ function tr(str,lc){
   return null;
 }
 /* user-entered content and proper nouns live here — never touched */
-const TRSKIP=".gname,.pbn,.dn,.excn,.pname,.pexname,.altn,.rp,.lrn,.ddname,.rn,.molimg,.mono";
+const TRSKIP=".gname,.pbn,.dn,.excn,.pname,.pexname,.altn,.rp,.lrn,.ddname,.rn,.molimg,.mono,"+
+  /* guide prose is translated by id through guideView, so the text walker must
+     leave it alone rather than trying to match paragraphs against the UI dict */
+  ".ddblock li,.ddlede,.ddsec p,.ddp,.ddkey li,.ddwarn li,.ddcol li,.ddalias";
 /* Translating in place is destructive — once "Today" becomes "Hoy" the English
    key is gone and no further switch can find it. So the original is stashed the
    first time a node is seen, and every pass translates from that. */
