@@ -333,6 +333,68 @@
   .ddyours{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 15px}
   .ddyh{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
     color:var(--ink3);font-weight:700;margin-bottom:8px}
+  /* result hero + its guidance panel */
+  .labhero{position:relative;background:color-mix(in srgb,var(--lc) 12%,var(--panel2));
+    border:1px solid color-mix(in srgb,var(--lc) 40%,transparent);border-left:3px solid var(--lc);
+    border-radius:12px;padding:13px 15px;margin-bottom:12px}
+  .lhv{font-size:31px;font-weight:800;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+  .lhv small{font-size:13px;font-weight:600;color:var(--ink3);margin-left:5px;letter-spacing:0}
+  .lhs{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--lc);font-weight:700;margin-top:6px}
+  .lhd{font-family:var(--mono);font-size:11px;color:var(--ink3);margin-top:4px}
+  .lhi{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;
+    border:1px solid var(--lc);background:transparent;color:var(--lc);
+    font-family:var(--mono);font-size:12px;font-weight:800}
+  .lhi.on{background:var(--lc);color:var(--bg)}
+  .labtip{display:none;margin:-4px 0 12px}
+  .labtip.on{display:block;animation:fade .2s ease}
+  .ltwrap{background:var(--panel2);border:1px solid color-mix(in srgb,var(--lc) 32%,var(--line));
+    border-radius:12px;padding:13px 15px}
+  .lth{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--lc);font-weight:700;margin-bottom:8px}
+  .ltwrap p{margin:0;font-size:14px;line-height:1.58;color:var(--ink2)}
+  .ltsub{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--ink3);margin:13px 0 7px}
+  .tipeps{display:flex;flex-wrap:wrap;gap:6px}
+  .tipep{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;
+    background:var(--panel);border:1px solid var(--line2);border-radius:99px;
+    padding:6px 12px;color:var(--ink)}
+  .tipep:hover{border-color:var(--accent)}
+  .tipep i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+  .tipep.dim{opacity:.6;text-transform:capitalize}
+  /* any advice carries this, always, in red */
+  .ltdisc{margin-top:13px;padding:10px 12px;border-radius:9px;font-size:12.5px;line-height:1.5;
+    background:var(--crit-soft);border:1px solid var(--crit);color:var(--ink)}
+  .ltdisc b{color:var(--crit)}
+  .labchart{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:8px;margin-bottom:4px}
+  .labchart .spark{width:100%;height:110px}
+  .labaxis{display:flex;justify-content:space-between;font-family:var(--mono);
+    font-size:9.5px;color:var(--ink3);margin-bottom:12px}
+  /* bloodwork list */
+  .lcats{display:flex;flex-direction:column;gap:8px}
+  .lcat{background:var(--panel);border:1px solid var(--line);border-radius:13px;overflow:hidden;box-shadow:var(--shadow)}
+  .lcathead{width:100%;display:flex;align-items:center;gap:9px;padding:13px 14px;background:transparent;
+    border:0;color:var(--ink);font-size:14px;font-weight:650;text-align:left}
+  .lcdot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+  .lcn{flex:1;min-width:0}
+  .lcbad{font-family:var(--mono);font-size:9px;font-weight:800;letter-spacing:.06em;color:#fff;
+    background:var(--crit);border-radius:5px;padding:2px 6px}
+  .lccount{font-family:var(--mono);font-size:10.5px;color:var(--ink3)}
+  .lcat .gcaret{transition:transform .25s ease}
+  .lcat.open .gcaret{transform:rotate(90deg)}
+  .lcbody{display:none;padding:0 10px 10px}
+  .lcat.open .lcbody{display:block}
+  .lrow{width:100%;display:flex;align-items:center;gap:10px;padding:10px 6px;background:transparent;
+    border:0;border-top:1px solid var(--line);color:var(--ink);text-align:left}
+  .lri{flex:1;min-width:0}
+  .lrn{font-size:13.5px;font-weight:600;line-height:1.25}
+  .lrr{font-family:var(--mono);font-size:9.5px;color:var(--ink3);margin-top:3px}
+  .lrspark{width:80px;flex:0 0 auto}
+  .lrspark .spark{width:100%;height:30px}
+  .lrv{width:74px;flex:0 0 auto;text-align:right}
+  .lrv b{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .lrv b.dim{color:var(--ink3);font-weight:600}
+  .lrv span{display:block;font-family:var(--mono);font-size:9px;color:var(--ink3);margin-top:1px}
   /* blood drop lives in the top bar, sized just under the avatar */
   .bloodbtn{width:32px;height:32px;padding:0;display:grid;place-items:center;
     background:var(--panel);border:1px solid var(--line)}
@@ -485,6 +547,20 @@
   /* collapsible peptide cards (Guide) */
   .gcard{background:var(--panel);background-image:var(--glass);border:1px solid var(--line);border-radius:15px;
     box-shadow:var(--shadow-lg),var(--hair);margin-bottom:9px;overflow:hidden;position:relative}
+  /* due today: floats to the top and glows in its own family colour */
+  .duehead{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--accent);margin:0 2px 9px}
+  .duehead.done{color:var(--good)}
+  .gcard.gdue{border-color:color-mix(in srgb,var(--glow) 55%,transparent);
+    box-shadow:0 0 0 1px color-mix(in srgb,var(--glow) 22%,transparent),
+               0 6px 22px -6px color-mix(in srgb,var(--glow) 45%,transparent),
+               var(--shadow-lg)}
+  .gcard.gtaken{opacity:.62}
+  .duetag{position:absolute;top:9px;right:11px;z-index:1;font-family:var(--mono);font-size:8.5px;
+    font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:5px;
+    background:color-mix(in srgb,var(--glow,var(--accent)) 22%,var(--panel));
+    color:var(--glow,var(--accent));border:1px solid color-mix(in srgb,var(--glow,var(--accent)) 45%,transparent)}
+  .duetag.ok{background:var(--good-soft);color:var(--good);border-color:transparent}
   /* family colour down the left edge, matching the boxes on Today */
   .gfam{position:absolute;left:0;top:0;bottom:0;width:4px;pointer-events:none}
   .gcard .ghead{padding-left:15px}
@@ -3039,7 +3115,6 @@ function deepDive(id){
 
       ${block("k","What's established","backed by human trials",known)}
       ${block("s","What's suggested","animal, cell or small human data",sugg)}
-      ${block("u","What's unknown","no data, or the trial went the wrong way",unknown)}
 
       ${g.dose||g.cyc?`<div class="ddcard dose">
         <div class="ddch"><span class="dot"></span>Dosing &amp; cycles</div>
@@ -3057,6 +3132,8 @@ function deepDive(id){
         ${(g.bad||[]).length?`<div class="ddcol bad"><h5>Against it</h5>
           <ul>${g.bad.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:""}
       </div>
+
+      ${block("u","What's unknown","no data, or the trial went the wrong way",unknown)}
 
       ${(g.warn||[]).length?`<div class="ddwarn"><div class="ddwh">Before you dose</div>
         <ul>${g.warn.map(w=>`<li>${w}</li>`).join("")}</ul></div>`:""}
@@ -3502,6 +3579,112 @@ tesa:{c:16137828,i:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoCAYAAA
 tirz:{c:166567236,i:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoCAYAAAB65WHVAAA8vUlEQVR42u2dd7hcZdW375WeAKEX64sN6fWlSREhSBPpVWkKSBEElSpNBCzwgnSQ3nsJKCSBIFJCk9AJSBeBUJNAevt9fzxrvmzGmZOTcpKTk999XXOdObPLzH723muvZ1UwxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGNNawkNgjOmISFoN2A4YBcwH3B0R/5iTjqGTT6MxpoPSA1gK+Cbw7RTScxRdfA6NMR2YscBIoCswrhVa93eAHwGfpUC/cXZq3RbQxpiOLJzHAwsBE4FDJQ2NiOda2GYJYDfgg3z/gDVoY4yZyUTEk5JeBQ4APgK6t8LvNgH4BBie8nEebIM2xpg2C4RYAOiZL01l/ckppCdTzBwbOorDGGNok0iO/qmIvg30ioidJW0PbAWMSK36zIh4vrLNFcBfI+ImSY8Dx0ZE/1y2LMX0MQHoHBH328RhjDFTBOi6wLbAp8C8wM0R8WiD9f4GXBIRN9Yt6pqCuSfQtSqcK3JxyXx/HbA90D///ypwIMUM0lvSxIh4yALaGGOmCMmfAUOBxYFBDYTzKsByDYQzQDeK83AE0EPSd+siNW4G9k7t+yNgsUqEx0K53WdpBplkDdoYY6YwHvgwtdjI/2lgvp3YZPs3gUWBb6Q2vSnw9Ypz8TZJJwFn5H5elvQCsCzwVmrVX0ntvTN2EhpjzBQFuc5cEQ0iOAYDr6bNuH7ZP1ITXgtYrV5RlXQm8BTwq4jYEHg0HwZQ7M+7ArcCZ7elecNOQmNMe7QxrwXsTUkwmR+4vuaky+WHAEtExJGSrgWGRMTvKsvXAb4A7AuMiIgd6va/cgrgKv8EHgZ6A59FxC/qtrkD2LLy0UoR8SyOgzbGdACheyqwPMVuC8V2e1pEPNBkZt8r3/emsQ35S/n+WuCnle85Ddi/sv1lkgZQbMnXpf34COD8fAD0BN6OiD9JOh4YHRFHN3hgrFH5aOCsEM4W0MaYWSGc1wE2AS5MAT0S+CGwE40z9TqnGePTnOXX19DoD2wjaVVKQslC+T3LpQDuld+zWUQMkNQHWAc4mGKX/hi4IyL61Zk+ftsk4eVRYAlJnwALAn/yWTXGdBQBfYakkxt8/qikZRp8vrykyyU9Jqm/pBEZQVFd51BJt0l6WNJlkm5XYXz+Vd36h0u6KN8fLOmGBt+7taS9Je0uabsGy5eTdJOk4yQtjzMJjTEdgKWAFxp8PgpYpoHG+nxqwmsA3wd6R8QgScdWBOcqwHMRsQ7Qr+I47Jp/L+G/bcxfyv2fBSwlaYW6dfYA/g/4PXCipFvyIbBdxdwymWLfPldSP0k/sYnDGDOnas/bAhMj4toGi/8MHCPpSymMlwTWBh4HhjRYfz7gZkl3AvdHxOkpcG+Q1AnYgGKTXpxic64K/fskHS9p/xTWbzYomjQceI9SZOlj4ExKmdJ9Jf2GEtp3XEQ8lrWmvw3sknHUe1hAG2PmND4B5pX0nYioTyhZhpIEclbd56ulgL4cGAOEpBUi4nBJ3wNuj4hL67Z5H+ib7z8EFmnwW54GfguMpiS51NObEh89Gvg0HZgPpG377YjYu1qICXgyHwjWoI0xzIkV5e6XNCpNAr0pNZknU8LnboqIr0k6h5I+XWMwJdTtkAa7vDnNGzTQkL9MScse3kJYcS0LsFESyxkUR+bCwA+yDsd9wO5AH59NY0xHNXWsqs/Tt275wfn5RZLWSvvuyo0iQiQNbmZOkXSMpF9J+lWD5ZdJGinpHUkvteI3byDpVEkvponDGGM6pIBetk5AX9VgnRcl7Znv+0natcm+bpa023T8hi0kHZCRGntOw3Z3SfpAUl9Jx/hsGmM6moBeTtLrlTC40xusc6ykDyX9TdILku5psq8DJP1H0mGSTpH0iKQBkgZlUsnM/u1VHsQF+40xdCxb9AsR8XVKXYt1I+KXDVa7D/gXJSwPSpZfo32dB2xDCXfblOJo/Crw5TaSaWMr7z/02TTGdFRN+ilJH0k6OTP86pdfn+aEt5rZmuvW3zW16SckvSRp7VZss1smtlwm6YaM0mi27jKSRkmanBr0CElHNirChKM4jDFzsHDekRJf/HtKDPHRkr4cEZdXVnsm5dJYSrQFrWhRNQgYRknxHtOKbb4CfI/SGLYbsIekeyNiQN3vXY0SC90nIh7Jz9amFGHqn/uxgDbGzPHC+TRKt+zbakX0s6HrLyRtCDwVEWdExO+ncdcTKPWgJ+SrNUyqPABqdT/6S7qbEn43mSldV46sCWeAfP+IpNewDdoY0wGE83kpRPsAk9K8sBawMyX9egPgR9O5+66UmOr5KIkmrZFpnwHvAD2A14C78/PNKCVFtwI2pyS/9G5UK6QVzWctoI0x7V44HwgsHRFHR8RzEXEgMAA4NGfwoyk1OYZN51e8S3EuPgL8ozUmjog4LyJWBc6lZDp2oaSd1/g0IgK4gFKatFGtEPnsGmPmdAG9e31SSmXZrZJebimkbhb8vn1Sox+WTsBxVQdgxj7vzucTZS6QNNRn1xjTnoXvZpI2lrR5k+VrSvpzlhXdmOYJLMu0g2O5StKIBp9vJ+mVPI6HJA2W9DtJK87g931H0tqS1p1VpUuNMXOPcN5G0vAUXh83SoWW9GA1w6MdH8sJmcX4d0kHN1h+btaTXnMmZlVeI+mK1NB/iqM4jDHM/M7aH1MiH74q6RFKmNzfIuJOSgfsdSmV6f4p6ZTc9qqIGNKOjuV4plTX+yJ11fXSbl4TrquQbbsi4pkZaHo7hhJ10rWF7uMW0MaY6aI7JZOvMyUa4paI+Jmkw4AjJX2DkuVHrjOUEjcc7VDu/IeShQglcqOZ5rsCcE0K1kUlnV9tVsu0BWdMSME8sdKn0QLaGDNTeBU4iBKBcQIlxnkAJSriM0qD2NPz/yXzNaY9yRxJ+wHbVoQzTGlGS5OQvppAnUCJp2Z60t7TETmBUtr0aQtoYwwzsbbGs0Cts/WNks6RdC4l1vnqqmaZDsLNKbWYu7U0pZ+VKeepOV8EHJla/jhgI0m3AJdExF2SNsrZwlfzgbQoJQNxYWDeSlz04jWTRUQMnMp375vrj8v9zeMryhjT1kJvF0mjs81Ve/+t1zQrOSpp35pTU9K/08d5sqSVJO2XpVDPk7QlU+qBDJM0JB2m27TwvRdLulfSG5Jezdoev7MGbYxpa636OknbU2zT7Z2HKZmDlzdY9k2gVm1vAYpdejSlut5EYHBEHM3n082H56tHsxmCpKeByyJi75xVRJpN3pK0D8UMNAn4OCLOtIA2xkyr5rliCuCJQKeIuKeBA2zyHHAozwA/aXB8xwNfjojD86MHgZUoJVD3BPpFxEF1m01Mc8cSFSFev99VgIVqgrd+3CTtAnwrt53Pqd7GmOlhWeDnwB7AfhnZUBMyOwCbpLbZ3rX9h4E3JdV3416LSiPYiNiCYnvuCbzWQDjXNO4nKM7SfwFfa7DOxKmMyyiKc3VEtYqfNWhjDNMY/zwMGJkCp6+kBVKoPAHsGxFXzyHH0h84VdKRKQu7AG9ExF/rhPltkg4HrpG0PvBJ1uOosQgwOiKuyK7jS+QD67sp2Ie3IupjQYrDsFZFzxhjptnEsbOkOyVdKumP6RRUS9lwHeSYqxxUywhkSgMAZcPamyUdm58fXtnmVUnDW/iOZ3K94ZIelrSVpB2sQRtjpoUXgVOANYEzmGJv7taBj3lCZfbQLbVdIuJFSXdQ7NN7AxfnegMk3ZuatdIZ+I0UxDdRQvj61X3HAkyxjT8K/BiYZAFtjGEa45+R1Bt4gxIP/AwlU7CjMrbuIXSIpPWAx4FzUjAPBdanlFHdKF/1rEZxAP45095vptj016OkzddS5+fPvwpfcsaYGZj+jwQuiIhfd/CGA4sAgyn25ctT0A4A9qh1iKnbZnJqzjVujYjtalX+gLuy3vSawPCI2L5W/pQS/jcC6GQN2piOIUQ2BY4FPgX6As9lpMKM7nfjBqF01EUfTJbUDzh1all0c+C4/gLoGRE71lekSw34nSab3khxOnYHno+IoyrLFgVejYjfZBTJLpVlg4B/1hoCWEAbM+cLkROAdYCj88b+JbCDpPeBiyPivhnY/Y8k7R0ROzWqlQzcExGHS9oKuE3SH3Kq/l59NMQcylbA2Q0+/19g0RYegh9Q0sfnoYTe1Vez61YpOtWZSp0O3PLKmA4jnH8HfC0iNo6IfwB7RcTWEbERpd7DnsyYzXlP4H5Jj0i6TNJaGWFwfWqQz+d6fSm26P0ozsPtOsgQ/zYffDRwHLYUNjcfU/ok1vc1/BDokrVLdqmNIe5JaEyH6/e3dkTskf9fBKyfxX6g9Okbw4w7Bs8HfkqJYngEOBy4l1Kx7puSrpXUJzXBT4D3KDZUOoBT9B/Ao5KOyTHeM8d9W7JYEs2r/b0KvMR/lzAdlbJ3U2CFlkqc2sRhzJzLPMBHKTj6MyUEbmumhIX1mEmC6kVJS+e/f8iC/AB7SzqU0qG7N9CLEjI2TweKXDlI0gBJg5hicxZwSQvbnNzCLjun7B2Z49TdAtqYjke12Pv3UzAuBnxB0roRcWIKlrUj4pE67Xu5envn1JyFlHAwKB1H7qwIozNynY0qXUKGd7CxPg74QkTcNhP2NTnNHBMy0mOkBbQxHY/BwPdSSEYKyeMorZsmSVo1NbT9MupgvhQKXwGWkDQJmBwR+9T6DFbspcPTrlzjqErY2JKSfhcRx9ZpjQPpuPHfj87EfT1PaQVmjKFj26Fvz2anG9R9vqukxyStI2lzSR9V0o5fkHSGpEsknV/Z5r5cb6ikpyStU1m2vqSxlX0869GfBQ8GD8HnLuoz8m0v4OGIuNKjYvLa2B7YAPhOTt8HAXdGxGPt4LcdCmxDsTffSbFprgScEBFPVqI9jslN7qM4sBYGxkbEj3Odm1P7FvA6pQDS4pRIholAv9Sw/05xfk0GhtVr0mbmYRPH55mfKSEyPTwcJgXXmSm4BkXEqpJWp9QSPkXS9RFx0Wyefp8BnJGlP48BlomIFWmcrkw+aPpSIi468/l6EAvWmplGxI8k7Uap+nZXxfwxgeKAXDj/GgvoWcKYipd1oofDSHoY+HtEfL/yceeI2F/ScsBpkpaJiF+2Azvpc8BOkm6VtDXFsTUfpffdksAVwCrAiRFxS4NdnEBxMm4CbJyfbQL8KSJOSEfhPMB3Kc1VJ9KxiyRZQLczFsu/vatdDcxczdciYp0U1ltTYld/IOmTiFgxq5nt2M5+8zvAOqntr5zC+2lJ+wMjmwhnIuKhfHurpO0k9QW+FxG9q11AJPWihPdNaCkCwZiZqSktI+k5Sc9Keje94Y3WOzenfWbuuC5ez79nSRqYTUM3kjQ4Pz9Y0t/a4e/uK2mzyv/7ZWPT707DPn5Qa55qZg/OJPy8w7Q3xQ7dA1ix6hmX9F1Jl1G6SPwgveAbeNiYGzqIQHGsdQUeymtgUt3y9sYFwO2SXpb0MqVq2u6ZGddak8lfgcdrWrixiWN22u9elHRljslY4H+A4yT9hGLDW5ZSGOaEFNgn5fIDgAvbKgZU0r7AUxHxhM/SbOHLklaNiNslDQPOzWukZgL7ekvmsCwi1DMirm+hWtq7EXHTTP7dPwe2jIgBU7m+NmJKYflh+XfbiDggG5muQQt25rwPbqzViTZmVk8Vb5D0TLWrsaQb88Yii8ic14bf/6KknX0mZtv5/6mke6vnQNIhGVt8oqS/ZfH2ZtuvlfHFOzdYdnaaItadyb/5/CwI35p1j83fcKOkCzJueoykuyWtnWaRhyTt3sTcd0W2wNrRV4uZHTfoLyVdWCvrKKl/2qn75WenSfpzG37/A5K29ZmYrdfAWimkL6v4K+6sXReVz56Q9Lik17IEaHUfAyX9qRZTLenRjE1u7W/YQtIrqRC8mqU+m/lS7m6t+U3SoSlkz5Z0dSajjMxklAclLStp1Tze23MsVs7kmJNzH9/J47vYV4tNHLOa+YDOklYCjo+ISG1ol0rs9Ng2PkddWjB/DG/U0cEws9N8+0g6Ih/MEyh95W6vW7UnJfSsO3UFcCJio2yy2o9S6e2QavpwpmJ/l2JO6wkMrquf0YXiG+mafzs3+bmrUdK3729wvWxLSTyZCIzLRKwelMSsSXlctd/+TqaSz5+/Y8ucNZ4P/IfSReWGPLZBwEaSDsuCQkdGxAO+ciygZwWTMmj/GUk/k/R3SgPIF3P5cNrWUTSJklBQf7P1oTh+OlO6N5i2F9R/zFC7a+uFc0QMyTZHtUpuYxtsf4Skd4GdG9R2mI9S8OgzSrLI0AbOys65rGulkWk9vWnu/F+FUiJ0AiVM7kpK5uG9EfGEpLcr63aLiF/U/f4z8/c/HxFDGhzfqZKe7oCFkphrozgk/T5TVdszm2X1r79ExPdSINacPt8D+rThdy8AbN/g8+Mp6b3vSVrRl/Is48PUcuuv41Xy7fXAg5SCRI0Y2qTEwsTUrD/Nv/XfsTjwLnAD8BalN17DW4qW21ONyNdntcI9FQf0zcC/geeACxsco/LaP7eFh9g9dhh2AAGdha8Hp4lgaUlPT4tNbhZyB3ATcHGtsEw2yFxT0qOUxpEDs7jM72e0/1naAS/ObgsARwI9JQ3OdkKkzfs3lOLp+0+ls4OZ+eGYjYTggllU7kjgUuDbea6Wb2X9m04Vc1bXfFX5KvByRBwNPEmJHmm0/89a+I7Odd9RL1wPpXRDWTyvrXq2Bn6U94PpqCYOSadSUk/3iohn8rNVgT0l3QD8MSIGt6M287/OtN7dJV2RWu0jwDm1mrqSrgX2b1SGcRpYEdg8taiR+f1/A/6Wsaj7ZsTIksAVEfE1SY9ReqZtOJPOzVbAB/X1gyvLd8kp7nNz6T2zUJOwulq5z80pXTJqzC9pVArEvwJfa2ISWzSF36QU1jtKejcivsSUAl4hacPUnl/LzzeU9FyaFa7Pbcc1+e2bMqXM5fuU3oU0sGEPAjaVtEnNzCFpC0o43nhgpKRdI+Jai1A6nEd8P0mv1DoR10dAZN+zm9vou3eVtIekvbML8vTs47i8CZst/3dlulu/bMP87t2bhC2dmdu/mDUgGu3jckmXNlm2raS98rXddB7f/hlWtUujan9ZAH6lufj63T3D5nZtsOxdSVdKGpJREXtLul7Sh/o8A1LQVrfdQP/NSZXl60i6I/f/tqR9Mszvlgbb3Zg+ivrf90RlnZclbSJpy8rygyXdVSszmqVHr5F0fM7qbpZ0W/6OP1iadVwnYa3L7UbAAak9X5e9z16q00BmJhunh7wX8DClfOK0atQnTmWVUUzpclHPMqnFjEht6Ik6Z0uP1J6H0bwNzotAs8yudXMqDMWWeMv09J+T9E/gmPTaX5za/NHA7XVFg+ZGR+GVkl4CfpNJShenxno4cFpEnC5pLeBA4KK6LhqdgP8D7gZOkPRb4LJcti//7WN4XdLtwOXAYZSEpZ/nLOdXTOlwUuWHwBvAZdk778o0t2wLfDOvrwCWyuv/BElLAnukVr0UsG7ekx9THIvbA3tGxHUWmR1fQE/m85lJZ6R3W5LGpvBqq9/1Wd5M4ynpurSRXb+ZDXBsTkVHZijUkAbTy8Mj4q7UcFaqmYAqdGvhATCy0qxzZKPZS0RcUPl/DUqBqIkpfPrl3yeArVILOxr4FrB5ezNrVGZBXdIs8/gsEtKP5/jsmQL2TWCrmnMsIzQezfKfK9X5e/pGxIMUv8WHlO7XAXwzQzhPjYjD8vjuzgf6IpSKcn0rHbT7ZkeUqh/pX7VegZIOoaSnTwCWzrrNC1bG7u400/WhOD4PiohHcva3U/6uiXm/DHXxsLlHQHdjSgxnZ0p85deBayLiMkmHt2EjgZojplMbHvuEiHia5k6aTulkml/S2RFxUN3yqGjT3Zt46btMZf/Ux8lK2i+1qwsqH69OKSf5aWr0b1UfGhFxr6QlgO3bqc35x0wJLesPPD6Lv3/1/Htnk8iFhyoV3zpRynw+WFk+IiK2yPPzWo75YZXx30zSBSl4+zbY/wBKZ+lOwNCI2K7u3n4pInaUtBOwX91DZrP83h2Bg2vXbEQ8BTyVD5e/pTLTfSrRIaYDCei3gS9leuugfIJfVKkZsAGwUDa9fGgmf/dyqQkskNPA6dHaDsr9TEozwj/TlNAtzSdIOikijmmw+beAXSl1pyMfTlUt+e2ccm4LPBYRj0s6DDg5teaawB4o6bsNCt/0odROAHgsIz2QtGZqRQc10Og/a0Gjp1I8qj0ysuKgG8us1d5XA7bKfw+SNCCLC1V5I8/ZhNTwBzaY0dX4lOZhlvM2WfZC7n8eSmhf/YP8s0os/ZgWZrQLN6otLekHU/79r5mc6YgCOiL6ZtGZ31KKD62YF/wRwJaUjsEfAH+QdGNEnDWDEQkrpDmjC/DlirDZUdI71Sl/K+mZGtvotO0tmlPBWjeW+4GukgakTXJA/padKCFxtX2Q9shngd0yFrxHHn9nYIdswdWrLiTqhPyOkyXdEBFn5/6PrAhnKGGAu0XEVRRv/e3ZrLL+Jh6Xr3kkHdxgvMe24zC+iZVjUIPzf0RqgPMAT0RE/2m4dlanJI6Mzu3/ltollYiIL1Vsy0dRojSq9EqFYHyTxJIXJB1dEbYNZ2QtRGXMW8kEXKhu2XDg41Qovg083UIi1NgWIpjM3OYkzDTQjdJDfEpexAsDv6zZETON+SRJnSJiemtdbJBTuw9Tyzq4EifaO4XgihFxwDSOWY9KZtev6pYfnba8nYATM4V3MeB/87eMydefKCFXgyQ9BTwDnFzTiiV1Ai6p2/foiPhtLdoC+GMWT18uj2mHFFRKzWoLSZsAoyLizCYa/V75QOwG/FTSmLoWTou1oMExG+3Pq1Dicrvmb3y/bvl2wK9Ty/5CzkL6T8NXfCXt7x/m8a8t6U+18xMRJ+fY1hx1a2RnlSENZigT0nncaHZSC3V7pMnvmCd/f7MZxMRGGnJEPCtpKYqTbwFKKGYzDX2hFsZ5nYh42KJyLkz1zp5nFwKv19liiYgXgW0zZGlwo9z+rImxZU4Pu1Ecjs/XXcBDKWmtnSPitrpd3CLpUkl9I2KrBvs/iuJgmZA1L35NcQh1yu/cpG6TQ2vxwxFxQ4ZJLZ0PgwUi4urKunfld9wJPBcRe9Yd/6WSLqnTpKo2xm/kzTlPLfU8IurDE6+T9G/g5QxnvLIWX57FdLat6yQDsBtwUca9bp03+B3tSDCvTimlOSFtpLVzsJWk+yh24TUp5WLfyQdpNBGQTKUOdO3amUhJzjgqtfJ7c+ZTE5zPURqp/kpS1K7DiDiVqafxv19534h/UPIDLktT4KDKNfLrlhpQpOY9sgWnMhRH4uH5sLmmdv1mJMp+OY7fs6icS2txRMTPml1gqY2Mn0r2VbcmmVc122TPFGITJS2bgr/KA8DOLTjdulbHqhqcnw7NGi830PQ7R8R+ue7LTb6jKzCwwfEvSwkFVM4uLq5FWVS2+0JE/FDS0Jxy1+/jHEofurtSuz45K459gRKS18jxs152CBmVIX1nt9Opbs3GOqki4A5MAb1nRNyTY94tz3/Xadx/59xuVGqZH0XEplmL4+JKAf/adTZpOh3m81TeN7o/zkxz2Q45ozx2GjTa7vkbezUrrhQRP8245x/k/i/Osf0ZMLBecTAulvT/i89ULv5owT5Xy7rr2iQrqhZ3em2Tqdy8LXiox6QQmEiJTa7n+zlFXSa1unrGpca35FQ0uF5NGgg8WZnmDmvU6SPjVZesczjVNOSlgF/kWD6SCUK7pkbfIyKWzvZdvwBOotR6OBWYFBE7tpEG/CBwwAxEhXTK3/9ZmmhOyRlIzTR2A7CypI9z3Uso8b6TpsNX8m5qoScBh1JszKsDt0XEPpVQxTUpDtpPUyi2NgrpqMo9OHEq98KJGRN9LaXg0VTvH0k/qjxsRrWw7sPAw6l110oMHNDEaWzmJgEtaX3gi3kD1Yq5bJ/Omftrttcmm38ZWD/thL2A8xoI39cj4nlJzcp2ftiCgF42b76RWXL0mWoVsxSib1DC1/aRdE2ddvNOTo27Afe08JCJFpxApEDq2iAaZgHgmtSw6zO7TqKkzFdvsk4RsV0WV7opj+Eq4KrK+Rg5PQkuTJtttzMzFss+IAVnL+DZum4zg1LwrQgc26yTSSuFdG2/P8wM2GsoqfgHVGOiJXXNa2g00KW1D59pjYxIu/K807D+4Gnc/5BacwoLZwvoqpb7vYq2egvFmdeJUiioE/AdGse4LkTJjvpm/v9dSbtHxBH5/3vAwallvg2MlvQr4Kd5My1IybxrllG4NMUBV+M2Sd+rq7W7Zmpx/wL+Iun4ii14ckWraukhcGMLiS218zSxgflmfD48ejYQ8mfVkhYaVDpbsIVyleNo26SEsTPamqxS6rWZaeLjfDg9PxNndBfkjGa9enNETQOdRffLWPcptYCelYyhhAR9mhrRrRVBUnPGrZOB83fUAvazY/EmdcLn3NSeyFoXXYGnUoiNoTiVFqn7/oE5vbuSYud9oOKAXKkuTfeEDKFbP6fXu1M88Q9ExGBJf6GkSP8x1+2cs4OeWa3xkJwqv0spePOfTF64qolQOHAqgmixHLMl6s0kTYr4/zvr9fagVESrn83sRHEK3tjGmaTjm8ymDpmBiJ3qrOPvM1M4VzXqdER2n111bChhnW1t2zdzq4BOb/HyEfF/THF21To6TKzEKSu1wn0zIuJI4EZJD+Tna1HSbG+l2AW3TeH3iqSHKN73eyLi3Pzew5iSWFC96frUCgEB92RUxTdT6J2bU/JdgGOARyke/AdTO78gu2CcIGnhise/5py5kBIr2wV4PrXtXvlaHNh7epvN5tT6pNSEe9I8zpW6uOGaU3Vi5ZzsABySkQkLU8L/PhdqlYK7NoX/ywxcAgvnzOTFyv6Xy1nTdpJ2ioi1mbEGB9+Zgetz3Xww1zTVJ4ETKXH74yg1K16fxffMGvnAH5VJXKtWzRd5/hbOh9+IWqcTpj/T1zD3VgM7OAVotYfaGvn+mfqqXHXbviRph3y9XLfsB/n3tlrvuAbfPVTS5GyKKUm/qSxbPnu9bSLpD5LuoK7mQzaMfTtviOp+V5Z0eFb/ek3S6CxUU//9J+Z3PF4dg1k49o9nxbVhkm7Jz7bJCml7VdZ7TtJ5ktaXtFKes76SrspKaSu08vtWkrRavlaqdZHOam5H110Dyv1L0r2t3P+q+Vo9o15qn/8h++ctPx1jtHP237sqK8VtlD3+JOn7eX1ckQ1Wl2vj87VM/p7LU3tG0nqS3kqb+Jo5tmfleblZ0mkz+J0rzc3VCm3iKBrfsAbRGmS8bc2Zd2+DKX6XWnv6+uL4lTTb0amtNuLGSmjTozXtOlkCGBkR/SUtAKxd2Xe/ipPmfYrzr/rdTwNPS/pKmlPmZ0q93ipvUVKwP51Ntr6/UuzP3YHHJB1HieB4hxJLfZmk04FXKMkr96Up5QWKY653midaOw3+PcXGTmrMm+eMYWAKnfuAcyPilizh+htgi9ZowBlxcE1qjYtSojWOyvNxpKS9KT6BXzWrbd2KyKARaRbrnlrzGRGxHNA/Zy8XZD2VtjIJXUhxhHepZBNun+dxFUp/QIDbKT6W3i2kdNMWjkvT8QT0yGY2vIg4NmN6/7eZ/TVvzJYYV0m7btYRgwaRBBMqn/VuIeypOw3C4vL3H0TrbLBMJXmANgpdPLFuLE9KYTQOmC/LjPaNiF/m8q9SMg1H1zkho2Ln/3KO1ciIOK/BmI6qvK/+lj2zpvLpkjqnkLubzyfx/CIfqN2AVxoIwvFMqUyouv1fLOn53P8B9QWschawZQq0eYGHI+K+ugen0tTRnZJVOLSy/2OyxsnvJC3dijK0TKd/ZlTep/Nns4hPavdG+kl6N7mejQV0U+3mOxWb5+JZ4a1fmiH+l2KrbcZoSubUaOD8OmfPEOC6yvva921dCbv6Bs2rms3HlHrQPWkQbpeF8hen9GdrZuP8sMlxv5QNXhcHToqIelNLD0poXHvxlM+TM4dadb/dazbxjHzZtFK1bXVg2boZz9cptU4mUCInaGDzXjzfv9QgEelaST/MfdzYpMNMrdbEhAYhYZH7792oXkVEPCppfhoUA8p9rsaUJq0v5jY3ATdJ2geo2toXr7ftRsRjwPebNWiYCSycxxeUWPcTI+KuuhlhrcP3qxFxhkWaBfTUhPMKFIdPrYX7a5S6G73zgjsYeEfSpnWZcbX6Cj8DzqQ4Z86UdHMW8qeS2lwf2L8LJTPui/n/sEwPrxfUd1eyA99tkBgyKbWp7jTv1D0/JQV2/8rv/mUKs6gUsGmk0TyfM4hx7eT835+CdXSOwcA6k8/dOU4LpIY8pIGGNyLP9YgG+/8ipfgTwGZNEpHGtTAen+V5mNggEWf1HO/TgVXzwUyTlO1JLTRpHZUPqEkNKsWdD+xIKXr/eAszk6fa6PxcmtdTF+DfdcKZ/O0Tc52JFmcW0LRyCl/Lvhub2omAP1OiLPpQvPhHpJ3wt3mDHE2purU0cGFEXCXpeEp9gx1Sm1Hur9ZkeGdKJ4pRqZWPpth4H0n74OvACTUtvCVbYTqZFszfv2ALBYL2pEQbDKbUYFiVEkf9BCXiY1Ju363BjfwPSm0F2km2Zl+gb5Nld9VMDVPRwBdIQd1F0up1SSNfqE39Jf2kQbTEJ7mP8S3MeObN8/ojSR9ExC2VZYqIP2fbpiMqZUB75j7H5HmY0OTanz+vvQUbFBsaRClktUdqr7PDJHXeVFbpXSk32tPizAKaVga6L5AX9LuUtNTFUiPZMGtvDATOTc/0s+k0PCwidsqIjsOym8eovNFWSY3u/oqD8ZmsKbEaJZ64VsHtjhTE5+YD4FxJV0TEpVNLgMgQO+XN/1yT9f6/kE1H5RLZrmtwTovfoTiv3qJjRN08k1PrRtmFfag4U/NcVgX02Ky6FzUtPXsdHktJj6/xzyZfv2sl7PIm4ANJq0XEk6kAdMnok+UqQr4zxaHZsxXNX7etmq4knZ5OwCofpbnrFEn3RMQf29HpeTLv4e5NnNLGNLypN5O0haQHJb0gaYSkc1toYvlBg2V/rjRQ/Tgry9Wvc1iGvT2V4Wu7N2nUun8bHusNWRHvxAzN6tOBzuMvJV2SYWY7N1j+fCUk8i1Jm0vapi6s77ZsnPpuNhutMim/41ZJxzbYf5Uhuf5qtdjgvD7OzvN/tqQTJA2U9J/KdjdLuilrjnyuXVZlncn59+f8dxPfMyr/j8hzfGH9usbMiTf4xXlB35CJIvU3f41x2UWkfvu7Mhb175J+2mD5j3P5pZKunk3H+CtJn9ZP4efgc7aapFMkDZZUrdHxoKRHJB2QgusVSa+n0JpQiWG/UtIxGbN+fGX70xt0n64mW5yfAvcMSYfkmP4nBfPLuf5ZkraWdKSkp2sP5IwXvkiN6SNpOUn9cl+/ydcLkt5PBUCSjpX0izzu/fJ4R2ZM9InZVfteSW9IGl5XCtaYOfJm31vS/nnD/aBu2X/qtJfrpzOp4GpJ5+bDYMVZfHy750Pk9vrklTn4nA1IQbR8vQO3NhOS9ICkeyqa6Nb5/uo8l6c32G+fBsJzu7p1+kl6WNIf8/pYubLsekkbSBqUVeYa/fZH6/a/e93ytzPJ5Iqsk137/Io8jrNTKA/MEDokbZwKwEWpqT+fD5JzfIcb5vA46CMojpiulESO8ZXeg4dSwoSiEhGApOUi4gVan5Y6XzrmesyGOgI/paRF1xyLN3WAa2Iixab+fAOb7b8j4sB8GB1MJYkn3/9Y0jepVMfj8+GT91EcyPNRag3f0sDp+OeIuCkf6AtX9r1zzfRF8/rdDzGly8g7EXFl/bFFxB65nzcq+94j3/bLqocvZwgdEXEPWYkwS6V2mR09EI0FdFvwft6YPShOsz2zldVxeRNSEc5jJZ0P9JZ0axOnVKP9/5PiTOw6GzpPf0jpOPEk8J6kS7O91EFz8DXRmcZRD+Mp2YU1If5RC8WKFmqSQPRGpQB+o7C1jyrhYkObRHcsSpNEobwe3sztRjRZ3uh9/YNo/iYO4vUsMkxHEtA9Kkkh70XEUdnE8gxJj9d1B5k0rdlQ2QS0/2wcv555jFHJPJvTq4ENp/Q6XBLoX4nx/QyYkD0kv07zJqdjmsTkds6wsE6pQc/fpEv1ThnjPKFJk4QJLZRK7VlJR2/0G16TVIvLfq2FuOmRFg1mbhDQu1M6TX8XeDVbTp2dCSkbUGoujKdkS/0kte3e09GeaHZxTP7+7SihgGM6QD3dL1PqT3QDLpR0TkRcGRFPS/ofSpz6gkAzG+zXmjQgmJAhiKNSAI5skoa/WQrmMU1KhvaoxMLX80l+R7PEmd7Axvn+sRZmAMtbNJgOL6BrxdXT3ncssEHW0pgcEWvweQfOV1PY9aTENbd7atpl/vaPcxo/cQ5yCG5OiUceRSmLujGwZkSsk8sHA4dkaNsraWsfntpw1IczAgcBD9U1NKiO1dQy7oJSG2R4drBZpkH24svAbU3OxzmtqHU8bCp1j28D9sq+jOdXinAZ0zGLJdWSO7JP3kGNbo6IuGBOHcSIuHsO/el9KGnrQykJNwcA90m6KiJ2y5nBCpRMup4Uu+3EehNCxgT/ELh5BmtFj6+8og3MWuMr5pHxTfZ/JVArv3qwJCykDXNR6N3Okvp5JNrFuThF0jtZ//npyudHZFLJjRnP/GxGMDTax6GSnu3AY+QMPdPhqtntmxpWL+Cpukaq87TnbuJzGR9RnGXDgEgfwYu1dOYs6j8fJaRscgv1Mp7yUBoziwV0dlboUokhfaaV1ez6UOyxvfPGn1CpLLcFpbi4mf0Mo4S+fVbxGVQ5juKQm9SCzVbMOU5dYzqUBv1fHTFa2XTys/z7GqXa3FmS3qTEvj7dRsXNzfSd/x40CVtrZcLQuA4+Rm6iamYbnVrR/mdUviZM474jX5MqZUgvt3BuV0zO8zqR6Y8++U4HF9LzNaoTY0x7cJDcko1QP6o1GZ3G7avc4xHtUNfGblmF7tQOfpxrZr2VP0j6vs+8aU8X5yOV6l+PTMf2J2b1rzvryz2aOfaaOETSPSm0dp+LjvusLLv6t1oXemNm90X5ZqP307iP2yQd4dHsMNfEC5KOnouP/1VJB/hKMLOCLpnZ9w2KLbIr8HrFm1+t2DW91btGU9pbrU7JtjvPrd3naD5h7g6rexb3/zOz0Iv/RWBvSoptrcZCTUAvnCmvNOqMLOnHlIato4CrIuLOuuV7AttQ2tt/lu93k7RIXYNSwxzlWJ6b+9/18CVgZhUhaX1gL0qhn1p793kp1cY+Aq7OUKOf5N/fRcQ9kvrn+ldSElJ2SyF/akTcL2kApWdgV+CIiOgr6RBKqvdnlOp2m/kUzFHT+7GU/nfkTOjAuez4P6ooKjfUalTX6pgDF+ZMdOFcfrKvGjOjGnS1u/EwShWzZYCTIuLPlXUvSy/2/mmDvCgirq0s/4ukQ4G/S7oDuCAibs0efUdlh4ovplDv0kgjN+1SKC1DqdTXg1Iw6X8o2YO9MvxsAeCFWoH7DjoGu+b98e+8fheq1qSWdFpdCdWFKRmzxsyYgI6I+ySNohRCP7UyjZunQeLCgGzw+vWIuLXB/hbLv91qyyPiXuBeSQcDa+aF3cUJAHMMvYEdKT6IvsA+KYxGAtvn+zE0L985pwvnFSimOQH9gK1SQG8p6TxKV/mBOTYrAYvkvePsSjNzMglr2o+knZjS8eL1JtllTwNPN2o2Sqn/DLCppJ9Xyz9GxFmSOgPv5c3ulkHMMS2whuf5WpySDdorZ1rDKMku4zt4JuGIHIdFgZfSjHEHpQrgasDtEfF49tXsm9r2v3zpmJma6p0lJlvSJrYFvk+xIXeNiEMqi1dKEwaVfoTn1O3/DA85c2ILrG4V2+qfIuLBFEafUWzSnTr4GHTLvwsCV0fEbZV7YhHgd5KeAM6JiKN9yZjZNd07RtJoSa9ly/p9G8Q8S9JESeMlfXdWd9o2bTPNl7R8TvfrP1txbjz+yrKt8prfx1eKmd3lRsdRYpmH5fvdJK0aEfvl8vfy7yvAnZTIj56STqtUszPMcQ0JnmvNZ3PT8Vf4AnB3RFzkK8Uwi4sl0aB40uTc7t3scvyKpCGS7gZ2rtjtulOcR6OYUjDJmI5GV1/fpl0I6Ay72wp4ktJYlBTECwOXA+tHRAAnUjo/z0Ox27lAv+movE1xqhsz82dvTJ9Nbh3gN5S0322BAyPissrylSmx1OPSmXiDh9rQcW3UOwAHAw9TIlrmBR7zdW9m94W5jqSHJR3p0TBz+b2wpaR3s3rjaEmne1QMs9gGXW/yeBgYQgnFMmZudqTeSYmLHgZ8SCkSZgyztGls1hzoQslCfJJif/4wl61CcZiEK9aZuUyDXjYVnlonIWNmy4V4q6SXJb2U0RvKKd0QSa9kveCXJe3o0TJz4f0xyM0pTHu6IC/JKnXG+H6QHpe0qUfC0NY2aEnLSlqxWbZYVjpbGPiSh9IYoJTo3cbDYGaFNnBHpnW/LGlgg+UfV5rCDvaIGQOSTpd0u2eWpq2jOCYyJXtwoqQbJR1bWT6m8v5NSQdIOlLSVh5aw9wb0fFL4BZgNUlPuIehaSsBvSAlS6oHpaLXycDXJZ2WRcyrpo3hwFr5WtJDa+ZyIX1VVod8DOjjETG0QZjdtcCqwMqUMovPAHtJegPYiFJOtEuGFdVqb3RJrdsYU7qwOBXczHwBXavQJWk74EBJSwFvUdK3V+Hzdrczcn9jLKCN+f+MBd71MBja2PGxpqSjMpX1mUpwvjGm8T1zhaRXJT0v6R6PiKGtUr0j4rGI+H1EfI3iNCQiXvQQGtM2RcmMmZ5U792ABSStQelRNyIiHsg0b6XQHxMRQzy8BjfcXQT4FOgj6RcRcaaHxbTZk13ShDrB/rOI+Iuky/P/eYAHIuJsD69h7jZx7E+piz6O4pf5atap+YlHx8xUAS3pOEqG1GBKK6ta55RBlGp2Q9JBOB8wKCIu8PAa81/30QfAzhFxn0fDMKMmjjRdHEYpzv/jiHhB0kJArd7AOvn3BUo4UW+gp4fWGJqF3blFlmFmOQn3AXpFxM8j4oX87GxgY+D9ynpfBa7L15MeWmMa4trpZqY6CccD/+LzER33pXZ9X2rNPYFnI+KvHlJjWmTheg1a0o+BNSgNlidExHEeJjMtURzdm3z+fgrwrpQqXsaYlrkZOFzSJ5Qs3SWBxYCFgPlxJxYzjQK6JTPIvBSnYHegl4fTGKZaSEnSnsCZTKnR8RClZseXKZmHxrSqHvS6wPLA8vm+njeBV4CXgXc8nMa0SkhfHhEbA68zJTR1UUok1FseIUMrojf+IOkBSRtI2lTS3yX9wSNjzEy7x96p1FP/0CNiWnPRLJ99B8+p+3wFSefksuU9UsbM8L22qqQzs2bHmh4R05qLZoikX+b7gyT9U9J6leWHSnIatzEz5357IpPAjKE1NugJwKP5/gjg18CRkg7Lzx5xOVFjZlgw7y7peoqTfTGPiGEaojhqERkjIuL+rAN9lqTuwF9xsL0x0yOUN6SE0R0MLB0Rq0raHviVpD8CN0aEk7xMiwK6cyUW81uZjDIS2CsirpO0tofNmGkWzqsDV+a9tChwXGXGOoyS8PVHScdGxCMeMdNMQI8CNqcUQdoUWKqu8NHmuY4xpvVMSkE8hlKkbFlJA/LzByPilKx78xdgdQ+Xaelpf6mkayXtUPlsH0nXSLrUI2TMNN9Ta0j6UNJbkkZIukrSig3We03Sqh4xQ0vlRiUdTGkMOw+lg8oo4O8RcZaHzZjpEtL7AhMpPp7BETGowTovAdu6W5Fp7UV1k6SbPBLGtOl9to6kQZKeytePPSqmNbU43vQwGTNL7sWvAO8B/0MpQGZ8UUyVYbjppTHMgjrR3SkV7boCX/CQmC5TmXbdCiwLTJS0SkRs7yEzpk0YCfyDUs1uArCFpKWB37sBswV0vWDeK9+OBj4AvjQ9HcCNMbS2wt3jwA519+EBwIWSTomIfh4lnOqdrAdsQTFvfAwsTqn9bIyZdUL7PGAEsK5Hwxp0/XRrMiXEbihwCcV5YYyZtXxCSW4xFtCfi4+eROk1+EREnO+hMma2zXLdBdwC+nNTq4M8NMa0C3pTGs0anElojKFdJbBsD+zNlDK/kTPbuxplIhpjjJm1QnpZSQOzNdbLksZI2tUjgxNVjDGzPZrjxawX/Q1gONANGO+RYe7u6m2MaTf0pGQbds2XzZPGGEP7auj8qsuRGmNM+xTSL3sUsInDGNMuWUTSch4GHGZnjGl3GvTded8+D1zqwv7GGNO+hPSmkv4sqb+kLTwixhjT/gT1WpJeqfYONdgGbYyhPcRHPwq8Aizi0bCANsa0z3vY7bGMMYb2ZeIYpyncXrds5Ww++5ik1ySd4BHDqd7GmDYXzPtQIjkeA75J6V84ubL858DawESgFyU13Pe6TRzGmDYWzisAGwMbAQ9Tuh4BLCNpmRTOGwLnAosBAhZMQW2sQRtj2lJGA5+ldrwY8DTwAqUl3YXAQhGxfArzm4D1geuBJzx0FtDGmFnDJGB+4JqIuDMF8prAoWlvfpdS/e7YiOjv4TLGmNlvAtk5nYbnSFrLI2KMMe1HQO8n6TaPBHYSGmNoj6aPnh4GC2hjTPvD0RoW0MaYdso/gPGSdmHqxf/Pl3SmpMsl7eihM8YYZokt+j5Jd0nau8nyNSQNzQ4toyT9xqOGw+yMMcyKQkobStoauEnS0Ij4a90qE4FPgHFAD2CMRw2bOIwxs0xI304xefRoopx1AkYCEyjp4MYC2hgzC5mXSp2OCl8BPo2I9YCLgNU9VNjEYYxhZtmZfw90T+33+Yi4oMFqo2lcjrRras6kFm1ZMG1jvwawGzAKWAC4NSIGWEAbY+Gwcs5+N6Wkey8OXNJk9eWB/ST9L7BZrU4HJRV8IUmbAMsBHzX5rh2B/0TEoGaZi8BrEfFEs/ZcQJcGNvDa8h8AE5qlo0vaEqCWzt5g+TbAuIi4q8ny7YCRLex/B+CTiBjYYNkywIrAexHxQN3iccCP046/MPAvYICk1ZuNBW4aa8xcUc3uiDRbDKOUG/0m8ClwTkRckesdB6xDKazUC/geUNO4xwLLAJsDA1JAzw/sWxN0KTj3yW3HU5yI59cEWQruPVJ7H5ua5JkR8Ugu3wvYJpXArsD7wGkR8XSlJOomubwL8DZwakQMyeVHUAo9dc4CUZ2AKyLi2lx+QpplulCSczoB51bqkvwRWDaPd0IuPzUi7svlZwFfo9jnJ+Trmoi4MZefltt3y2OfCFxUGZ9LcnwnA0NTQPfM8TonIv5hDdqYubOa3ZgUSp3zL8AbwA8kLZ3C5FspMO+SdGBEbC7pMWCNyr7WzrZZNYH6i9QaSeF5bURcLmkVYD3gCEnfTo1xbeCqiLguizStC/xO0jXA0vn9d0TExbn/o4DTKoJtUeDmygPlBOBMSRcCW+SxXR0R1+Xy3YBdJC0MrJYa7GURcXMu/wmwv6QvAH1SaP6lIrD3AQ6T9DVgyxSo50ZEv1y+L7CHpG8ACwHzAf8XEQMlLZ8PiyMkLZWCfb40DXXNczIxH1I0sfkbY+YGDVrSTZKulnRnCqbasv6SBkg6QVK/Bts+VenA0sykcUkK0Wbff62kM5ssW0bS7ZJObmaakdQvhXWj5WtLGpjadbPvv0PST1tY3r+lpBtJ90javIXl56dtv9Gy53Lsj5c0oGqmyd91Vf7d0CYOY+ZeIb1Das7dKfbfx/PzZ4ADIuJhSW8C20bE4Mp2FwNrpcliaERs7tGcpnF/PSK+nu//HRFfzffLU2z949Mk8lxEvGAThzHMlfHNNzVZNBJYStKININMqFs+JAX7BGC4R3KaGStpvTRpjKycj+eB53GYnTGmBQYDJ6XwGBYRz9Ut70mxnU5oILzN1PkXcFW+fxrHQRtjpsOBOLriPKSuFGlNOE/0cE0zk5nFjkALaGM6DvMBS6Sm/Bn/bRr5vYdohliQEnMO8IEFtDFmWrgbeJXirBrv4ZjpXE0JDwT40MNhjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGGGOMMcYYY4wxxhhjjDHGzLX8P1uMNs6Z293VAAAAAElFTkSuQmCC"}};
 function molFor(k){return MOL[k]||null;}
 
+/* ---------- what a result might mean ----------
+   Three tiers per marker: holding well, room to improve, and out of range.
+   `peps` names things in this app that act on that pathway — as a starting
+   point for a conversation with a doctor, never as an instruction. Anything
+   shown from here carries the medical-supervision notice. */
+const TIPBASE={
+ opt:"This one is where you want it. Whatever you are doing for it, keep doing it — the useful move is to leave it alone and retest on your normal schedule.",
+ ok:"Inside the standard range but not in the tighter optimal band. This is the zone where diet, sleep, training and alcohol usually move the number more than anything you inject.",
+ out:"Outside the standard range. A single reading is not a diagnosis — the first step is to repeat the test before acting on it, and to take the result to a doctor."
+};
+const LABTIP={
+apob:{ok:"Cutting saturated fat, raising soluble fibre (oats, beans, psyllium) and losing visceral fat all move ApoB. It responds well to diet before anything else.",
+ out:"High ApoB is one of the strongest predictors of heart disease and it is very treatable. This is a conversation to have with a doctor sooner rather than later, because statins and similar drugs work far better here than anything in this app.",
+ peps:["sema","tirz","reta"]},
+lpa:{ok:"Lp(a) is largely genetic and barely moves with lifestyle. Knowing the number matters more than chasing it.",
+ out:"Raised Lp(a) is inherited and does not respond much to diet. It does not mean something is wrong with how you live — it means your overall risk picture should be managed more aggressively. Worth telling a doctor, and worth mentioning to blood relatives.",peps:[]},
+trig:{ok:"Triglycerides respond faster than any other lipid. Alcohol, refined carbs and excess calories are the usual three levers.",
+ out:"High triglycerides usually track with insulin resistance and alcohol intake. They also fall quickly — often within weeks of changing those two.",peps:["sema","tirz","reta","mots"]},
+hdl:{ok:"HDL responds to exercise more than to food. Cardio and resistance training both help; the number is stubborn otherwise.",
+ out:"Low HDL rarely travels alone — it usually sits alongside high triglycerides and insulin resistance, and the whole picture is what matters.",peps:["mots","lcar"]},
+homo:{ok:"Homocysteine rises when B12, folate or B6 run low. Leafy greens, eggs and meat cover most of it.",
+ out:"Raised homocysteine is usually a B-vitamin problem and is one of the easier things to correct. Test B12 and folate alongside it rather than guessing.",peps:[]},
+hba1c:{ok:"Sitting above optimal but in range is the earliest warning of drifting glucose control. Walking after meals and cutting liquid sugar both move it.",
+ out:"An HbA1c in this territory needs a doctor, not a protocol. It is the number that defines prediabetes and diabetes, and the treatments with real evidence are prescription ones.",
+ peps:["sema","tirz","reta","mots","amino"]},
+gluc:{ok:"Fasting glucose creeps up before HbA1c does. Sleep debt and stress raise it as much as food does.",
+ out:"Out-of-range fasting glucose needs medical follow-up and a repeat test. Note that Tesamorelin and the GH-axis peptides can push this number up — if you run those, that is the first thing to review.",
+ peps:["sema","tirz","reta","mots","amino"]},
+insulin:{ok:"Fasting insulin rises years before glucose does, so this is the early-warning number. It falls with fat loss and resistance training.",
+ out:"High fasting insulin is insulin resistance, whatever the glucose says. It is very responsive to losing visceral fat and to lifting.",
+ peps:["sema","tirz","reta","mots","amino"]},
+crp:{ok:"Mildly raised hs-CRP is often sleep, alcohol, a recent hard session or body fat rather than disease. Retest when you are rested and not sore.",
+ out:"A high hs-CRP means something is inflamed. It can be as simple as a recent infection or a brutal training week, so repeat it before drawing conclusions — but persistent elevation is worth investigating properly.",
+ peps:["bpc","kpv","ta1","gluta"]},
+igf1:{ok:"IGF-1 in the middle of the range is generally where you want it. Higher is not automatically better — the top of the range carries its own questions.",
+ out:"IGF-1 outside range matters in both directions. Low can mean poor GH output or under-eating; high, particularly on GH-axis peptides, is the signal to come down rather than push on.",
+ peps:["tesa","sermorelin","cjc","ipa"]},
+testt:{ok:"In range but not optimal. Sleep, body fat and resistance training move total testosterone more than most people expect.",
+ out:"Testosterone outside range is a doctor conversation, not a self-managed one — and if you are already on TRT, this reflects your protocol and should be reviewed with whoever prescribes it.",
+ peps:["kiss"]},
+e2:{ok:"Estradiol matters as much as testosterone on TRT. Symptoms usually tell you more than the number alone.",
+ out:"Estradiol out of range on TRT usually means the protocol needs adjusting. Too low causes joint pain, low libido and poor mood — it is not a case of lower being better.",peps:[]},
+shbg:{ok:"SHBG shifts with thyroid, insulin and liver status rather than being a target itself.",
+ out:"Out-of-range SHBG changes how much of your testosterone is actually free, so read it alongside free testosterone rather than on its own.",peps:[]},
+hct:{ok:"Haematocrit at the upper end is common on TRT. Hydration on the day of the draw affects it noticeably.",
+ out:"High haematocrit thickens the blood and raises clot risk. On TRT this is the number that decides whether you donate blood or adjust the dose, and it needs medical input. Anything that raises red cells further, EPO above all, compounds the risk.",peps:[]},
+hgb:{ok:"Tracks with haematocrit. Read the two together.",
+ out:"Out-of-range haemoglobin needs following up — low points to iron, B12 or blood loss; high raises the same viscosity concerns as haematocrit.",peps:[]},
+vitd:{ok:"Most people sit here. It is very individual, so dose against the test rather than a generic recommendation.",
+ out:"Low vitamin D is extremely common and easy to correct, but the right dose varies enormously between people. Retest after eight to twelve weeks rather than assuming.",peps:[]},
+b12:{ok:"Low-normal B12 can still cause symptoms, particularly if you eat little animal food.",
+ out:"Out-of-range B12 needs following up properly — it affects nerves and red cell production, and low levels also push homocysteine up.",peps:[]},
+ferr:{ok:"Ferritin in the middle is comfortable. It rises with inflammation too, so read it next to hs-CRP.",
+ out:"Ferritin out of range matters in both directions: low means depleted iron stores, high can mean iron overload or inflammation. Never start iron on a guess — it is genuinely toxic in excess.",peps:[]},
+tsh:{ok:"TSH in the upper half of range with symptoms is worth a closer look including free T3 and T4.",
+ out:"Out-of-range TSH is a thyroid conversation with a doctor. Aggressive dieting and hard training can both push it around, so context matters.",peps:[]},
+ft3:{ok:"Free T3 drops in a sustained calorie deficit. That is a normal adaptation, not necessarily thyroid disease.",
+ out:"Low free T3 alongside a long deficit usually means the deficit, not the thyroid. Persistent abnormality needs proper assessment.",peps:[]},
+alt:{ok:"Mildly raised ALT is often fatty liver, alcohol, or just a heavy training block.",
+ out:"Out-of-range liver enzymes need repeating and investigating. Review everything you take — oral compounds especially — with a doctor before adding anything else.",peps:[]},
+ast:{ok:"AST rises from hard training as well as from the liver, so read it next to ALT.",
+ out:"Raised AST with a normal ALT often points at muscle rather than liver, particularly after heavy lifting. Repeat it rested.",peps:[]},
+ggt:{ok:"GGT is sensitive to alcohol and to oxidative stress. It often falls within weeks of cutting back.",
+ out:"High GGT is worth taking seriously as a liver and oxidative-stress signal, and alcohol is the first thing to examine.",peps:["gluta"]},
+egfr:{ok:"Slightly reduced eGFR in a muscular person on creatine is common and often not kidney disease.",
+ out:"Reduced eGFR needs proper follow-up including cystatin C, which is not thrown off by muscle mass. Review anything that stresses the kidneys.",peps:[]},
+creat:{ok:"Creatinine runs high in muscular people and on creatine supplementation. Cystatin C is the cleaner measure.",
+ out:"Out-of-range creatinine should be confirmed with cystatin C before assuming a kidney problem, especially if you are lean and muscular.",peps:[]},
+sod:{ok:"Sodium at the low end is common when eating much less, particularly on GLP-1 drugs.",
+ out:"Low sodium causes the fatigue, headaches and dizziness people usually blame on the drug itself. On a GLP-1 in a deficit, deliberately salting food is often the fix — but a genuinely out-of-range result needs medical review.",peps:[]},
+mag:{ok:"Red-cell magnesium is the better measure. Pumpkin seeds, spinach and dark chocolate are the easy sources.",
+ out:"Low magnesium affects sleep, cramps and blood pressure, and is one of the more common deficiencies in people training hard.",peps:[]},
+zinc:{ok:"Zinc and copper move against each other. Pushing one up over months usually pulls the other down.",
+ out:"Out-of-range zinc should be read next to copper. If you inject GHK-Cu or KLOW long term, that is the first thing to check.",peps:[]},
+copper:{ok:"Worth watching if you use copper peptides regularly.",
+ out:"Copper out of range matters if you run GHK-Cu or KLOW — chronic systemic copper is the plausible cause and worth pausing to reassess with a doctor.",peps:[]},
+psa:{ok:"Track the trend rather than any single value. Rate of change matters more than the number.",
+ out:"A raised PSA needs medical follow-up. It is not automatically cancer — infection, recent cycling and recent ejaculation all raise it — but it does need proper assessment, and more so on TRT.",peps:[]},
+uric:{ok:"Uric acid tracks with alcohol, fructose and metabolic health generally.",
+ out:"High uric acid means gout risk and often travels with insulin resistance. Alcohol and sugary drinks are the usual first targets.",peps:[]},
+alb:{ok:"Albumin near the top of range generally reflects good protein status and liver function.",
+ out:"Low albumin can mean under-eating protein, inflammation or liver issues, and is worth investigating rather than supplementing around.",peps:[]},
+lead:{ok:"There is no genuinely safe level of lead. Lower is always better.",
+ out:"Raised lead needs a doctor and a source hunt — old plumbing, old paint, some supplements and some imported goods are the common culprits.",peps:[]},
+merc:{ok:"Mostly from large predatory fish. Swapping to smaller fish brings it down over months.",
+ out:"High mercury usually means diet, typically tuna and other large fish. It clears slowly, so the fix is patience plus changing the source.",peps:[]}
+};
+/* a readable name for a guide key, taken from the dose table where possible */
+function guideName(k){
+  const hit=Object.keys(LOWDOSE).find(n=>pepKey(n).startsWith(pepKey(k)));
+  if(hit)return hit;
+  return k.charAt(0).toUpperCase()+k.slice(1);
+}
+function labTip(def,st){
+  const t=LABTIP[def.k]||{};
+  const tier=st==="opt"?"opt":st==="ok"?"ok":"out";
+  const text=t[tier]||TIPBASE[tier];
+  const peps=(tier==="out"||tier==="ok")?(t.peps||[]):[];
+  // only suggest things the user actually has in their list
+  const mine=peps.map(k=>S.track.find(p=>(p.guideKey||p.id)===k&&p.status!=="removed"))
+    .filter(Boolean);
+  const other=peps.filter(k=>!mine.some(p=>(p.guideKey||p.id)===k))
+    .map(k=>GUIDES[k]).filter(Boolean);
+  return {text,mine,other:other.length?peps.filter(k=>GUIDES[k]&&!mine.some(p=>(p.guideKey||p.id)===k)):[]};
+}
+
 /* ============ BLOODWORK ============
    Manual entry against the Function Health panel. Every marker keeps a history,
    so each one gets a trend chart with the healthy band drawn behind it and a
@@ -3603,7 +3786,9 @@ function labPop(k){
         <div class="lhs">${st.n}</div>
         ${delta!=null?`<div class="lhd">${delta>0?"▲":delta<0?"▼":"■"}
           ${Math.abs(Math.round(delta*100)/100)} since ${prev.d}</div>`:""}
-      </div>`:""}
+        <button class="lhi" id="lbTip" aria-label="What this means">i</button>
+      </div>
+      <div class="labtip" id="lbTipBody" style="--lc:${LABC[st.s]}"></div>`:""}
       ${hist.length?`<div class="labchart">${labSpark(def,hist,300,110)}</div>
         <div class="labaxis"><span>${hist[0].d}</span><span>${last.d}</span></div>`:""}
       <div class="istat"><span class="k">Standard range</span><span class="v">${def.lo}–${def.hi} ${def.u}</span></div>
@@ -3634,6 +3819,28 @@ function labPop(k){
       S.labs[k]=(S.labs[k]||[]).filter(x=>x.d!==b.dataset.lbdel);
       if(!S.labs[k].length)delete S.labs[k];
       save();draw();renderLabs();});
+    // guidance is opt-in, and never appears without the supervision notice
+    const tipBtn=$("#lbTip");
+    if(tipBtn)tipBtn.onclick=()=>{
+      const box=$("#lbTipBody");
+      if(box.classList.contains("on")){box.classList.remove("on");box.innerHTML="";tipBtn.classList.remove("on");return;}
+      const t=labTip(def,st.s);
+      const chip=p=>`<button class="tipep" data-tipep="${p.id}">
+        <i style="background:${pepPaint(p)}"></i>${p.name}</button>`;
+      box.innerHTML=`<div class="ltwrap">
+        <div class="lth">${st.s==="opt"?"Holding well":st.s==="ok"?"Room to improve":"Worth acting on"}</div>
+        <p>${t.text}</p>
+        ${t.mine.length?`<div class="ltsub">In your list, acting on this pathway</div>
+          <div class="tipeps">${t.mine.map(chip).join("")}</div>`:""}
+        ${t.other.length?`<div class="ltsub">Not in your list, but act here too</div>
+          <div class="tipeps">${t.other.map(kk=>`<span class="tipep dim"><i style="background:${(PFAM[(PMAP[kk]||["other"])[0]]||PFAM.other).c}"></i>${guideName(kk)}</span>`).join("")}</div>`:""}
+        <div class="ltdisc"><b>This is not medical advice.</b> These decisions must be
+          made with medical supervision.</div>
+      </div>`;
+      box.classList.add("on");tipBtn.classList.add("on");
+      $$("[data-tipep]",box).forEach(b=>b.onclick=()=>{closeModal();setTab("guide");
+        setTimeout(()=>deepDive(b.dataset.tipep),80);});
+    };
     $("#lbEditRange").onclick=()=>labRangePop(k);
     $("#lbClose").onclick=closeModal;
   };
@@ -3994,18 +4201,46 @@ function runOutDate(p){
   return new Date(Date.now()+d*DAY).toLocaleDateString('en-US',{month:'short',day:'numeric'});
 }
 let openGuide=null;
+/* hue of a peptide's first family colour, so "by colour" sorts red through
+   violet the way a spectrum does rather than alphabetically by hex */
+function pepHue(p){
+  const hex=(pepColors(p)[0]||"").replace("#","");
+  if(hex.length<6)return 999;
+  const r=parseInt(hex.slice(0,2),16)/255,g=parseInt(hex.slice(2,4),16)/255,b=parseInt(hex.slice(4,6),16)/255;
+  const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;
+  if(d<0.02)return 998;                       // greys sort last
+  let h;
+  if(mx===r)h=((g-b)/d)%6; else if(mx===g)h=(b-r)/d+2; else h=(r-g)/d+4;
+  h*=60; if(h<0)h+=360;
+  return h;
+}
+let pepSort="due";   // due | alpha | colour
 function renderGuide(){
-  const el=$("#v-guide");const list=S.track.filter(p=>p.status!=="removed");
+  const el=$("#v-guide");
+  const key=iso(new Date()),logd=S.log[key]||{};
+  const dueNow=p=>p.status==="active"&&dueOn(p,new Date());
+  let list=S.track.filter(p=>p.status!=="removed");
+  const rank=p=>dueNow(p)?(logd[p.id]?1:0):2;   // to take, taken, not due
+  const within=(a,b)=>pepSort==="colour"?(pepHue(a)-pepHue(b))||a.name.localeCompare(b.name)
+                                        :a.name.localeCompare(b.name);
+  list=[...list].sort((a,b)=>(rank(a)-rank(b))||within(a,b));
+  const toTake=list.filter(p=>rank(p)===0).length;
   let html=`<div class="vsub">Protocol &amp; stock</div>
-    <div class="vhead"><h2>My peptides</h2><div class="spacer"></div><span class="chip">${list.filter(p=>p.status==="active").length} active</span></div>
+    <div class="vhead"><h2>My peptides</h2><div class="spacer"></div>
+      <button class="mini" id="pepSortBtn">${pepSort==="colour"?"◐ Colour":"A–Z"}</button></div>
+    ${toTake?`<div class="duehead">${toTake} still to take today</div>`:
+      list.some(p=>dueNow(p))?`<div class="duehead done">All of today's shots logged</div>`:""}
     <button class="disclaimer" id="discBtn">⚠ Not medical advice — tap to read</button>`;
   if(!list.length){el.innerHTML=html+`<div class="empty-note">Add peptides from the Today tab.</div>`;$("#discBtn").onclick=showDisclaimer;return;}
   list.forEach(p=>{
+    const _r=rank(p);
     const off=p.status==="off",g=GUIDES[p.guideKey||p.id],open=openGuide===p.id;
     const out=runOutDate(p),pct=p.vialMg?Math.max(0,Math.min(100,p.remaining/p.vialMg*100)):0;
     const sub=off?"deactivated":`${doseLabel(p)} · ${p.sched.t==="daily"?"daily":p.sched.days.map(d=>WD[d]).join(", ")}`;
-    html+=`<div class="gcard ${open?'open':''} ${off?'goff':''} ${g&&g.danger?'grisk':''}">
+    html+=`<div class="gcard ${open?'open':''} ${off?'goff':''} ${g&&g.danger?'grisk':''} ${_r===0?'gdue':_r===1?'gtaken':''}"
+      ${_r===0?`style="--glow:${pepColors(p)[0]}"`:""}>
       <i class="gfam" style="background:${pepPaint(p)}"></i>
+      ${_r===0?`<span class="duetag">Due</span>`:_r===1?`<span class="duetag ok">✓</span>`:""}
       <button class="ghead" data-g="${p.id}">
         <div class="gt2"><div class="gname">${p.name}</div>
           <div class="gsub"><span class="gfamn" style="color:${pepColors(p)[0]}">${pepFamNames(p)}</span> · ${sub}</div></div>
@@ -4027,6 +4262,8 @@ function renderGuide(){
   });
   el.innerHTML=html;
   $("#discBtn").onclick=showDisclaimer;
+  $("#pepSortBtn").onclick=()=>{pepSort=pepSort==="colour"?"alpha":"colour";renderGuide();
+    toast(pepSort==="colour"?"Sorted by colour":"Sorted A–Z");};
   $$("[data-g]",el).forEach(b=>b.onclick=()=>{openGuide=(openGuide===b.dataset.g)?null:b.dataset.g;renderGuide();});
   $$("[data-ged]",el).forEach(b=>b.onclick=e=>{e.stopPropagation();editVial(b.dataset.ged);});
   $$("[data-gref]",el).forEach(b=>b.onclick=e=>{e.stopPropagation();refill(b.dataset.gref);renderGuide();});
