@@ -405,11 +405,20 @@
   .lgf{font-size:21px;line-height:1}
   .lgn{flex:1;min-width:0}
   .lgc{color:var(--accent);font-weight:800}
+  /* Latin names, doses and numbers must keep their own direction inside RTL,
+     or bidi reorders things like "NAD+" into "+NAD" */
+  body.rtl .gname,body.rtl .gsub,body.rtl .gleft,body.rtl .gout,body.rtl .dm,
+  body.rtl .dn,body.rtl .lrv,body.rtl .lrr,body.rtl .lhv,body.rtl .cv,body.rtl .excmeta,
+  body.rtl .pbn,body.rtl .ddcls,body.rtl .dddose,body.rtl .mono,body.rtl .tnum,
+  body.rtl .altn,body.rtl .altm,body.rtl .pexmeta,body.rtl .istat .v{
+    direction:ltr;unicode-bidi:isolate}
+  body.rtl .gname,body.rtl .gsub,body.rtl .dn,body.rtl .dm{text-align:right}
+  body.rtl .duehead{display:flex;gap:6px;align-items:baseline}
   /* Arabic reads right to left, so mirror the directional bits */
   body.rtl .di .dstripe{left:auto;right:-9px}
   body.rtl .gfam{left:auto;right:0}
   body.rtl .gcard .ghead{padding-left:14px;padding-right:15px}
-  body.rtl .duetag{right:auto;left:11px}
+  body.rtl .duetag{left:auto;right:12px}
   body.rtl .gstock{border-radius:2px 0 0 2px}
   body.rtl .ddcard,body.rtl .ddblock,body.rtl .ddtoggle{
     border-left-width:1px;border-right:3px solid var(--sc)}
@@ -585,7 +594,10 @@
                0 6px 22px -6px color-mix(in srgb,var(--glow) 45%,transparent),
                var(--shadow-lg)}
   .gcard.gtaken{opacity:.62}
-  .duetag{position:absolute;top:9px;right:11px;z-index:1;font-family:var(--mono);font-size:8.5px;
+  /* the stock readout hugs the trailing edge, so the Due tag takes the leading
+     one — which flips with the writing direction */
+  .gcard.gdue .gt2,.gcard.gtaken .gt2{padding-top:15px}
+  .duetag{position:absolute;top:8px;left:12px;z-index:1;font-family:var(--mono);font-size:8.5px;
     font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:5px;
     background:color-mix(in srgb,var(--glow,var(--accent)) 22%,var(--panel));
     color:var(--glow,var(--accent));border:1px solid color-mix(in srgb,var(--glow,var(--accent)) 45%,transparent)}
@@ -4261,8 +4273,8 @@ function renderGuide(){
   let html=`<div class="vsub">Protocol &amp; stock</div>
     <div class="vhead"><h2>My peptides</h2><div class="spacer"></div>
       <button class="mini" id="pepSortBtn">${pepSort==="colour"?"◐ Colour":"A–Z"}</button></div>
-    ${toTake?`<div class="duehead">${toTake} still to take today</div>`:
-      list.some(p=>dueNow(p))?`<div class="duehead done">All of today's shots logged</div>`:""}
+    ${toTake?`<div class="duehead"><b class="tnum">${toTake}</b> <span>still to take today</span></div>`:
+      list.some(p=>dueNow(p))?`<div class="duehead done"><span>All of today's shots logged</span></div>`:""}
     <button class="disclaimer" id="discBtn">⚠ Not medical advice — tap to read</button>`;
   if(!list.length){el.innerHTML=html+`<div class="empty-note">Add peptides from the Today tab.</div>`;$("#discBtn").onclick=showDisclaimer;return;}
   list.forEach(p=>{
@@ -4515,6 +4527,7 @@ const NOTR=new Set(["mg","mcg","ml","iu","lb","kcal","g","mg/dL","min","ApoB","N
 
 const I18N={
 es:{
+"still to take today":"aún por tomar hoy","All of today's shots logged":"Todas las inyecciones de hoy registradas",
 /* nav + shell */
 "Today":"Hoy","Peps":"Peps","Gym":"Gimnasio","Food":"Comida","Bloodwork":"Análisis",
 "Settings":"Ajustes","Recovery":"Recuperación","Peptides":"Péptidos","Workout":"Entrenamiento",
@@ -4645,13 +4658,310 @@ es:{
 "· deactivated":"· desactivado","Ongoing":"Continuo","None built in":"Sin descanso definido",
 "◇ History":"◇ Historial","Not recommended.":"No recomendado."
 }
+,
+ar:{
+"still to take today":"متبقية اليوم","All of today's shots logged":"تم تسجيل كل حقن اليوم",
+"Today":"اليوم","Peps":"الببتيدات","Gym":"النادي","Food":"الطعام","Bloodwork":"التحاليل",
+"Settings":"الإعدادات","Recovery":"التعافي","Peptides":"الببتيدات","Workout":"التمرين",
+"Nutrition":"التغذية","Muscle recovery":"تعافي العضلات","Protocol & stock":"البروتوكول والمخزون",
+"Function Health panel":"لوحة Function Health","My peptides":"ببتيداتي",
+"Toggle theme":"تبديل المظهر","Weekly goal":"الهدف الأسبوعي",
+"OPEN LIST":"فتح القائمة","LOG FOOD":"تسجيل الطعام","CHOOSE":"اختر","START":"ابدأ",
+"No session picked for this day":"لا توجد جلسة لهذا اليوم","Morning":"الصباح","Night":"الليل",
+"☀ Morning":"☀ الصباح","☾ Night":"☾ الليل","Rest day":"يوم راحة",
+"Mark all shots done":"تسجيل كل الحقن","Due":"مستحق","Up next":"التالي","Supply":"المخزون",
+"est. run out":"ينفد تقريبًا",
+"Greyed out means it isn't due today. Tap the circle to log one anyway.":
+ "الرمادي يعني أنه غير مستحق اليوم. اضغط الدائرة لتسجيله على أي حال.",
+"A–Z":"أ–ي","Add a peptide":"إضافة ببتيد","Add peptide":"إضافة ببتيد",
+"Search peptides...":"ابحث عن ببتيد...","From Lucky's catalog":"من كتالوج Lucky",
+"⚠ Not medical advice — tap to read":"⚠ ليست نصيحة طبية — اضغط للقراءة",
+"ⓘ Deep dive":"ⓘ التفاصيل الكاملة","✎ Edit":"✎ تعديل","↺ Refill vial":"↺ إعادة تعبئة",
+"↺ Refill vial to full":"↺ تعبئة القارورة بالكامل","Stats":"إحصائيات","Deactivate":"إيقاف",
+"Vial left":"المتبقي في القارورة","Last taken":"آخر جرعة","Per-dose":"لكل جرعة","Doses logged":"الجرعات المسجلة",
+"How it's thought to work":"كيف يُعتقد أنه يعمل","What's established":"ما هو مثبت",
+"What's suggested":"ما هو مُرجّح","What's unknown":"ما هو مجهول",
+"backed by human trials":"مدعوم بتجارب على البشر",
+"animal, cell or small human data":"بيانات حيوانية أو خلوية أو بشرية محدودة",
+"no data, or the trial went the wrong way":"لا توجد بيانات، أو فشلت التجربة",
+"Dosing & cycles":"الجرعات والدورات","Run for":"المدة","Then off":"ثم راحة",
+"Worth it because":"لصالحه","Against it":"ضده","Before you dose":"قبل الحقن",
+"Food & nutrients that support it":"أطعمة ومغذيات تدعمه",
+"Check it yourself":"تحقق بنفسك","Your setup":"إعداداتك","Your dose":"جرعتك",
+"Schedule":"الجدول","Vial":"القارورة","Family":"العائلة","Structure":"التركيب",
+"Human trials":"تجارب بشرية","Preclinical / limited":"ما قبل سريري / محدود",
+"No human efficacy data":"لا بيانات فعالية بشرية","High risk":"خطورة عالية",
+"Holding well":"في وضع جيد","Room to improve":"مجال للتحسين","Worth acting on":"يستحق التصرف",
+"Optimal":"مثالي","In range":"ضمن النطاق","Out of range":"خارج النطاق",
+"Above range":"أعلى من النطاق","Below range":"أقل من النطاق","Standard range":"النطاق المعياري",
+"Optimal high":"الحد الأعلى المثالي","Optimal low":"الحد الأدنى المثالي",
+"Range high":"أعلى النطاق","Range low":"أدنى النطاق",
+"Your result":"نتيجتك","Date drawn":"تاريخ السحب","Save result":"حفظ النتيجة",
+"Save range":"حفظ النطاق","Reset to default":"إعادة الضبط","Adjust dose & vial":"تعديل الجرعة والقارورة",
+"Taken this month":"عدد الأيام هذا الشهر","Vials opened":"قوارير مفتوحة","Left in vial":"المتبقي",
+"In your list, acting on this pathway":"من قائمتك، تؤثر على هذا المسار",
+"Not in your list, but act here too":"ليست في قائمتك، لكنها تؤثر هنا",
+"This is not medical advice.":"هذه ليست نصيحة طبية.",
+"These decisions must be made with medical supervision.":"يجب اتخاذ هذه القرارات تحت إشراف طبي.",
+"Heart":"القلب","Metabolic":"الأيض","Thyroid":"الغدة الدرقية","Hormones":"الهرمونات",
+"Nutrients":"المغذيات","Liver":"الكبد","Kidney":"الكلى","Blood count":"صورة الدم",
+"Electrolytes":"الشوارد","Inflammation":"الالتهاب","Immune":"المناعة",
+"Heavy metals":"المعادن الثقيلة","Cancer markers":"دلالات الأورام","Urine":"البول",
+"Muscle status":"حالة العضلات","Exercise history":"سجل التمارين","Recent workouts":"تمارين حديثة",
+"Fresh":"مرتاح","Recovering":"يتعافى","Fatigued":"مُجهد","Untrained":"غير مُدرَّب","Ready":"جاهز",
+"not trained recently":"لم يُدرَّب مؤخرًا",
+"Chest":"الصدر","Shoulders":"الأكتاف","Biceps":"البايسبس","Triceps":"الترايسبس","Forearms":"الساعدان",
+"Abs":"البطن","Quads":"الفخذ الأمامي","Traps":"شبه المنحرف","Lats / Back":"الظهر العريض",
+"Lower back":"أسفل الظهر","Glutes":"المؤخرة","Hamstrings":"الفخذ الخلفي","Calves":"السمانة",
+"Front muscles":"العضلات الأمامية","Back muscles":"العضلات الخلفية",
+"+ Log a workout":"+ تسجيل تمرين","Log a workout":"تسجيل تمرين",
+"Tap the muscles you trained":"اضغط العضلات التي دربتها","How hard was it?":"ما مدى صعوبته؟",
+"Light":"خفيف","Moderate":"متوسط","Hard":"صعب","Medium":"متوسط","Save workout":"حفظ التمرين",
+"Pick a routine":"اختر برنامجًا","Delete workout":"حذف التمرين","Edit workout":"تعديل التمرين",
+"▶ Start workout":"▶ ابدأ التمرين","End workout":"إنهاء التمرين","Exercises":"التمارين",
+"Log set & rest":"سجّل المجموعة واسترح","Log all remaining sets":"تسجيل باقي المجموعات",
+"Rest":"راحة","Skip":"تخطي","Swap exercise":"تبديل التمرين","How to":"كيفية الأداء",
+"Reps":"تكرارات","warm-up":"إحماء","exercises":"تمارين","calories":"سعرات","Calories":"السعرات",
+"difficulty":"الصعوبة","All":"الكل","Cable":"كابل","Dumbbell":"دمبل","Machine":"جهاز",
+"Barbell":"بار","Bodyweight":"وزن الجسم",
+"+ Add food":"+ إضافة طعام","Add food":"إضافة طعام","Log what you ate":"سجّل ما أكلت",
+"What was it?":"ما هو؟","Protein":"بروتين","Carbs":"كربوهيدرات","Fat":"دهون","Fiber":"ألياف",
+"Protein (g)":"بروتين (غ)","Carbs (g)":"كربوهيدرات (غ)","Fat (g)":"دهون (غ)",
+"Daily targets":"الأهداف اليومية","Your goals":"أهدافك","Save targets":"حفظ الأهداف",
+"✎ Targets":"✎ الأهداف","Nothing logged":"لا شيء مسجل","Nothing logged yet today.":"لا شيء مسجل اليوم بعد.",
+"Dose":"الجرعة","Unit":"الوحدة","Vial size (max)":"حجم القارورة","Remaining now":"المتبقي حاليًا",
+"Bac water":"ماء بكتيري","Bac water (mL)":"ماء بكتيري (مل)","Timing note":"ملاحظة التوقيت",
+"Timing":"التوقيت","Frequency":"التكرار","Every day":"كل يوم","Specific weekdays":"أيام محددة",
+"Days":"الأيام","When":"متى","Exact time (optional)":"وقت محدد (اختياري)","Save":"حفظ",
+"Cancel":"إلغاء","Close":"إغلاق","Back":"رجوع","Add":"إضافة","Date":"التاريخ","Note":"ملاحظة",
+"Note (optional)":"ملاحظة (اختياري)","Edit dose & schedule":"تعديل الجرعة والجدول",
+"Archive":"الأرشيف","Remove permanently":"حذف نهائي","Profile · weigh-ins":"الملف · الأوزان",
+"+ Add weigh-in":"+ إضافة وزن","Weight (lb)":"الوزن (رطل)","Tracking history":"سجل المتابعة",
+"Show month calendar":"عرض التقويم الشهري","Hide month calendar":"إخفاء التقويم",
+"Restock notifications":"تنبيهات إعادة التخزين","Data":"البيانات",
+"↓ Export backup (.json)":"↓ تصدير نسخة (.json)","↑ Import backup":"↑ استيراد نسخة",
+"Reset everything to defaults":"إعادة ضبط كل شيء","Language":"اللغة",
+"Please read":"يُرجى القراءة","I understand":"فهمت","Talk to your doctor":"استشر طبيبك",
+"Get bloodwork.":"أجرِ تحاليل الدم.","This is not medical advice":"هذه ليست نصيحة طبية",
+"What the colours mean":"معنى الألوان","What this means":"ماذا يعني هذا",
+"GLP / incretin":"GLP / إنكريتين","Copper / GHK":"نحاس / GHK","Mitochondrial":"الميتوكوندريا",
+"Regenerative":"تجديدي","GH / hormone":"هرمون النمو","Longevity":"طول العمر",
+"Antioxidant":"مضاد أكسدة","Gut":"الأمعاء","Sleep":"النوم","Other":"أخرى",
+"Vegetables":"خضار","Meat":"لحوم","Fish":"أسماك","Fruit":"فواكه","Nuts, seeds":"مكسرات وبذور",
+"Eggs, dairy":"بيض وألبان","Grains, legumes":"حبوب وبقوليات",
+"Mon":"إثن","Tue":"ثلا","Wed":"أرب","Thu":"خمي","Fri":"جمع","Sat":"سبت","Sun":"أحد",
+"Mo":"إث","Tu":"ثل","We":"أر","Th":"خم","Fr":"جم","Sa":"سب","Su":"أح",
+"Previous day":"اليوم السابق","Next day":"اليوم التالي","Previous week":"الأسبوع السابق",
+"Next week":"الأسبوع التالي","Previous month":"الشهر السابق","Next month":"الشهر التالي",
+"off":"موقوف","never":"أبدًا","taken":"مأخوذ","new vial":"قارورة جديدة","ran out":"نفد",
+"Ongoing":"مستمر","None built in":"بلا فترة راحة","◇ History":"◇ السجل"
+},
+zh:{
+"still to take today":"个今天还没打","All of today's shots logged":"今天的注射都已记录",
+"Today":"今天","Peps":"肽","Gym":"健身","Food":"饮食","Bloodwork":"血检",
+"Settings":"设置","Recovery":"恢复","Peptides":"肽","Workout":"训练",
+"Nutrition":"营养","Muscle recovery":"肌肉恢复","Protocol & stock":"方案与库存",
+"Function Health panel":"Function Health 检测项","My peptides":"我的肽",
+"Toggle theme":"切换主题","Weekly goal":"每周目标",
+"OPEN LIST":"打开列表","LOG FOOD":"记录饮食","CHOOSE":"选择","START":"开始",
+"No session picked for this day":"这天还没选训练","Morning":"早上","Night":"晚上",
+"☀ Morning":"☀ 早上","☾ Night":"☾ 晚上","Rest day":"休息日",
+"Mark all shots done":"标记全部已注射","Due":"待打","Up next":"下一个","Supply":"库存",
+"est. run out":"预计用完",
+"Greyed out means it isn't due today. Tap the circle to log one anyway.":
+ "灰色表示今天不需要。仍要记录请点圆圈。",
+"A–Z":"A–Z","Add a peptide":"添加肽","Add peptide":"添加肽",
+"Search peptides...":"搜索肽...","From Lucky's catalog":"来自 Lucky 目录",
+"⚠ Not medical advice — tap to read":"⚠ 非医疗建议 — 点击阅读",
+"ⓘ Deep dive":"ⓘ 详细资料","✎ Edit":"✎ 编辑","↺ Refill vial":"↺ 补充药瓶",
+"↺ Refill vial to full":"↺ 补满药瓶","Stats":"数据","Deactivate":"停用",
+"Vial left":"瓶内剩余","Last taken":"上次使用","Per-dose":"每剂","Doses logged":"已记录剂量",
+"How it's thought to work":"作用机制推测","What's established":"已证实的",
+"What's suggested":"有提示的","What's unknown":"未知的",
+"backed by human trials":"有人体试验支持",
+"animal, cell or small human data":"动物、细胞或小规模人体数据",
+"no data, or the trial went the wrong way":"无数据，或试验结果不佳",
+"Dosing & cycles":"剂量与周期","Run for":"使用时长","Then off":"停用时长",
+"Worth it because":"优点","Against it":"缺点","Before you dose":"注射前须知",
+"Food & nutrients that support it":"支持它的食物与营养",
+"Check it yourself":"自行核实","Your setup":"你的设置","Your dose":"你的剂量",
+"Schedule":"安排","Vial":"药瓶","Family":"类别","Structure":"结构",
+"Human trials":"人体试验","Preclinical / limited":"临床前 / 有限","No human efficacy data":"无人体疗效数据",
+"High risk":"高风险",
+"Holding well":"状态良好","Room to improve":"仍可改善","Worth acting on":"值得处理",
+"Optimal":"最佳","In range":"在范围内","Out of range":"超出范围",
+"Above range":"高于范围","Below range":"低于范围","Standard range":"标准范围",
+"Optimal high":"最佳上限","Optimal low":"最佳下限","Range high":"范围上限","Range low":"范围下限",
+"Your result":"你的结果","Date drawn":"抽血日期","Save result":"保存结果",
+"Save range":"保存范围","Reset to default":"恢复默认","Adjust dose & vial":"调整剂量与药瓶",
+"Taken this month":"本月使用天数","Vials opened":"已开药瓶","Left in vial":"瓶内剩余",
+"In your list, acting on this pathway":"你列表中作用于此通路的",
+"Not in your list, but act here too":"不在你列表中，但也作用于此",
+"This is not medical advice.":"这不是医疗建议。",
+"These decisions must be made with medical supervision.":"这些决定必须在医生指导下做出。",
+"Heart":"心血管","Metabolic":"代谢","Thyroid":"甲状腺","Hormones":"激素",
+"Nutrients":"营养素","Liver":"肝脏","Kidney":"肾脏","Blood count":"血常规",
+"Electrolytes":"电解质","Inflammation":"炎症","Immune":"免疫",
+"Heavy metals":"重金属","Cancer markers":"肿瘤标志物","Urine":"尿液",
+"Muscle status":"肌肉状态","Exercise history":"训练历史","Recent workouts":"近期训练",
+"Fresh":"已恢复","Recovering":"恢复中","Fatigued":"疲劳","Untrained":"未训练","Ready":"可训练",
+"not trained recently":"近期未训练",
+"Chest":"胸","Shoulders":"肩","Biceps":"二头肌","Triceps":"三头肌","Forearms":"前臂",
+"Abs":"腹肌","Quads":"股四头肌","Traps":"斜方肌","Lats / Back":"背阔肌",
+"Lower back":"下背","Glutes":"臀","Hamstrings":"腘绳肌","Calves":"小腿",
+"Front muscles":"正面肌群","Back muscles":"背面肌群",
+"+ Log a workout":"+ 记录训练","Log a workout":"记录训练",
+"Tap the muscles you trained":"点击你训练过的肌肉","How hard was it?":"强度如何？",
+"Light":"轻","Moderate":"中等","Hard":"大","Medium":"中等","Save workout":"保存训练",
+"Pick a routine":"选择计划","Delete workout":"删除训练","Edit workout":"编辑训练",
+"▶ Start workout":"▶ 开始训练","End workout":"结束训练","Exercises":"动作",
+"Log set & rest":"记录并休息","Log all remaining sets":"记录剩余组数",
+"Rest":"休息","Skip":"跳过","Swap exercise":"更换动作","How to":"动作说明",
+"Reps":"次数","warm-up":"热身","exercises":"个动作","calories":"千卡","Calories":"热量",
+"difficulty":"难度","All":"全部","Cable":"绳索","Dumbbell":"哑铃","Machine":"器械",
+"Barbell":"杠铃","Bodyweight":"自重",
+"+ Add food":"+ 添加饮食","Add food":"添加饮食","Log what you ate":"记录你吃了什么",
+"What was it?":"吃了什么？","Protein":"蛋白质","Carbs":"碳水","Fat":"脂肪","Fiber":"膳食纤维",
+"Protein (g)":"蛋白质 (克)","Carbs (g)":"碳水 (克)","Fat (g)":"脂肪 (克)",
+"Daily targets":"每日目标","Your goals":"你的目标","Save targets":"保存目标",
+"✎ Targets":"✎ 目标","Nothing logged":"暂无记录","Nothing logged yet today.":"今天还没有记录。",
+"Dose":"剂量","Unit":"单位","Vial size (max)":"药瓶容量","Remaining now":"当前剩余",
+"Bac water":"抑菌水","Bac water (mL)":"抑菌水 (毫升)","Timing note":"时间备注",
+"Timing":"时间","Frequency":"频率","Every day":"每天","Specific weekdays":"指定星期",
+"Days":"日期","When":"时段","Exact time (optional)":"具体时间（可选）","Save":"保存",
+"Cancel":"取消","Close":"关闭","Back":"返回","Add":"添加","Date":"日期","Note":"备注",
+"Note (optional)":"备注（可选）","Edit dose & schedule":"编辑剂量与安排",
+"Archive":"归档","Remove permanently":"永久删除","Profile · weigh-ins":"个人 · 体重记录",
+"+ Add weigh-in":"+ 添加体重","Weight (lb)":"体重 (磅)","Tracking history":"记录历史",
+"Show month calendar":"显示月历","Hide month calendar":"隐藏月历",
+"Restock notifications":"补货提醒","Data":"数据",
+"↓ Export backup (.json)":"↓ 导出备份 (.json)","↑ Import backup":"↑ 导入备份",
+"Reset everything to defaults":"全部恢复默认","Language":"语言",
+"Please read":"请阅读","I understand":"我明白","Talk to your doctor":"咨询你的医生",
+"Get bloodwork.":"去做血检。","This is not medical advice":"这不是医疗建议",
+"What the colours mean":"颜色含义","What this means":"这代表什么",
+"GLP / incretin":"GLP / 肠促胰素","Copper / GHK":"铜 / GHK","Mitochondrial":"线粒体",
+"Regenerative":"修复再生","GH / hormone":"生长激素","Longevity":"抗衰老",
+"Antioxidant":"抗氧化","Gut":"肠道","Sleep":"睡眠","Other":"其他",
+"Vegetables":"蔬菜","Meat":"肉类","Fish":"鱼类","Fruit":"水果","Nuts, seeds":"坚果种子",
+"Eggs, dairy":"蛋奶","Grains, legumes":"谷物豆类",
+"Mon":"一","Tue":"二","Wed":"三","Thu":"四","Fri":"五","Sat":"六","Sun":"日",
+"Mo":"一","Tu":"二","We":"三","Th":"四","Fr":"五","Sa":"六","Su":"日",
+"Previous day":"前一天","Next day":"后一天","Previous week":"上周","Next week":"下周",
+"Previous month":"上个月","Next month":"下个月",
+"off":"已停用","never":"从未","taken":"已用","new vial":"新药瓶","ran out":"已用完",
+"Ongoing":"持续使用","None built in":"无固定停药期","◇ History":"◇ 历史"
+},
+ru:{
+"still to take today":"осталось сегодня","All of today's shots logged":"Все инъекции на сегодня записаны",
+"Today":"Сегодня","Peps":"Пептиды","Gym":"Зал","Food":"Питание","Bloodwork":"Анализы",
+"Settings":"Настройки","Recovery":"Восстановление","Peptides":"Пептиды","Workout":"Тренировка",
+"Nutrition":"Питание","Muscle recovery":"Восстановление мышц","Protocol & stock":"Протокол и запас",
+"Function Health panel":"Панель Function Health","My peptides":"Мои пептиды",
+"Toggle theme":"Сменить тему","Weekly goal":"Цель на неделю",
+"OPEN LIST":"ОТКРЫТЬ СПИСОК","LOG FOOD":"ЗАПИСАТЬ ЕДУ","CHOOSE":"ВЫБРАТЬ","START":"НАЧАТЬ",
+"No session picked for this day":"На этот день ничего не выбрано","Morning":"Утро","Night":"Вечер",
+"☀ Morning":"☀ Утро","☾ Night":"☾ Вечер","Rest day":"День отдыха",
+"Mark all shots done":"Отметить все инъекции","Due":"Сегодня","Up next":"Далее","Supply":"Запас",
+"est. run out":"закончится ок.",
+"Greyed out means it isn't due today. Tap the circle to log one anyway.":
+ "Серым — не по расписанию сегодня. Нажмите кружок, чтобы всё равно записать.",
+"A–Z":"А–Я","Add a peptide":"Добавить пептид","Add peptide":"Добавить пептид",
+"Search peptides...":"Поиск пептидов...","From Lucky's catalog":"Из каталога Lucky",
+"⚠ Not medical advice — tap to read":"⚠ Не медицинский совет — нажмите",
+"ⓘ Deep dive":"ⓘ Подробно","✎ Edit":"✎ Изменить","↺ Refill vial":"↺ Пополнить флакон",
+"↺ Refill vial to full":"↺ Заполнить флакон","Stats":"Статистика","Deactivate":"Отключить",
+"Vial left":"Осталось во флаконе","Last taken":"Последний приём","Per-dose":"На дозу",
+"Doses logged":"Записано доз",
+"How it's thought to work":"Как это предположительно работает","What's established":"Что доказано",
+"What's suggested":"Что предполагается","What's unknown":"Что неизвестно",
+"backed by human trials":"подтверждено испытаниями на людях",
+"animal, cell or small human data":"данные на животных, клетках или малые исследования",
+"no data, or the trial went the wrong way":"нет данных или испытание провалилось",
+"Dosing & cycles":"Дозы и циклы","Run for":"Принимать","Then off":"Затем перерыв",
+"Worth it because":"За","Against it":"Против","Before you dose":"Перед инъекцией",
+"Food & nutrients that support it":"Еда и нутриенты в поддержку",
+"Check it yourself":"Проверьте сами","Your setup":"Ваши настройки","Your dose":"Ваша доза",
+"Schedule":"График","Vial":"Флакон","Family":"Группа","Structure":"Структура",
+"Human trials":"Испытания на людях","Preclinical / limited":"Доклинические / ограниченные",
+"No human efficacy data":"Нет данных об эффективности","High risk":"Высокий риск",
+"Holding well":"Всё в порядке","Room to improve":"Есть куда улучшать","Worth acting on":"Стоит заняться",
+"Optimal":"Оптимально","In range":"В норме","Out of range":"Вне нормы",
+"Above range":"Выше нормы","Below range":"Ниже нормы","Standard range":"Стандартный диапазон",
+"Optimal high":"Оптимум сверху","Optimal low":"Оптимум снизу",
+"Range high":"Верх диапазона","Range low":"Низ диапазона",
+"Your result":"Ваш результат","Date drawn":"Дата забора","Save result":"Сохранить результат",
+"Save range":"Сохранить диапазон","Reset to default":"Сбросить","Adjust dose & vial":"Изменить дозу и флакон",
+"Taken this month":"Дней в этом месяце","Vials opened":"Открыто флаконов","Left in vial":"Осталось",
+"In your list, acting on this pathway":"Из вашего списка, действуют на этот путь",
+"Not in your list, but act here too":"Не в вашем списке, но действуют здесь",
+"This is not medical advice.":"Это не медицинский совет.",
+"These decisions must be made with medical supervision.":"Такие решения принимаются под наблюдением врача.",
+"Heart":"Сердце","Metabolic":"Обмен веществ","Thyroid":"Щитовидная железа","Hormones":"Гормоны",
+"Nutrients":"Нутриенты","Liver":"Печень","Kidney":"Почки","Blood count":"Общий анализ крови",
+"Electrolytes":"Электролиты","Inflammation":"Воспаление","Immune":"Иммунитет",
+"Heavy metals":"Тяжёлые металлы","Cancer markers":"Онкомаркеры","Urine":"Моча",
+"Muscle status":"Состояние мышц","Exercise history":"История упражнений","Recent workouts":"Недавние тренировки",
+"Fresh":"Свежие","Recovering":"Восстанавливаются","Fatigued":"Утомлены","Untrained":"Не тренировались",
+"Ready":"Готовы","not trained recently":"давно не тренировались",
+"Chest":"Грудь","Shoulders":"Плечи","Biceps":"Бицепс","Triceps":"Трицепс","Forearms":"Предплечья",
+"Abs":"Пресс","Quads":"Квадрицепс","Traps":"Трапеции","Lats / Back":"Широчайшие",
+"Lower back":"Поясница","Glutes":"Ягодицы","Hamstrings":"Бицепс бедра","Calves":"Икры",
+"Front muscles":"Мышцы спереди","Back muscles":"Мышцы сзади",
+"+ Log a workout":"+ Записать тренировку","Log a workout":"Записать тренировку",
+"Tap the muscles you trained":"Отметьте, что тренировали","How hard was it?":"Насколько тяжело?",
+"Light":"Лёгкая","Moderate":"Средняя","Hard":"Тяжёлая","Medium":"Средняя","Save workout":"Сохранить",
+"Pick a routine":"Выберите программу","Delete workout":"Удалить тренировку","Edit workout":"Изменить тренировку",
+"▶ Start workout":"▶ Начать тренировку","End workout":"Завершить","Exercises":"Упражнения",
+"Log set & rest":"Записать подход и отдых","Log all remaining sets":"Записать все подходы",
+"Rest":"Отдых","Skip":"Пропустить","Swap exercise":"Заменить упражнение","How to":"Как выполнять",
+"Reps":"Повт.","warm-up":"разминка","exercises":"упражнений","calories":"ккал","Calories":"Калории",
+"difficulty":"сложность","All":"Все","Cable":"Блок","Dumbbell":"Гантели","Machine":"Тренажёр",
+"Barbell":"Штанга","Bodyweight":"Свой вес",
+"+ Add food":"+ Добавить еду","Add food":"Добавить еду","Log what you ate":"Запишите, что съели",
+"What was it?":"Что это было?","Protein":"Белки","Carbs":"Углеводы","Fat":"Жиры","Fiber":"Клетчатка",
+"Protein (g)":"Белки (г)","Carbs (g)":"Углеводы (г)","Fat (g)":"Жиры (г)",
+"Daily targets":"Дневные цели","Your goals":"Ваши цели","Save targets":"Сохранить цели",
+"✎ Targets":"✎ Цели","Nothing logged":"Ничего не записано","Nothing logged yet today.":"Сегодня пока пусто.",
+"Dose":"Доза","Unit":"Единица","Vial size (max)":"Объём флакона","Remaining now":"Осталось сейчас",
+"Bac water":"Бакт. вода","Bac water (mL)":"Бакт. вода (мл)","Timing note":"Заметка о времени",
+"Timing":"Время","Frequency":"Частота","Every day":"Каждый день","Specific weekdays":"Определённые дни",
+"Days":"Дни","When":"Когда","Exact time (optional)":"Точное время (необяз.)","Save":"Сохранить",
+"Cancel":"Отмена","Close":"Закрыть","Back":"Назад","Add":"Добавить","Date":"Дата","Note":"Заметка",
+"Note (optional)":"Заметка (необяз.)","Edit dose & schedule":"Изменить дозу и график",
+"Archive":"Архив","Remove permanently":"Удалить навсегда","Profile · weigh-ins":"Профиль · вес",
+"+ Add weigh-in":"+ Добавить вес","Weight (lb)":"Вес (фунты)","Tracking history":"История записей",
+"Show month calendar":"Показать календарь","Hide month calendar":"Скрыть календарь",
+"Restock notifications":"Напоминания о запасе","Data":"Данные",
+"↓ Export backup (.json)":"↓ Экспорт копии (.json)","↑ Import backup":"↑ Импорт копии",
+"Reset everything to defaults":"Сбросить всё","Language":"Язык",
+"Please read":"Прочтите","I understand":"Понятно","Talk to your doctor":"Обратитесь к врачу",
+"Get bloodwork.":"Сдайте анализы.","This is not medical advice":"Это не медицинский совет",
+"What the colours mean":"Что означают цвета","What this means":"Что это значит",
+"GLP / incretin":"GLP / инкретин","Copper / GHK":"Медь / GHK","Mitochondrial":"Митохондриальные",
+"Regenerative":"Восстановительные","GH / hormone":"Гормон роста","Longevity":"Долголетие",
+"Antioxidant":"Антиоксидант","Gut":"Кишечник","Sleep":"Сон","Other":"Прочее",
+"Vegetables":"Овощи","Meat":"Мясо","Fish":"Рыба","Fruit":"Фрукты","Nuts, seeds":"Орехи, семена",
+"Eggs, dairy":"Яйца, молочное","Grains, legumes":"Злаки, бобовые",
+"Mon":"Пн","Tue":"Вт","Wed":"Ср","Thu":"Чт","Fri":"Пт","Sat":"Сб","Sun":"Вс",
+"Mo":"Пн","Tu":"Вт","We":"Ср","Th":"Чт","Fr":"Пт","Sa":"Сб","Su":"Вс",
+"Previous day":"Прошлый день","Next day":"Следующий день","Previous week":"Прошлая неделя",
+"Next week":"Следующая неделя","Previous month":"Прошлый месяц","Next month":"Следующий месяц",
+"off":"выкл","never":"никогда","taken":"принято","new vial":"новый флакон","ran out":"закончился",
+"Ongoing":"Постоянно","None built in":"Без перерыва","◇ History":"◇ История"
+}
 };
 
 /* pattern prefixes: "Edit <name>", "Log <name>", "<name> history" */
 const LANGPAT={
  es:[[/^Edit (.+)$/,"Editar $1"],[/^Log (.+?)( anyway)?$/,"Registrar $1"],
-     [/^(.+) history$/,"Historial de $1"],[/^(.+) range$/,"Rango de $1"],
-     [/^Swap exercise$/,"Cambiar ejercicio"]]
+     [/^(.+) history$/,"Historial de $1"],[/^(.+) range$/,"Rango de $1"]],
+ ar:[[/^Edit (.+)$/,"تعديل $1"],[/^Log (.+?)( anyway)?$/,"تسجيل $1"],
+     [/^(.+) history$/,"سجل $1"],[/^(.+) range$/,"نطاق $1"]],
+ zh:[[/^Edit (.+)$/,"编辑 $1"],[/^Log (.+?)( anyway)?$/,"记录 $1"],
+     [/^(.+) history$/,"$1 历史"],[/^(.+) range$/,"$1 范围"]],
+ ru:[[/^Edit (.+)$/,"Изменить $1"],[/^Log (.+?)( anyway)?$/,"Записать $1"],
+     [/^(.+) history$/,"История $1"],[/^(.+) range$/,"Диапазон $1"]]
 };
 
 function curLang(){return (S.settings&&S.settings.lang)||"en";}
@@ -4660,6 +4970,14 @@ function tr(str,lc){
   const t=str.trim();
   if(NOTR.has(t))return null;
   if(d[t]!=null)return d[t];
+  // composed lists ("Immune + Gut + Copper", "Chest, Triceps") translate part by part
+  for(const sep of [" + ",", "]){
+    if(t.includes(sep)){
+      const parts=t.split(sep);
+      if(parts.length>1&&parts.every(x=>d[x.trim()]!=null))
+        return parts.map(x=>d[x.trim()]).join(sep);
+    }
+  }
   for(const [re,rep] of (LANGPAT[lc]||[])){
     const m=t.match(re);
     if(m){
@@ -4672,13 +4990,16 @@ function tr(str,lc){
 }
 /* user-entered content and proper nouns live here — never touched */
 const TRSKIP=".gname,.pbn,.dn,.excn,.pname,.pexname,.altn,.rp,.lrn,.ddname,.rn,.molimg,.mono";
+/* Translating in place is destructive — once "Today" becomes "Hoy" the English
+   key is gone and no further switch can find it. So the original is stashed the
+   first time a node is seen, and every pass translates from that. */
+const TRORIG=new WeakMap();
 function applyLang(){
   const lc=curLang();
   const L=LANGS.find(x=>x.c===lc)||LANGS[0];
   document.documentElement.lang=lc;
   document.documentElement.dir=L.rtl?"rtl":"ltr";
   document.body.classList.toggle("rtl",!!L.rtl);
-  if(lc==="en")return;
   const skipTags=new Set(["SCRIPT","STYLE","IMG","INPUT","TEXTAREA"]);
   const tw=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
   const jobs=[];
@@ -4686,17 +5007,23 @@ function applyLang(){
   while(n=tw.nextNode()){
     const p=n.parentElement;
     if(!p||skipTags.has(p.tagName)||p.closest(TRSKIP))continue;
-    const raw=n.textContent;
-    const t=raw.trim();
+    let base=TRORIG.get(n);
+    if(base===undefined){base=n.textContent;TRORIG.set(n,base);}
+    const t=base.trim();
     if(!t||t.length<2||!/[A-Za-z]/.test(t))continue;
-    const hit=tr(t,lc);
-    if(hit!=null&&hit!==t)jobs.push([n,raw.replace(t,hit)]);
+    const hit=lc==="en"?null:tr(t,lc);
+    const val=hit!=null?base.replace(t,hit):base;
+    if(val!==n.textContent)jobs.push([n,val]);
   }
   jobs.forEach(([node,val])=>{node.textContent=val;});
-  document.querySelectorAll("[placeholder]").forEach(e=>{
-    const h=tr(e.getAttribute("placeholder")||"",lc);if(h)e.setAttribute("placeholder",h);});
-  document.querySelectorAll("[aria-label]").forEach(e=>{
-    const h=tr(e.getAttribute("aria-label")||"",lc);if(h)e.setAttribute("aria-label",h);});
+  const attr=(sel,name)=>document.querySelectorAll(sel).forEach(e=>{
+    let base=e.getAttribute("data-en-"+name);
+    if(base==null){base=e.getAttribute(name)||"";e.setAttribute("data-en-"+name,base);}
+    const h=lc==="en"?null:tr(base,lc);
+    e.setAttribute(name,h!=null?h:base);
+  });
+  attr("[placeholder]","placeholder");
+  attr("[aria-label]","aria-label");
 }
 
 /* Sheets and overlays are built by many different functions, so rather than
