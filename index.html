@@ -333,6 +333,19 @@
   .ddyours{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 15px}
   .ddyh{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
     color:var(--ink3);font-weight:700;margin-bottom:8px}
+  /* High-risk compounds carry a banner that sticks to the top of the deep dive
+     and stays visible the whole time you're reading about them. */
+  .ddanger{position:sticky;top:0;z-index:3;display:flex;gap:11px;align-items:flex-start;
+    background:#7c1d17;color:#ffe9e7;padding:13px 16px;font-size:13.5px;line-height:1.5;
+    border-bottom:1px solid #a33028;box-shadow:0 6px 18px -8px rgba(0,0,0,.7)}
+  .ddanger b{color:#fff;letter-spacing:.02em}
+  .dgi{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:#ffe9e7;color:#7c1d17;
+    display:grid;place-items:center;font-weight:900;font-size:13px;margin-top:1px}
+  /* and the row in the Peps list reads red before you even open it */
+  .gcard.grisk{border-color:var(--crit)}
+  .gcard.grisk .gname::after{content:"HIGH RISK";margin-left:7px;font-family:var(--mono);
+    font-size:8.5px;font-weight:800;letter-spacing:.09em;color:#fff;background:var(--crit);
+    border-radius:4px;padding:2px 5px;vertical-align:middle}
   /* Each kind of information gets its own hue, so dosing never reads like a
      warning and food never reads like evidence. --sc drives the whole card. */
   .ddcard{--sc:var(--accent);position:relative;border:1px solid var(--line);
@@ -1637,8 +1650,112 @@ cagri:{cls:"Long-acting amylin analog",tier:"human",
  dose:"Trials stepped up to 2.4 mg weekly, matched to the semaglutide arm.",
  good:["Complementary mechanism to GLP-1","Real Phase 3 trial data","May allow lower GLP-1 doses for the same effect"],
  bad:["Not approved","Adds to the GI side-effect burden when stacked","Little standalone long-term data"],
- t:"Weekly, subq.",pair:["protein","electro"],warn:["Stacking this with a GLP-1 doubles up the nausea. Change one thing at a time so you know what caused what.", "Same rules as the GLP-1s: lift, eat protein, keep water and salt up.", "Not approved yet — the trials are still running."],src:[{"n": "CagriSema trials", "u": "https://clinicaltrials.gov/search?term=cagrilintide"}, {"n": "Research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=cagrilintide"}],cyc:{"run": "Ongoing", "off": "None built in", "note": "Trialled continuously alongside semaglutide rather than in cycles."}}
+ t:"Weekly, subq.",pair:["protein","electro"],warn:["Stacking this with a GLP-1 doubles up the nausea. Change one thing at a time so you know what caused what.", "Same rules as the GLP-1s: lift, eat protein, keep water and salt up.", "Not approved yet — the trials are still running."],src:[{"n": "CagriSema trials", "u": "https://clinicaltrials.gov/search?term=cagrilintide"}, {"n": "Research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=cagrilintide"}],cyc:{"run": "Ongoing", "off": "None built in", "note": "Trialled continuously alongside semaglutide rather than in cycles."}},
+
+sermorelin:{cls:"GHRH analog (1-29 fragment)",tier:"human",
+ what:"The original growth-hormone-releasing peptide. Was an approved medicine before it was pulled for business reasons, not safety.",
+ mech:"A 29-amino-acid fragment of natural GHRH — the shortest piece that still works. Tells the pituitary to release its own GH in normal pulses rather than flooding you with synthetic hormone.",
+ ev:[["human","Held FDA approval as Geref for paediatric growth hormone deficiency. Withdrawn in 2008 for commercial reasons, not because of a safety finding."],
+     ["human","Well characterised in humans as a diagnostic agent for testing pituitary function."],
+     ["none","No controlled trial supports the anti-ageing or body-composition uses it is now sold for."]],
+ dose:"The approved paediatric dose was 30 mcg/kg nightly. Adult community use is typically 200-500 mcg before bed.",
+ cyc:{run:"8-12 weeks",off:"4 weeks",note:"Cycled by convention rather than evidence. Pituitary response tends to blunt with continuous use, so breaks are sensible."},
+ good:["Actually held regulatory approval, and was not withdrawn for safety","Shortest, best-understood GHRH fragment","Keeps GH release pulsatile and self-limiting","Cheaper than most of the alternatives"],
+ bad:["Very short half-life, so timing is fussy","No trial support for the uses it is marketed for now","Effect fades as you age, since it needs a pituitary that still responds","Raises IGF-1, which needs watching"],
+ t:"Before bed, fasted.",pair:["protein"],
+ warn:["Take it fasted before bed. Food, especially carbs, blunts the pulse you are paying for.",
+   "Get IGF-1 tested. It is the only practical way to know it is working.",
+   "It relies on your pituitary responding, so it does less as you get older.",
+   "Puffy hands or aching joints mean come down, not push on."],
+ src:[["Sermorelin research","https://pubmed.ncbi.nlm.nih.gov/?term=sermorelin"],["Trials","https://clinicaltrials.gov/search?term=sermorelin"]]},
+
+thymalin:{cls:"Thymic peptide bioregulator",tier:"pre",
+ what:"A thymus extract from the same Russian programme as Epithalon, used for immune support in older people.",
+ mech:"A mix of thymic peptides rather than a single molecule, proposed to restore T-cell maturation as the thymus shrinks with age.",
+ ev:[["pre","Russian clinical work reports improved immune markers and, in long-running elderly cohorts, reduced mortality — the same research group and the same methodological caveats as Epithalon."],
+     ["pre","Animal work supports effects on T-cell populations."],
+     ["none","No Western trials, no independent replication."]],
+ dose:"Russian protocols use 10 mg/day for 5-10 days, repeated a few times a year.",
+ cyc:{run:"5-10 days",off:"3-6 months",note:"Strictly a short-course peptide, like the rest of this family. Never run continuously."},
+ good:["Long history of clinical use in Russia","Very short courses mean minimal total exposure","Reported well tolerated"],
+ bad:["Evidence is one research programme, unreplicated in the West","It is an extract, so composition varies more than a synthetic peptide","Immune modulation without oversight is a poor idea with autoimmune conditions"],
+ t:"Short courses, a few times a year.",pair:["zinc","c","d"],
+ warn:["Talk to a doctor first if you have any autoimmune condition — this pushes immune activity up.",
+   "Run it as a short course only. Continuous use has never been studied.",
+   "Being an extract rather than a single molecule, batch-to-batch consistency is a real question."],
+ src:[["Thymalin research","https://pubmed.ncbi.nlm.nih.gov/?term=thymalin"],["Khavinson bioregulators","https://pubmed.ncbi.nlm.nih.gov/?term=Khavinson+peptide+bioregulator"]]},
+
+cerebrolysin:{cls:"Porcine brain peptide preparation",tier:"human",
+ what:"A mixture of low-weight neuropeptides from pig brain tissue, prescribed across parts of Europe and Asia for stroke and dementia.",
+ mech:"Acts like a mix of neurotrophic factors, proposed to support neuron survival and plasticity after injury. It is a preparation, not a single defined molecule.",
+ ev:[["human","Many controlled trials in acute stroke, traumatic brain injury and vascular dementia — a genuinely large clinical literature."],
+     ["human","Cochrane reviews have been lukewarm: some benefit signals in subgroups, but the overall evidence is judged low quality and many trials came from the manufacturer."],
+     ["none","Not approved in the US or UK. Regulators elsewhere have accepted it on evidence Western reviewers found unconvincing."]],
+ dose:"Clinical protocols use 10-50 mL IV daily for 10-20 days, which is a hospital procedure. Community intramuscular use of 1-5 mL is far smaller.",
+ cyc:{run:"10-20 days",off:"2-3 months",note:"Always a defined course, never continuous. The clinical protocols are built around repeated short courses."},
+ good:["One of the largest human trial bases of anything in this space","Decades of prescribed clinical use in many countries","Reasonable safety record in those trials"],
+ bad:["Independent reviews rate the evidence low quality","Derived from pig brain tissue, which carries an allergic-reaction risk","Real dosing is intravenous in a clinic, not something to improvise","Not approved in the US or UK"],
+ t:"Short IM or IV courses.",pair:["b","omega3"],
+ warn:["This is derived from pig brain tissue and can cause allergic reactions. Do not start it without medical supervision.",
+   "The trial doses are intravenous infusions given in a clinic — self-administering that route is not the same thing.",
+   "Independent reviewers rate the evidence low quality despite the large number of trials."],
+ src:[["Cerebrolysin trials","https://clinicaltrials.gov/search?term=cerebrolysin"],["Cochrane and other reviews","https://pubmed.ncbi.nlm.nih.gov/?term=cerebrolysin+review"]]},
+
+/* ---- high-risk. These carry a banner that stays on screen. ---- */
+
+ace031:{cls:"ActRIIB-Fc myostatin trap",tier:"none",danger:
+ "Human trials of this were stopped early on safety grounds. Patients developed nosebleeds and burst blood vessels in the skin and gums, because blocking this pathway also affects blood vessel growth. It was abandoned by its developer and no one has established a safe dose.",
+ what:"A myostatin and activin blocker that produced real muscle growth in trials — and was halted because of what else it did.",
+ mech:"A decoy receptor that soaks up myostatin and activin before they can limit muscle growth. The problem is that the same receptor family regulates blood vessels.",
+ ev:[["human","Phase 2 trials in Duchenne muscular dystrophy showed increases in lean mass."],
+     ["none","Those trials were stopped early after nosebleeds and telangiectasia — dilated, fragile surface blood vessels — appeared in participants."],
+     ["none","Development was discontinued. There is no established safe dose in humans."]],
+ dose:"Trials used 1-3 mg/kg. Those are the doses that produced the bleeding problems.",
+ cyc:{run:"Not established",off:"Not established",note:"No safe schedule exists. The trials that would have defined one were stopped."},
+ good:["The muscle effect is real and was measured in humans","Mechanism is well understood"],
+ bad:["Trials halted for safety — the clearest possible signal","Nosebleeds and burst capillaries in the skin and gums","Abandoned by its developer","No safe dose has ever been established","WADA-banned"],
+ t:"Not recommended.",pair:["protein"],
+ warn:["Human trials were stopped early because of bleeding side effects. That is not a theoretical risk, it is what happened to trial participants.",
+   "Effects on blood vessels can persist after stopping.",
+   "WADA-banned."],
+ src:[["ACE-031 trials","https://clinicaltrials.gov/search?term=ACE-031"],["Research and safety findings","https://pubmed.ncbi.nlm.nih.gov/?term=ACE-031+ramatercept+myostatin"]]},
+
+adipotide:{cls:"Prohibitin-targeting peptidomimetic",tier:"none",danger:
+ "This caused kidney damage in monkeys at the doses that produced weight loss. It has never been tested in humans and development stopped there. The fat loss and the kidney toxicity came from the same mechanism, so there is no known dose that gives you one without the other.",
+ what:"A fat-killing peptide that works by destroying the blood supply to fat tissue. It damaged kidneys in primates and was never taken further.",
+ mech:"Targets prohibitin on the blood vessels feeding white fat and triggers those vessels to die, starving the fat tissue. The kidney has similar vasculature, which is the problem.",
+ ev:[["pre","Obese rhesus monkeys lost substantial weight and improved insulin sensitivity."],
+     ["none","The same primate studies found dose-dependent kidney toxicity."],
+     ["none","No human trial has ever been run. Development did not continue."]],
+ dose:"Primate studies used 0.43 mg/kg daily. That is also the exposure that damaged kidneys.",
+ cyc:{run:"Not established",off:"Not established",note:"No human schedule exists. The primate work used short courses and still produced kidney injury."},
+ good:["The weight loss in primates was genuine and substantial","Novel mechanism unlike anything else available"],
+ bad:["Kidney toxicity in primates at the effective dose","Never tested in humans at all","Development abandoned","The mechanism that burns fat is the one that harms kidneys"],
+ t:"Not recommended.",pair:[],
+ warn:["This caused dose-dependent kidney damage in primate studies, at the same doses that caused the weight loss.",
+   "No human has been dosed with this in a trial. There is no safety data in people.",
+   "If you run it regardless, kidney function bloodwork is not optional."],
+ src:[["Adipotide research","https://pubmed.ncbi.nlm.nih.gov/?term=adipotide+prohibitin"],["Trials","https://clinicaltrials.gov/search?term=adipotide"]]},
+
+epo:{cls:"Erythropoietin",tier:"human",danger:
+ "EPO thickens your blood by increasing red cell count, which raises the risk of clots, stroke and heart attack. It has killed athletes using it without supervision. This is a prescription drug that requires regular haematocrit monitoring, and it is not something to run on your own judgement.",
+ what:"The hormone that drives red blood cell production. A legitimate and important medicine, and one of the most genuinely dangerous things you can buy off a peptide catalogue.",
+ mech:"Signals bone marrow to produce more red blood cells. More red cells means more oxygen carried — and thicker, slower-flowing blood.",
+ ev:[["human","Approved and widely prescribed for anaemia in kidney disease and cancer. The clinical evidence is extensive and solid."],
+     ["human","Trials targeting higher haemoglobin levels found increased deaths and cardiovascular events, which is why prescribing targets are deliberately conservative."],
+     ["human","A long documented history of harm in endurance sport, including deaths attributed to blood thickening."]],
+ dose:"Clinical dosing is individualised against haematocrit and haemoglobin readings, adjusted continuously. There is no fixed dose, which is precisely the point.",
+ cyc:{run:"Clinically supervised only",off:"n/a",note:"Not a cycled compound. Prescribed use means continuous monitoring of haematocrit, with the dose adjusted every few weeks against blood counts."},
+ good:["A genuinely effective, well-understood medicine when used properly","Life-changing for anaemia in kidney disease"],
+ bad:["Thickens blood, raising clot, stroke and heart attack risk","Trials pushing haemoglobin higher found more deaths, not fewer","Requires regular blood monitoring that most people will not do","Deaths documented in unsupervised athletic use","WADA-banned"],
+ t:"Prescription use only.",pair:["iron","b12"],
+ warn:["This raises your red cell count and thickens your blood, which is how it causes clots, strokes and heart attacks.",
+   "Using it without regular haematocrit blood tests is genuinely dangerous, not cautious-label dangerous.",
+   "Dehydration on top of raised haematocrit compounds the risk sharply.",
+   "WADA-banned, and detectable."],
+ src:[["Erythropoietin label","https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=epoetin"],["Safety trials","https://pubmed.ncbi.nlm.nih.gov/?term=erythropoietin+hemoglobin+target+cardiovascular+mortality"]]}
 };
+
 const DEF=[
  mk("reta","Retatrutide","GLP-1",1,"mg",{t:"week",days:[1]},30,30,"Weekly, AM"),
  mk("tesa","Tesamorelin","GH axis",.5,"mg",{t:"daily"},10,10,"Fasted, before bed"),
@@ -1670,6 +1787,8 @@ const LOWDOSE={
 "KLOW":[4,"mg","am"],"GLOW":[4,"mg","am"],"KPV":[.25,"mg","am"],"Glutathione":[200,"mg","am"],
 "Thymosin Alpha-1":[1.6,"mg","am"],"Epithalon":[5,"mg","pm"],"Pinealon":[1,"mg","pm"],"DSIP":[.2,"mg","pm"],
 "Ara-290":[1,"mg","am"],"Kisspeptin-10":[.05,"mg","am"],"L-Carnitine":[500,"mg","am"],"AOD-9604":[.3,"mg","am"],
+"Thymalin":[10,"mg","am"],"Cerebrolysin":[1,"ml","am"],
+"ACE-031":[1,"mg","am"],"Adipotide":[1,"mg","am"],"EPO":[1,"iu","am"],
 "Selank":[.3,"mg","am"],"Semax":[.3,"mg","am"],"PT-141":[1,"mg","pm"],"Melatonin":[.5,"mg","pm"]};
 
 /* ---------- peptide colour families ----------
@@ -1710,7 +1829,9 @@ const PMAP={
   epithalon:["pineal"],pinealon:["pineal"],
   glutathione:["antiox"],
   dsip:["sleep"],melatonin:["sleep"],
-  selank:["other"],semax:["other"],pt141:["other"]
+  selank:["other"],semax:["other"],pt141:["other"],
+  thymalin:["immune"],cerebrolysin:["other"],
+  ace031:["other"],adipotide:["metabolic"],epo:["other"]
 };
 /* fall back on the peptide's own category label when the name is unknown */
 const CATFAM={"glp-1":"glp","gh axis":"gh",mitochondria:"mito",metabolic:"metabolic",recovery:"regen",
@@ -2884,6 +3005,8 @@ function deepDive(id){
         <div class="ddcls">${g.cls||pepFamNames(p)}</div></div>
       <span class="ddtier ${g.tier||"pre"}">${TIERN[g.tier]||"Limited evidence"}</span>
     </div>
+    ${g.danger?`<div class="ddanger"><span class="dgi">!</span>
+      <div><b>High risk</b> ${g.danger}</div></div>`:""}
     <div class="ddwrap">
       <p class="ddlede">${g.what||""}</p>
 
@@ -3127,7 +3250,10 @@ function reconStep(name,size){
 function addFinal(name,size,vialUnit,dose,du,bac,tm){
   const it=LUCKY[name];const arch=S.archive.find(a=>a.name===name);
   const id=name.toLowerCase().replace(/[^a-z0-9]+/g,"")+"_"+Date.now().toString().slice(-4);
-  const guideId=Object.keys(GUIDES).find(k=>name.toLowerCase().startsWith(k))||null;
+  // match on normalised names so "ACE-031" still finds the "ace031" guide
+  const nk=pepKey(name);
+  const guideId=Object.keys(GUIDES).sort((a,b)=>b.length-a.length)
+    .find(k=>nk.startsWith(pepKey(k)))||null;
   const p={id,name,cat:it.c,dose:dose||0.25,unit:du||vialUnit||"mg",sched:arch?arch.sched:{t:"daily"},vialMg:size,remaining:size,
     time:arch?(arch.time||"am"):(tm||"am"),clock:arch?(arch.clock||""):"",
     bacMl:bac||2,mixDate:iso(new Date()),timing:arch?arch.timing:"Daily",label:arch?arch.label:null,status:"active",guideKey:guideId};
@@ -3508,7 +3634,7 @@ function renderGuide(){
     const off=p.status==="off",g=GUIDES[p.guideKey||p.id],open=openGuide===p.id;
     const out=runOutDate(p),pct=p.vialMg?Math.max(0,Math.min(100,p.remaining/p.vialMg*100)):0;
     const sub=off?"deactivated":`${doseLabel(p)} · ${p.sched.t==="daily"?"daily":p.sched.days.map(d=>WD[d]).join(", ")}`;
-    html+=`<div class="gcard ${open?'open':''} ${off?'goff':''}">
+    html+=`<div class="gcard ${open?'open':''} ${off?'goff':''} ${g&&g.danger?'grisk':''}">
       <button class="ghead" data-g="${p.id}">
         <div class="gt2"><div class="gname">${p.name}</div><div class="gsub">${sub}</div></div>
         <div class="ginv">${off?"":`<div class="gleft">${round(p.remaining,1)}<small>/${p.vialMg}${p.unit}</small></div>
