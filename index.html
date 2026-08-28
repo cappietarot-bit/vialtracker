@@ -4466,7 +4466,9 @@ let tab="track";
 function setTab(t){tab=t;$$(".view").forEach(v=>v.classList.remove("on"));$("#v-"+t).classList.add("on");
   $$("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   $("#bloodBtn").classList.toggle("on",t==="labs");
-  $("#topSub").textContent=SUBS[t]||"";$("#fab").style.display=t==="track"?"grid":"none";
+  // "add peptide" belongs on Today and on Peps, where the list actually lives
+  $("#topSub").textContent=SUBS[t]||"";
+  $("#fab").style.display=(t==="track"||t==="guide")?"grid":"none";
   ({track:renderTrack,guide:renderGuide,labs:renderLabs,gym:renderGym,food:renderFood,settings:renderSettings}[t]||(()=>{}))();
   window.scrollTo({top:0,behavior:"smooth"});}
 $$("#nav button").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
