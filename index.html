@@ -441,6 +441,65 @@
   .backrow:hover{color:var(--accent)}
   .backrow.sm{font-size:12px;padding:6px 4px 8px}
   body.rtl .backrow span{transform:scaleX(-1)}
+
+  /* ---- injection sites ---- */
+  .sitewrap{display:grid;grid-template-columns:0.9fr 1.1fr;gap:14px;align-items:center;margin:14px 0 4px}
+  @media(max-width:420px){.sitewrap{grid-template-columns:1fr;gap:10px}}
+  .sfigwrap{background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:10px}
+  .sfig{width:100%;height:auto;display:block;max-height:230px}
+  .szone{cursor:pointer;transition:fill-opacity .18s,r .18s}
+  .szone:hover{fill-opacity:.85}
+  .sitecol{display:flex;flex-direction:column;gap:5px}
+  .siterow{display:flex;align-items:center;gap:8px;width:100%;text-align:start;
+    background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+    padding:7px 9px;font-family:inherit;color:var(--ink);cursor:pointer}
+  .siterow.static{cursor:default}
+  .siterow.on{border-color:var(--accent);background:var(--accent-soft,var(--panel))}
+  .siterow .sdot{width:9px;height:9px;border-radius:3px;flex:0 0 auto}
+  .siterow .sname{flex:1;font-size:12.5px;font-weight:600;letter-spacing:-.01em}
+  .siterow .sage{font-family:var(--mono);font-size:9.5px;color:var(--ink3)}
+  .sitekey{display:flex;flex-wrap:wrap;gap:11px;margin-top:11px;padding-top:10px;
+    border-top:1px solid var(--line)}
+  .sitekey span{display:flex;align-items:center;gap:5px;font-family:var(--mono);
+    font-size:9px;color:var(--ink3)}
+  .sitekey i{width:9px;height:9px;border-radius:3px}
+
+  /* ---- adherence ---- */
+  .adhbig{display:flex;align-items:baseline;gap:10px;margin:14px 0 4px}
+  .adhbig .ab{font-size:38px;font-weight:800;letter-spacing:-.035em}
+  .adhbig .al{font-family:var(--mono);font-size:10px;color:var(--ink3)}
+  .adhnote{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--warn);
+    border-radius:0 9px 9px 0;padding:11px 13px;font-size:13px;line-height:1.5;
+    color:var(--ink2);margin:12px 0}
+  .adhnote b{color:var(--ink)}
+  .adhlist{display:flex;flex-direction:column;gap:13px;margin:14px 0 4px}
+  .adhrow{}
+  .adhtop{display:flex;align-items:baseline;justify-content:space-between;gap:9px;margin-bottom:6px}
+  .adhn{font-size:13.5px;font-weight:700;letter-spacing:-.01em}
+  .adhp{font-family:var(--mono);font-size:12px;font-weight:700}
+  .adhp.hi{color:var(--good)} .adhp.mid{color:var(--warn)} .adhp.lo{color:var(--crit)}
+  .adhtrack{display:flex;gap:2px;height:17px}
+  .adhtrack i{flex:1;min-width:2px;border-radius:2px;background:var(--line)}
+  .adhtrack i.miss{background:transparent;border:1px solid var(--crit);opacity:.55}
+  .adhsub{font-family:var(--mono);font-size:9px;color:var(--ink3);margin-top:5px}
+  .adhmini{display:inline-flex;gap:1.5px;height:11px;vertical-align:middle;margin-inline-end:7px}
+  .adhmini i{width:3px;border-radius:1px;background:var(--line)}
+  .adhmini i.miss{background:transparent;border:1px solid var(--crit);opacity:.6}
+
+  /* ---- vial expiry ---- */
+  .exp{font-family:var(--mono);font-weight:700}
+  .exp.ok{color:var(--good)} .exp.warn{color:var(--warn)} .exp.crit{color:var(--crit)}
+
+  /* ---- the button that opens adherence ---- */
+  .adhbtn{display:inline-flex;align-items:center;gap:7px;background:var(--panel2);
+    border:1px solid var(--line2);border-radius:99px;padding:6px 12px 6px 8px;
+    font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--ink2);cursor:pointer}
+  .adhbtn:hover{border-color:var(--accent);color:var(--accent)}
+  .adhbtn .spark{display:flex;gap:1.5px;height:13px;align-items:flex-end}
+  .adhbtn .spark i{width:2.5px;border-radius:1px;background:var(--accent);opacity:.9}
+  .adhbtn .spark i.m{background:var(--line2)}
+
   /* language picker */
   .langlist{display:flex;flex-direction:column;gap:7px;margin-bottom:6px}
   .langbtn{display:flex;align-items:center;gap:12px;width:100%;padding:13px 15px;
@@ -3193,13 +3252,114 @@ function half(cls,icon,label,list,key,isToday){
 function toggleDay2(id,key,isToday){
   const p=pById(id);if(!p)return;S.log[key]=S.log[key]||{};
   if(S.log[key][id]){delete S.log[key][id];if(isToday&&!p.label)p.remaining=Math.min(p.vialMg,round(p.remaining+doseMg(p),3));}
-  else{S.log[key][id]={dose:p.dose,unit:p.unit,at:Date.now()};if(isToday&&!p.label)p.remaining=Math.max(0,round(p.remaining-doseMg(p),3));toast(p.name+" logged");}
+  else{S.log[key][id]={dose:p.dose,unit:p.unit,at:Date.now()};if(isToday&&!p.label)p.remaining=Math.max(0,round(p.remaining-doseMg(p),3));
+    if(S.settings.sites!==false&&!p.label)setTimeout(()=>sitePop(id,key),80);else toast(p.name+" logged");}
   if(!Object.keys(S.log[key]).length)delete S.log[key];
   // mark the day a vial ran dry so it shows on that peptide's history
   if(p.remaining<=0)pepEvent(p,"empty",key);
   else S.events=S.events.filter(e=>!(e.pep===p.id&&e.type==="empty"&&e.date===key));
   save();
 }
+
+/* ---------- injection sites ----------
+   Ten subcutaneous zones on a front-facing figure. Repeatedly injecting one
+   spot builds scar tissue that changes absorption, which is a real reason a
+   dose can quietly stop working — so the app tracks recency and suggests the
+   site that has rested longest. Coordinates are on a 90x150 viewBox. */
+const SITES=[
+ {id:"abdL", n:"Left abdomen",  x:37, y:66, r:5},
+ {id:"abdR", n:"Right abdomen", x:53, y:66, r:5},
+ {id:"flkL", n:"Left flank",    x:28, y:71, r:4},
+ {id:"flkR", n:"Right flank",   x:62, y:71, r:4},
+ {id:"thiL", n:"Left thigh",    x:36, y:97, r:5},
+ {id:"thiR", n:"Right thigh",   x:54, y:97, r:5},
+ {id:"delL", n:"Left delt",     x:23, y:36, r:4.5},
+ {id:"delR", n:"Right delt",    x:67, y:36, r:4.5},
+ {id:"gluL", n:"Left glute",    x:31, y:82, r:4},
+ {id:"gluR", n:"Right glute",   x:59, y:82, r:4}
+];
+const SITEBY={};SITES.forEach(x=>SITEBY[x.id]=x);
+/* every recorded shot, newest first */
+function siteLog(){
+  const out=[];
+  Object.keys(S.log).forEach(k=>Object.keys(S.log[k]).forEach(id=>{
+    const e=S.log[k][id];
+    if(e&&e.site)out.push({date:k,pep:id,site:e.site,at:e.at||parseISO(k).getTime()});
+  }));
+  return out.sort((a,b)=>b.at-a.at);
+}
+/* days since a site was last used, null if never */
+function siteAge(sid,log){
+  const l=(log||siteLog()).find(x=>x.site===sid);
+  if(!l)return null;
+  return Math.floor((Date.now()-l.at)/DAY);
+}
+/* the site that has rested longest — never used beats everything */
+function suggestSite(){
+  const log=siteLog();
+  let best=null,bestAge=-1;
+  SITES.forEach(s=>{
+    const a=siteAge(s.id,log);
+    const v=a==null?9e9:a;
+    if(v>bestAge){bestAge=v;best=s.id;}
+  });
+  return best;
+}
+/* red just used, green well rested — the same language as muscle recovery */
+function siteColor(age){
+  if(age==null)return "var(--good)";
+  if(age<=2)return "var(--crit)";
+  if(age<=6)return "var(--warn)";
+  if(age<=13)return "var(--good)";
+  return "var(--accent)";
+}
+function siteAgeLabel(age){return age==null?"never":age===0?"today":age===1?"1d":age+"d";}
+/* the figure, with each zone coloured by recency. sel highlights one. */
+function siteFigure(sel){
+  const log=siteLog();
+  return `<svg viewBox="0 0 90 150" class="sfig" aria-label="Injection sites by how recently each was used">
+    <g fill="var(--panel2)" stroke="var(--line2)" stroke-width="1">
+      <ellipse cx="45" cy="13" rx="9" ry="10"/>
+      <path d="M31 26 Q45 22 59 26 L63 40 Q64 62 61 78 L29 78 Q26 62 27 40 Z"/>
+      <path d="M31 26 Q22 30 19 44 L16 66 L23 68 L27 46 Z"/>
+      <path d="M59 26 Q68 30 71 44 L74 66 L67 68 L63 46 Z"/>
+      <path d="M31 79 L43 79 L42 118 L38 146 L29 146 L30 112 Z"/>
+      <path d="M59 79 L47 79 L48 118 L52 146 L61 146 L60 112 Z"/>
+    </g>
+    ${SITES.map(st=>{const a=siteAge(st.id,log),c=siteColor(a),on=st.id===sel;
+      return `<circle class="szone${on?" on":""}" data-site="${st.id}" cx="${st.x}" cy="${st.y}" r="${st.r}"
+        fill="${c}" fill-opacity="${on?.9:.5}" stroke="${on?"var(--ink)":c}" stroke-width="${on?2:1}">
+        <title>${st.n} — ${siteAgeLabel(a)}</title></circle>`;}).join("")}
+  </svg>`;
+}
+
+/* ---------- adherence ----------
+   Doses you logged against doses that were due. Both halves were already
+   stored; nothing ever compared them. */
+function adherence(p,days){
+  days=days||30;
+  const marks=[];
+  for(let i=days-1;i>=0;i--){
+    const d=new Date(Date.now()-i*DAY),k=iso(d);
+    if(!dueOn(p,d))continue;
+    marks.push({date:k,hit:!!(S.log[k]&&S.log[k][p.id])});
+  }
+  const hit=marks.filter(m=>m.hit).length;
+  return {marks,due:marks.length,hit,pct:marks.length?Math.round(hit/marks.length*100):null};
+}
+
+/* ---------- vial expiry ----------
+   Reconstituted peptide has a real shelf life. Vials already stored mixDate
+   and nothing ever looked at it. */
+function budDays(p){const g=guideFor(p);return (g&&g.bud)||28;}
+function expiryInfo(p){
+  if(!p.mixDate)return null;
+  const total=budDays(p);
+  const used=Math.floor((Date.now()-parseISO(p.mixDate).getTime())/DAY);
+  const left=total-used;
+  return {left,total,used,state:left<0?"crit":left<=7?"warn":"ok"};
+}
+
 /* ---------- deep dive ----------
    The long-form page for one peptide: what's actually established, what's only
    suggested, and what nobody knows yet — kept out of the card so the list stays
@@ -3400,17 +3560,113 @@ function infoPop(id){
     ${rec!=null&&p.status!=="off"?st("Per-dose",`${rec} units (U-100, ${p.bacMl}mL)`):""}
     ${st("Last taken",last?`${WD[parseISO(last).getDay()]} ${last}`:"never")}
     ${st("Doses logged",`${total} total · ${mo} this month`)}
-    ${st("Adherence 30d",adher!=null?adher+"%":"—")}
+    ${(()=>{const x=expiryInfo(p);return x?st("Vial expires",
+      `<span class="exp ${x.state}">${x.left<0?`${-x.left}d ago`:`in ${x.left}d`}</span> · mixed ${p.mixDate}`):"";})()}
+    ${(()=>{const l=siteLog().filter(x=>x.pep===p.id)[0];
+      return st("Last site",l?`${SITEBY[l.site]?SITEBY[l.site].n:l.site} · ${siteAgeLabel(Math.floor((Date.now()-l.at)/DAY))}`:"not recorded");})()}
+    ${(()=>{const a=adherence(p,30);return a.due?`<div class="istat"><span class="k">Adherence 30d</span>
+      <span class="v"><span class="adhmini">${a.marks.slice(-14).map(m=>`<i class="${m.hit?"hit":"miss"}" style="${m.hit?`background:${pepColors(p)[0]}`:""}"></i>`).join("")}</span>
+      ${a.pct}%</span></div>`:st("Adherence 30d","—");})()}
     <button class="primary" id="ipEdit">Edit dose &amp; schedule</button>
+    <button class="ghost" id="ipSites">Injection sites</button>
     ${p.status!=="off"&&!p.label?`<button class="ghost" id="ipRefill">↺ Refill vial to full</button>`:""}
     <button class="ghost" id="ipOff">${p.status==="off"?"Reactivate":"Deactivate"}</button>
     <button class="ghost" id="ipClose">Close</button>`;
   $("#modal").classList.add("on");
   $("#ipEdit").onclick=()=>{closeModal();editVial(id);};
+  $("#ipSites").onclick=()=>siteMapPop();
   if($("#ipRefill"))$("#ipRefill").onclick=()=>{refill(id);closeModal();};
   $("#ipOff").onclick=()=>{toggleOff(id);closeModal();};
   $("#ipClose").onclick=closeModal;
 }
+
+/* one tap to confirm where it went. The longest-rested site is preselected,
+   and skipping records nothing rather than inventing a location. */
+function sitePop(id,key){
+  const p=pById(id);if(!p)return;
+  let sel=suggestSite();
+  const draw=()=>{
+    const log=siteLog();
+    $("#sheet").innerHTML=`<h3>Where did it go?</h3>
+      <div class="msub">${p.name} · logged. Tap a spot, or skip.</div>
+      <div class="sitewrap">
+        <div class="sfigwrap">${siteFigure(sel)}</div>
+        <div class="sitecol">${SITES.map(st=>{const a=siteAge(st.id,log);
+          return `<button class="siterow${st.id===sel?" on":""}" data-pick="${st.id}">
+            <span class="sdot" style="background:${siteColor(a)}"></span>
+            <span class="sname">${st.n}</span>
+            <span class="sage">${siteAgeLabel(a)}</span></button>`;}).join("")}</div>
+      </div>
+      <button class="primary" id="spSave">Log to ${SITEBY[sel]?SITEBY[sel].n:"site"}</button>
+      <button class="ghost" id="spSkip">Skip, don't record a site</button>`;
+    $$("[data-pick]").forEach(b=>b.onclick=()=>{sel=b.dataset.pick;draw();});
+    $$(".szone").forEach(c=>c.onclick=()=>{sel=c.dataset.site;draw();});
+    $("#spSave").onclick=()=>{
+      if(S.log[key]&&S.log[key][id])S.log[key][id].site=sel;
+      save();closeModal();toast(`${p.name} · ${SITEBY[sel].n}`);
+      if($("#v-guide").classList.contains("on"))renderGuide();
+    };
+    $("#spSkip").onclick=()=>{closeModal();toast(p.name+" logged");};
+  };
+  draw();$("#modal").classList.add("on");
+}
+
+/* ---------- adherence screen ---------- */
+
+/* the whole rotation picture, independent of any one peptide */
+function siteMapPop(){
+  const log=siteLog();
+  const next=suggestSite();
+  const rows=SITES.map(st=>{const a=siteAge(st.id,log);
+    const uses=log.filter(x=>x.site===st.id).length;
+    return `<div class="siterow static${st.id===next?" on":""}">
+      <span class="sdot" style="background:${siteColor(a)}"></span>
+      <span class="sname">${st.n}</span>
+      <span class="sage">${siteAgeLabel(a)}${uses?` · ${uses}×`:""}</span></div>`;}).join("");
+  $("#sheet").innerHTML=`<h3>Injection sites</h3>
+    <div class="msub">${log.length?`${log.length} shots recorded`:"Nothing recorded yet"}</div>
+    ${next?`<div class="adhnote">Next suggested: <b>${SITEBY[next].n}</b>, rested longest.</div>`:""}
+    <div class="sitewrap"><div class="sfigwrap">${siteFigure(next)}</div>
+      <div class="sitecol">${rows}</div></div>
+    <div class="sitekey">
+      <span><i style="background:var(--crit)"></i>0-2d</span>
+      <span><i style="background:var(--warn)"></i>3-6d</span>
+      <span><i style="background:var(--good)"></i>7-13d</span>
+      <span><i style="background:var(--accent)"></i>14d+ or unused</span>
+    </div>
+    <button class="ghost" id="smClose">Close</button>`;
+  $("#modal").classList.add("on");
+  $("#smClose").onclick=closeModal;
+}
+
+function adherencePop(){
+  const list=activeTrack().filter(p=>!p.label);
+  const rows=list.map(p=>{
+    const a=adherence(p,30);
+    if(!a.due)return "";
+    const col=pepColors(p)[0];
+    const cls=a.pct>=90?"hi":a.pct>=70?"mid":"lo";
+    return `<div class="adhrow">
+      <div class="adhtop"><span class="adhn">${p.name}</span>
+        <span class="adhp ${cls}">${a.pct}%</span></div>
+      <div class="adhtrack">${a.marks.map(m=>
+        `<i class="${m.hit?"hit":"miss"}" style="${m.hit?`background:${col}`:""}" title="${m.date}"></i>`).join("")}</div>
+      <div class="adhsub">${a.hit} of ${a.due} scheduled doses · last 30 days</div>
+    </div>`;}).filter(Boolean).join("");
+  const all=list.map(p=>adherence(p,30)).filter(a=>a.due);
+  const overall=all.length?Math.round(all.reduce((t,a)=>t+a.pct,0)/all.length):null;
+  const worst=list.map(p=>({p,a:adherence(p,30)})).filter(x=>x.a.due).sort((x,y)=>x.a.pct-y.a.pct)[0];
+  $("#sheet").innerHTML=`<h3>Adherence</h3>
+    <div class="msub">Logged against scheduled, last 30 days</div>
+    ${overall!=null?`<div class="adhbig"><span class="ab">${overall}%</span><span class="al">across ${all.length} peptides</span></div>`:""}
+    ${worst&&worst.a.pct<70?`<div class="adhnote">You have taken <b>${worst.p.name}</b> ${worst.a.pct}% of the time.
+      If you are judging whether it works, you have run part of a protocol.</div>`:""}
+    <div class="adhlist">${rows||`<div class="empty-note">Nothing scheduled in the last 30 days.</div>`}</div>
+    <button class="ghost" id="adClose">Close</button>`;
+  $("#modal").classList.add("on");
+  $("#adClose").onclick=closeModal;
+}
+
 function trackCard(p){
   const off=p.status==="off",d=daysLeft(p),empty=!off&&p.remaining<=0;
   const pct=p.vialMg?Math.max(0,Math.min(100,p.remaining/p.vialMg*100)):0;
@@ -4472,6 +4728,13 @@ function renderGuide(){
   const toTake=list.filter(p=>rank(p)===0).length;
   let html=`<div class="vsub">Protocol &amp; stock</div>
     <div class="vhead"><h2>My peptides</h2><div class="spacer"></div>
+      ${(()=>{const l=activeTrack().filter(p=>!p.label).map(p=>adherence(p,30)).filter(a=>a.due);
+        if(!l.length)return "";
+        const pct=Math.round(l.reduce((t,a)=>t+a.pct,0)/l.length);
+        const last=(l[0].marks||[]).slice(-7);
+        return `<button class="adhbtn" id="gAdh" aria-label="Adherence">
+          <span class="spark">${last.map((m,i)=>`<i class="${m.hit?"":"m"}" style="height:${5+i}px"></i>`).join("")}</span>
+          ${pct}%</button>`;})()}
       <button class="mini" id="pepSortBtn">${pepSort==="colour"?"◐ Colour":"A–Z"}</button></div>
     ${toTake?`<div class="duehead"><b class="tnum">${toTake}</b> <span>still to take today</span></div>`:
       list.some(p=>dueNow(p))?`<div class="duehead done"><span>All of today's shots logged</span></div>`:""}
@@ -4507,6 +4770,7 @@ function renderGuide(){
   });
   el.innerHTML=html;
   $("#discBtn").onclick=showDisclaimer;
+  if($("#gAdh"))$("#gAdh").onclick=adherencePop;
   $("#pepSortBtn").onclick=()=>{pepSort=pepSort==="colour"?"alpha":"colour";renderGuide();
     toast(pepSort==="colour"?"Sorted by colour":"Sorted A–Z");};
   $$("[data-g]",el).forEach(b=>b.onclick=()=>{openGuide=(openGuide===b.dataset.g)?null:b.dataset.g;renderGuide();});
