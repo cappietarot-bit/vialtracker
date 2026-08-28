@@ -1431,14 +1431,18 @@ const LUCKY={
    Each food source gets tinted by what it is, so a nutrient's sources read at
    a glance: greens for vegetables, red for meat, blue for fish, and so on. */
 const FOODC={
-  veg:   {n:"Vegetables", c:"#3f9e54", w:["spinach","broccoli","cabbage","bell pepper","kale","leafy greens","greens","vegetable","asparagus","brussels","avocado"]},
-  meat:  {n:"Meat",       c:"#cf4b3c", w:["beef","red meat","chicken","liver","organ meat","meat","poultry","turkey","pork","lamb"]},
+  /* minerals and herbs are checked first: foodKind returns the first match, and
+     "potassium (avocado, potato)" should read as a mineral, not a vegetable */
+  mineral:{n:"Minerals, salts",c:"#8a5fc9", w:["salt","sodium","potassium","magnesium","zinc","selenium","iodine","calcium","electrolyte","mineral","copper"]},
+  herb:  {n:"Herbs, tea",  c:"#2f9e8f", w:["tea","chamomile","herb","turmeric","ginger","mint","matcha","coffee","parsley"]},
+  veg:   {n:"Vegetables", c:"#3f9e54", w:["spinach","broccoli","cabbage","bell pepper","kale","leafy greens","greens","vegetable","asparagus","brussels","avocado","beet","celery","veg","potato","onion","garlic","cauliflower","carrot","mushroom","squash","pepper"]},
+  meat:  {n:"Meat",       c:"#cf4b3c", w:["beef","red meat","chicken","liver","organ meat","meat","poultry","turkey","pork","lamb","broth","gelatin","collagen"]},
   fish:  {n:"Fish",       c:"#3b7fd1", w:["fish","salmon","sardines","mackerel","oysters","clams","seafood","tuna","shellfish","anchov"]},
   fruit: {n:"Fruit",      c:"#e07b2a", w:["citrus","kiwi","berries","fruit","banana","orange","apple","tomato"]},
-  nut:   {n:"Nuts, seeds",c:"#9a6f42", w:["seeds","almonds","cashews","nuts","walnuts","peanut","sesame"]},
+  nut:   {n:"Nuts, seeds",c:"#9a6f42", w:["seeds","almonds","cashews","nuts","walnuts","peanut","sesame","chia","flax","chocolate","cocoa","sunflower","hemp"]},
   dairy: {n:"Eggs, dairy",c:"#c9a13a", w:["egg","yogurt","whey","dairy","cheese","milk","kefir"]},
   grain: {n:"Grains, legumes",c:"#8d8f3a", w:["lentils","legumes","grains","beans","oats","quinoa","rice","chickpea"]},
-  other: {n:"Other",      c:"#7a8a86", w:[]}
+  other: {n:"Other",      c:"#c96f8f", w:[]}
 };
 function foodKind(item){
   const t=item.toLowerCase();
@@ -1479,7 +1483,7 @@ vitc:{n:"Vitamin C",f:"bell pepper, citrus, kiwi, broccoli",a:"Cofactor for coll
 iron:{n:"Iron",f:"red meat, lentils, spinach",a:"FOOD ONLY — never supplement without bloodwork, overload is toxic"},
 coq10:{n:"CoQ10",f:"organ meat, sardines, mackerel",a:"Mitochondrial support; fat-soluble, take with a meal"},
 ala:{n:"Alpha-lipoic acid",f:"broccoli, spinach, organ meat",a:"Antioxidant that recycles other antioxidants"},
-nac:{n:"NAC",f:"(precursor your body turns into glutathione)",a:"Feeds your own glutathione production"},
+nac:{n:"NAC",f:"whey, eggs, garlic, onions, broccoli",a:"A cysteine donor — it feeds your own glutathione production rather than supplying it directly"},
 b:{n:"B-complex",f:"eggs, meat, leafy greens, legumes",a:"Energy metabolism cofactors"},
 b12:{n:"Vitamin B12",f:"meat, eggs, dairy, clams",a:"Worth testing if you eat little animal food"},
 vitd:{n:"Vitamin D3",f:"sunlight, salmon, egg yolk",a:"Test your level — this one is very individual"},
@@ -3586,7 +3590,7 @@ const LABCATS=[
  {id:"elec",  n:"Electrolytes",     c:"#6b7ae0"},
  {id:"infl",  n:"Inflammation",     c:"#ff8a2b"},
  {id:"immune",n:"Immune",           c:"#f0c230"},
- {id:"metal", n:"Heavy metals",     c:"#8a9a95"},
+ {id:"metal", n:"Heavy metals",     c:"#8f7ab8"},
  {id:"canc",  n:"Cancer markers",   c:"#7a6ad6"},
  {id:"uro",   n:"Urine",            c:"#4aa8c9"}
 ];
