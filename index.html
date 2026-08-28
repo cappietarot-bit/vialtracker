@@ -395,6 +395,35 @@
   .lrv b{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
   .lrv b.dim{color:var(--ink3);font-weight:600}
   .lrv span{display:block;font-family:var(--mono);font-size:9px;color:var(--ink3);margin-top:1px}
+  /* language picker */
+  .langlist{display:flex;flex-direction:column;gap:7px;margin-bottom:6px}
+  .langbtn{display:flex;align-items:center;gap:12px;width:100%;padding:13px 15px;
+    background:var(--panel2);border:1px solid var(--line);border-radius:12px;color:var(--ink);
+    font-size:15px;font-weight:600;text-align:left}
+  .langbtn:hover{border-color:var(--accent)}
+  .langbtn.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 11%,var(--panel2))}
+  .lgf{font-size:21px;line-height:1}
+  .lgn{flex:1;min-width:0}
+  .lgc{color:var(--accent);font-weight:800}
+  /* Arabic reads right to left, so mirror the directional bits */
+  body.rtl .di .dstripe{left:auto;right:-9px}
+  body.rtl .gfam{left:auto;right:0}
+  body.rtl .gcard .ghead{padding-left:14px;padding-right:15px}
+  body.rtl .duetag{right:auto;left:11px}
+  body.rtl .gstock{border-radius:2px 0 0 2px}
+  body.rtl .ddcard,body.rtl .ddblock,body.rtl .ddtoggle{
+    border-left-width:1px;border-right:3px solid var(--sc)}
+  body.rtl .ddblock.k{border-right-color:var(--good)}
+  body.rtl .ddblock.s{border-right-color:var(--warn)}
+  body.rtl .ddblock.u{border-right-color:var(--crit)}
+  body.rtl .labhero{border-left-width:1px;border-right:3px solid var(--lc)}
+  body.rtl .gcaret,body.rtl .ddchev{transform:scaleX(-1)}
+  body.rtl .lcat.open .gcaret{transform:scaleX(-1) rotate(-90deg)}
+  body.rtl .deepx{right:auto;left:14px}
+  body.rtl .lhi{right:auto;left:12px}
+  body.rtl .keybtn{right:auto;left:11px}
+  body.rtl .fab{right:auto;left:18px}
+  body.rtl ul,body.rtl ol{padding-left:0;padding-right:17px}
   /* blood drop lives in the top bar, sized just under the avatar */
   .bloodbtn{width:32px;height:32px;padding:0;display:grid;place-items:center;
     background:var(--panel);border:1px solid var(--line)}
@@ -2617,6 +2646,7 @@ function openDay(fromCal){
   $("#oNext").onclick=()=>{selDay=new Date(+selDay+DAY);openDay();};
   $$("[data-dt]",$("#dayOverlay")).forEach(b=>b.onclick=()=>{dayTab=b.dataset.dt;openDay();});
   renderDayBody(key,isToday);
+  applyLang();
 }
 function renderDayBody(key,isToday){
   const el=$("#dayBody");if(!el)return;
@@ -2753,7 +2783,8 @@ function exInfoPop(name){
     ${h.length?`<div class="stacklbl" style="margin:14px 0 2px">◇ Your history</div>
       ${h.slice(0,6).map(x=>`<div class="istat"><span class="k">${x.date}</span><span class="v">${x.s}×${x.r} · ${x.w} lb</span></div>`).join("")}`:""}
     <button class="primary" id="xOk">Close</button>`;
-  $("#modal").classList.add("on");$("#xOk").onclick=closeModal;
+  $("#modal").classList.add("on");
+  applyLang();$("#xOk").onclick=closeModal;
 }
 /* Swap an exercise for another version of the same movement — the cable,
    dumbbell or machine variant. `after` re-renders whichever surface opened
@@ -2942,6 +2973,7 @@ function drawPlayer(){
       </div></div>`;
   el.classList.add("on");
   $("#plClose").onclick=endPlayer;
+  applyLang();
   $("#plList").onclick=()=>{PL.listOpen=true;drawPlayer();};
   $$("[data-jump]",el).forEach(b=>b.onclick=()=>jumpTo(+b.dataset.jump));
   $$(".pin",el).forEach(inp=>inp.onchange=()=>{const si=+inp.dataset.si,f=inp.dataset.f;
@@ -3183,6 +3215,7 @@ function deepDive(id){
     $("#ddSupBody").classList.toggle("on",!open);
   };
   $("#deepView").classList.add("on");
+  applyLang();
   $("#deepView").scrollTop=0;
 }
 function closeDeep(){$("#deepView").classList.remove("on");}
@@ -4431,12 +4464,16 @@ function renderSettings(){
     <div class="panel"><div class="setrow" style="border:0"><div style="flex:1"><div style="font-weight:600;font-size:13.5px">Restock notifications</div><div class="rm">Warn me when under a week of doses is left</div></div><div class="toggle ${S.settings.notify?'on':''}" id="notifTog"></div></div></div>
     <div class="panel"><div class="lbl" style="margin-bottom:6px">My peptides</div><div class="lbl" style="text-transform:none;letter-spacing:0;color:var(--ink3);font-family:var(--sans);margin-bottom:8px">Uncheck to hide, × to remove. Deactivate from a card to redden it and drop it to the bottom; archive from Edit to park it with its settings.</div>
       <div class="settbl">${rows}</div></div>
+    <div class="panel"><div class="setrow" style="border:0"><div style="flex:1"><div style="font-weight:600;font-size:13.5px">Language</div><div class="rm" id="langNow"></div></div><button class="mini" id="langBtn">Change</button></div></div>
     <div class="panel"><div class="lbl" style="margin-bottom:10px">Data</div>
       <button class="primary" id="setExport">↓ Export backup (.json)</button>
       <button class="ghost" id="setImport">↑ Import backup</button>
       <button class="ghost danger" id="setReset">Reset everything to defaults</button>
       <div class="lbl" style="text-transform:none;letter-spacing:0;color:var(--ink3);font-family:var(--sans);margin-top:10px">Saved on this device. Export to back up or move to another phone. Cloud sync is planned.</div></div>`;
   // the month grid is a log-browsing view now, not a tracking surface
+  {const L=LANGS.find(x=>x.c===curLang())||LANGS[0];
+   $("#langNow").textContent=L.f+" "+L.n;}
+  $("#langBtn").onclick=()=>langPop(false);
   $("#calToggle").onclick=()=>{calMode=calMode==="month"?"week":"month";renderSettings();};
   $("#wAdd").onclick=()=>{const v=parseFloat($("#wV").value),n=$("#wN").value.trim();if(!v&&!n){toast("Enter a weight or note");return;}S.weights.push({id:Date.now()+"",weight:v||"",note:n,date:$("#wD").value||iso(new Date())});save();renderSettings();toast("Logged");};
   $$("[data-wdel]",el).forEach(b=>b.onclick=()=>{S.weights=S.weights.filter(w=>w.id!==b.dataset.wdel);save();renderSettings();});
@@ -4460,16 +4497,251 @@ $("#importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new
   r.onload=()=>{try{const d=JSON.parse(r.result);if(d.track)S.track=d.track;if(d.archive)S.archive=d.archive;if(d.log)S.log=d.log;if(d.sales)S.sales=d.sales;if(d.resale)S.resale=d.resale;if(d.weights)S.weights=d.weights;if(d.settings)S.settings=d.settings;save();applyTheme();renderAll();setTab("track");toast("Imported");}catch(err){toast("Couldn't read that file");}};
   r.readAsText(f);e.target.value="";};
 
+/* ---------- languages ----------
+   Translation runs over the rendered DOM rather than through every template,
+   so a missing key simply stays in English instead of breaking a screen.
+   Peptide names, exercise names, lab abbreviations and units are proper nouns
+   and are never translated. */
+const LANGS=[
+  {c:"en",n:"English",     f:"🇬🇧"},
+  {c:"es",n:"Español",     f:"🇪🇸"},
+  {c:"ar",n:"العربية",      f:"🇸🇦", rtl:true},
+  {c:"zh",n:"中文",         f:"🇨🇳"},
+  {c:"ru",n:"Русский",     f:"🇷🇺"}
+];
+/* words that must survive translation untouched */
+const NOTR=new Set(["mg","mcg","ml","iu","lb","kcal","g","mg/dL","min","ApoB","NAD+","DSIP",
+  "KLOW","GLOW","KPV","GHK-Cu","MOTS-c","HCG","VIP","AICAR","AHK-Cu","Vialback"]);
+
+const I18N={
+es:{
+/* nav + shell */
+"Today":"Hoy","Peps":"Peps","Gym":"Gimnasio","Food":"Comida","Bloodwork":"Análisis",
+"Settings":"Ajustes","Recovery":"Recuperación","Peptides":"Péptidos","Workout":"Entrenamiento",
+"Nutrition":"Nutrición","Muscle recovery":"Recuperación muscular","Protocol & stock":"Protocolo y stock",
+"Function Health panel":"Panel de Function Health","My peptides":"Mis péptidos",
+"Toggle theme":"Cambiar tema","Weekly goal":"Meta semanal",
+/* today */
+"OPEN LIST":"VER LISTA","LOG FOOD":"REGISTRAR COMIDA","CHOOSE":"ELEGIR","START":"EMPEZAR",
+"No session picked for this day":"Sin sesión elegida para este día","Morning":"Mañana","Night":"Noche",
+"☀ Morning":"☀ Mañana","☾ Night":"☾ Noche","Rest day":"Día de descanso",
+"Mark all shots done":"Marcar todas las inyecciones",
+"Greyed out means it isn't due today. Tap the circle to log one anyway.":
+ "En gris significa que no toca hoy. Toca el círculo para registrarla igualmente.",
+"Due":"Toca","Up next":"Siguiente","Supply":"Existencias","est. run out":"se acaba aprox.",
+/* peps list */
+"A–Z":"A–Z","Add a peptide":"Añadir un péptido","Add peptide":"Añadir péptido",
+"Search peptides...":"Buscar péptidos...","From Lucky's catalog":"Del catálogo de Lucky",
+"⚠ Not medical advice — tap to read":"⚠ No es consejo médico — toca para leer",
+"ⓘ Deep dive":"ⓘ Ficha completa","✎ Edit":"✎ Editar","↺ Refill vial":"↺ Rellenar vial",
+"↺ Refill vial to full":"↺ Rellenar vial al máximo","Stats":"Datos","Deactivate":"Desactivar",
+"Vial left":"Queda en el vial","Last taken":"Última toma","Per-dose":"Por dosis","Doses logged":"Dosis registradas",
+/* deep dive */
+"How it's thought to work":"Cómo se cree que funciona","What's established":"Lo que está demostrado",
+"What's suggested":"Lo que se sugiere","What's unknown":"Lo que se desconoce",
+"backed by human trials":"respaldado por ensayos en humanos",
+"animal, cell or small human data":"datos en animales, células o estudios humanos pequeños",
+"no data, or the trial went the wrong way":"sin datos, o el ensayo salió mal",
+"Dosing & cycles":"Dosis y ciclos","Run for":"Tomar durante","Then off":"Luego descanso",
+"Worth it because":"A favor","Against it":"En contra","Before you dose":"Antes de inyectar",
+"Food & nutrients that support it":"Comida y nutrientes que lo apoyan",
+"Check it yourself":"Compruébalo tú mismo","Your setup":"Tu configuración","Your dose":"Tu dosis",
+"Schedule":"Pauta","Vial":"Vial","Family":"Familia","Structure":"Estructura",
+"Human trials":"Ensayos en humanos","Preclinical / limited":"Preclínico / limitado",
+"No human efficacy data":"Sin datos de eficacia en humanos","High risk":"Alto riesgo",
+"Every claim above comes from published research. These open the literature so you can read it rather than take my word for it.":
+ "Todo lo anterior viene de investigación publicada. Estos enlaces abren la literatura para que la leas tú mismo.",
+/* bloodwork */
+"Holding well":"Va bien","Room to improve":"Se puede mejorar","Worth acting on":"Conviene actuar",
+"Optimal":"Óptimo","In range":"En rango","Out of range":"Fuera de rango","Above range":"Por encima del rango",
+"Below range":"Por debajo del rango","Standard range":"Rango estándar","Optimal high":"Óptimo máximo",
+"Optimal low":"Óptimo mínimo","Range high":"Rango máximo","Range low":"Rango mínimo",
+"Your result":"Tu resultado","Date drawn":"Fecha de extracción","Save result":"Guardar resultado",
+"Save range":"Guardar rango","Reset to default":"Restablecer","Adjust dose & vial":"Ajustar dosis y vial",
+"✎ Adjust range for this marker":"✎ Ajustar el rango de este marcador",
+"Match it to your own lab report":"Ajústalo a tu propio informe de laboratorio",
+"Taken this month":"Tomado este mes","Vials opened":"Viales abiertos","Left in vial":"Queda en el vial",
+"In your list, acting on this pathway":"En tu lista, actúan en esta vía",
+"Not in your list, but act here too":"No están en tu lista, pero actúan aquí",
+"This is not medical advice.":"Esto no es consejo médico.",
+"These decisions must be made with medical supervision.":"Estas decisiones deben tomarse con supervisión médica.",
+"Heart":"Corazón","Metabolic":"Metabólico","Thyroid":"Tiroides","Hormones":"Hormonas",
+"Nutrients":"Nutrientes","Liver":"Hígado","Kidney":"Riñón","Blood count":"Hemograma",
+"Electrolytes":"Electrolitos","Inflammation":"Inflamación","Immune":"Inmunidad",
+"Heavy metals":"Metales pesados","Cancer markers":"Marcadores tumorales","Urine":"Orina",
+/* gym */
+"Muscle status":"Estado muscular","Exercise history":"Historial de ejercicios",
+"Recent workouts":"Entrenamientos recientes","Fresh":"Descansado","Recovering":"Recuperando",
+"Fatigued":"Fatigado","Untrained":"Sin entrenar","Ready":"Listo","not trained recently":"sin entrenar hace tiempo",
+"Chest":"Pecho","Shoulders":"Hombros","Biceps":"Bíceps","Triceps":"Tríceps","Forearms":"Antebrazos",
+"Abs":"Abdominales","Quads":"Cuádriceps","Traps":"Trapecios","Lats / Back":"Dorsales / espalda",
+"Lower back":"Zona lumbar","Glutes":"Glúteos","Hamstrings":"Isquiotibiales","Calves":"Gemelos",
+"Front muscles":"Músculos frontales","Back muscles":"Músculos posteriores",
+"+ Log a workout":"+ Registrar entrenamiento","Log a workout":"Registrar entrenamiento",
+"Tap the muscles you trained":"Toca los músculos que entrenaste","How hard was it?":"¿Qué tan duro fue?",
+"Light":"Suave","Moderate":"Moderado","Hard":"Duro","Medium":"Medio","Save workout":"Guardar entrenamiento",
+"Pick a routine":"Elige una rutina","Delete workout":"Borrar entrenamiento","Edit workout":"Editar entrenamiento",
+"▶ Start workout":"▶ Empezar entrenamiento","End workout":"Terminar entrenamiento","Exercises":"Ejercicios",
+"Log set & rest":"Registrar serie y descansar","Log all remaining sets":"Registrar las series restantes",
+"Rest":"Descanso","Skip":"Saltar","Swap exercise":"Cambiar ejercicio","How to":"Cómo se hace",
+"Reps":"Reps","warm-up":"calentamiento","exercises":"ejercicios","calories":"calorías",
+"Calories":"Calorías","difficulty":"dificultad","min":"min","All":"Todos","Cable":"Polea",
+"Dumbbell":"Mancuerna","Machine":"Máquina","Barbell":"Barra","Bodyweight":"Peso corporal",
+"Complete some exercises to build history.":"Completa ejercicios para crear tu historial.",
+"No workouts logged yet.":"Aún no hay entrenamientos.",
+/* food */
+"+ Add food":"+ Añadir comida","Add food":"Añadir comida","Log what you ate":"Registra lo que comiste",
+"What was it?":"¿Qué fue?","Protein":"Proteína","Carbs":"Carbohidratos","Fat":"Grasa","Fiber":"Fibra",
+"Protein (g)":"Proteína (g)","Carbs (g)":"Carbohidratos (g)","Fat (g)":"Grasa (g)",
+"Daily targets":"Objetivos diarios","Your goals":"Tus objetivos","Save targets":"Guardar objetivos",
+"✎ Targets":"✎ Objetivos","Nothing logged":"Nada registrado","Nothing logged yet today.":"Nada registrado hoy todavía.",
+"Tap “Add food” to start.":"Toca «Añadir comida» para empezar.",
+"Enter macros and calories fill in automatically if left blank.":
+ "Introduce los macros y las calorías se calculan solas si lo dejas en blanco.",
+/* forms + settings */
+"Dose":"Dosis","Unit":"Unidad","Vial size (max)":"Tamaño del vial (máx.)","Remaining now":"Cantidad actual",
+"Bac water":"Agua bacteriostática","Bac water (mL)":"Agua bacteriostática (mL)","Timing note":"Nota de horario",
+"Timing":"Horario","Frequency":"Frecuencia","Every day":"Todos los días","Specific weekdays":"Días concretos",
+"Days":"Días","When":"Cuándo","Exact time (optional)":"Hora exacta (opcional)","Save":"Guardar",
+"Cancel":"Cancelar","Close":"Cerrar","Back":"Atrás","Add":"Añadir","Date":"Fecha","Note":"Nota",
+"Note (optional)":"Nota (opcional)","Edit dose & schedule":"Editar dosis y pauta",
+"Edit · everything here is editable":"Editar · todo aquí es editable",
+"Archive":"Archivo","Archive — park it with these settings":"Archivar — guardar con estos ajustes",
+"Remove permanently":"Eliminar definitivamente","Profile · weigh-ins":"Perfil · pesajes",
+"+ Add weigh-in":"+ Añadir pesaje","Weight (lb)":"Peso (lb)","No weigh-ins yet.":"Aún no hay pesajes.",
+"Tracking history":"Historial de registro","Show month calendar":"Ver calendario mensual",
+"Hide month calendar":"Ocultar calendario mensual",
+"Everything you've logged. Tap a day to edit it, even in the past.":
+ "Todo lo que has registrado. Toca un día para editarlo, incluso en el pasado.",
+"Restock notifications":"Avisos de reposición",
+"Warn me when under a week of doses is left":"Avísame cuando quede menos de una semana de dosis",
+"Parked peptides keep their settings. Adding one again from + preloads them.":
+ "Los péptidos archivados conservan sus ajustes. Al añadirlos de nuevo con + se recuperan.",
+"Data":"Datos","↓ Export backup (.json)":"↓ Exportar copia (.json)","↑ Import backup":"↑ Importar copia",
+"Reset everything to defaults":"Restablecer todo","Language":"Idioma",
+"Saved on this device. Export to back up or move to another phone. Cloud sync is planned.":
+ "Guardado en este dispositivo. Exporta para hacer copia o pasarlo a otro móvil. La sincronización en la nube está prevista.",
+/* disclaimer */
+"Please read":"Léelo, por favor","I understand":"Entendido","Talk to your doctor":"Habla con tu médico",
+"Get bloodwork.":"Hazte análisis.","This is not medical advice":"Esto no es consejo médico",
+"Vialback is a personal logging tool. It is":"Vialback es una herramienta personal de registro. No es",
+"This app deliberately shows":"Esta app muestra a propósito","no supplement amounts":"cantidades de suplementos",
+"Anything you enter is your own record. You are responsible for your own health decisions.":
+ "Lo que introduzcas es tu propio registro. Tú eres responsable de tus decisiones de salud.",
+"What the colours mean":"Qué significan los colores","What this means":"Qué significa esto",
+/* families */
+"GLP / incretin":"GLP / incretina","Copper / GHK":"Cobre / GHK","Mitochondrial":"Mitocondrial",
+"Regenerative":"Regenerativo","GH / hormone":"GH / hormona","Longevity":"Longevidad",
+"Antioxidant":"Antioxidante","Gut":"Intestino","Sleep":"Sueño","Other":"Otro",
+"Vegetables":"Verduras","Meat":"Carne","Fish":"Pescado","Fruit":"Fruta","Nuts, seeds":"Frutos secos, semillas",
+"Eggs, dairy":"Huevos, lácteos","Grains, legumes":"Cereales, legumbres",
+/* days */
+"Mon":"Lun","Tue":"Mar","Wed":"Mié","Thu":"Jue","Fri":"Vie","Sat":"Sáb","Sun":"Dom",
+"Mo":"Lu","Tu":"Ma","We":"Mi","Th":"Ju","Fr":"Vi","Sa":"Sá","Su":"Do",
+/* aria + misc */
+"Previous day":"Día anterior","Next day":"Día siguiente","Previous week":"Semana anterior",
+"Next week":"Semana siguiente","Previous month":"Mes anterior","Next month":"Mes siguiente",
+"off":"apagado","never":"nunca","taken":"tomado","new vial":"vial nuevo","ran out":"se acabó",
+"· deactivated":"· desactivado","Ongoing":"Continuo","None built in":"Sin descanso definido",
+"◇ History":"◇ Historial","Not recommended.":"No recomendado."
+}
+};
+
+/* pattern prefixes: "Edit <name>", "Log <name>", "<name> history" */
+const LANGPAT={
+ es:[[/^Edit (.+)$/,"Editar $1"],[/^Log (.+?)( anyway)?$/,"Registrar $1"],
+     [/^(.+) history$/,"Historial de $1"],[/^(.+) range$/,"Rango de $1"],
+     [/^Swap exercise$/,"Cambiar ejercicio"]]
+};
+
+function curLang(){return (S.settings&&S.settings.lang)||"en";}
+function tr(str,lc){
+  const d=I18N[lc];if(!d)return null;
+  const t=str.trim();
+  if(NOTR.has(t))return null;
+  if(d[t]!=null)return d[t];
+  for(const [re,rep] of (LANGPAT[lc]||[])){
+    const m=t.match(re);
+    if(m){
+      const inner=m[1]!=null?m[1]:"";
+      // don't translate the name itself, only the wrapper
+      return rep.replace("$1",inner);
+    }
+  }
+  return null;
+}
+/* user-entered content and proper nouns live here — never touched */
+const TRSKIP=".gname,.pbn,.dn,.excn,.pname,.pexname,.altn,.rp,.lrn,.ddname,.rn,.molimg,.mono";
+function applyLang(){
+  const lc=curLang();
+  const L=LANGS.find(x=>x.c===lc)||LANGS[0];
+  document.documentElement.lang=lc;
+  document.documentElement.dir=L.rtl?"rtl":"ltr";
+  document.body.classList.toggle("rtl",!!L.rtl);
+  if(lc==="en")return;
+  const skipTags=new Set(["SCRIPT","STYLE","IMG","INPUT","TEXTAREA"]);
+  const tw=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+  const jobs=[];
+  let n;
+  while(n=tw.nextNode()){
+    const p=n.parentElement;
+    if(!p||skipTags.has(p.tagName)||p.closest(TRSKIP))continue;
+    const raw=n.textContent;
+    const t=raw.trim();
+    if(!t||t.length<2||!/[A-Za-z]/.test(t))continue;
+    const hit=tr(t,lc);
+    if(hit!=null&&hit!==t)jobs.push([n,raw.replace(t,hit)]);
+  }
+  jobs.forEach(([node,val])=>{node.textContent=val;});
+  document.querySelectorAll("[placeholder]").forEach(e=>{
+    const h=tr(e.getAttribute("placeholder")||"",lc);if(h)e.setAttribute("placeholder",h);});
+  document.querySelectorAll("[aria-label]").forEach(e=>{
+    const h=tr(e.getAttribute("aria-label")||"",lc);if(h)e.setAttribute("aria-label",h);});
+}
+
+/* Sheets and overlays are built by many different functions, so rather than
+   patching each one, watch their containers and translate whatever appears. */
+let langObs=null;
+function watchLang(){
+  if(langObs||typeof MutationObserver!=="function")return;
+  let queued=false;
+  langObs=new MutationObserver(()=>{
+    if(queued||curLang()==="en")return;
+    queued=true;
+    requestAnimationFrame(()=>{queued=false;applyLang();});
+  });
+  ["#sheet","#dayBody","#player","#deepBody"].forEach(sel=>{
+    const el=$(sel);
+    if(el)langObs.observe(el,{childList:true,subtree:true});
+  });
+}
+/* asked once, then lives in Settings */
+function langPop(first){
+  $("#sheet").innerHTML=`<h3>${first?"Choose your language":"Language"}</h3>
+    <div class="msub">${first?"Elige tu idioma · اختر لغتك · 选择语言 · Выберите язык":"You can change this any time in Settings"}</div>
+    <div class="langlist">${LANGS.map(l=>`<button class="langbtn ${curLang()===l.c?"on":""}" data-lang="${l.c}">
+      <span class="lgf">${l.f}</span><span class="lgn">${l.n}</span>
+      ${curLang()===l.c?`<span class="lgc">✓</span>`:""}</button>`).join("")}</div>
+    ${first?"":`<button class="ghost" id="lgClose">Close</button>`}`;
+  $("#modal").classList.add("on");
+  $$("[data-lang]").forEach(b=>b.onclick=()=>{
+    S.settings.lang=b.dataset.lang;S.settings.langAsked=true;save();
+    closeModal();renderAll();setTab(tab);
+  });
+  if($("#lgClose"))$("#lgClose").onclick=()=>{S.settings.langAsked=true;save();closeModal();};
+}
+
 /* ============ nav / shell ============ */
 const SUBS={track:"Today",guide:"Peps",labs:"Bloodwork",gym:"Recovery",food:"Food",settings:"Settings"};
 let tab="track";
 function setTab(t){tab=t;$$(".view").forEach(v=>v.classList.remove("on"));$("#v-"+t).classList.add("on");
   $$("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   $("#bloodBtn").classList.toggle("on",t==="labs");
-  // "add peptide" belongs on Today and on Peps, where the list actually lives
+  // "add peptide" belongs on Peps, where the list actually lives
   $("#topSub").textContent=SUBS[t]||"";
-  $("#fab").style.display=(t==="track"||t==="guide")?"grid":"none";
+  $("#fab").style.display=t==="guide"?"grid":"none";
   ({track:renderTrack,guide:renderGuide,labs:renderLabs,gym:renderGym,food:renderFood,settings:renderSettings}[t]||(()=>{}))();
+  applyLang();
   window.scrollTo({top:0,behavior:"smooth"});}
 $$("#nav button").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 $("#profileBtn").onclick=()=>setTab("settings");
@@ -4508,7 +4780,8 @@ const PUBLIC=!!window.VIALBACK_PUBLIC;
 /* init */
 $("#deepClose").onclick=closeDeep;
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#deepView").classList.contains("on"))closeDeep();});
-applyLabRanges();initTips();renderTrack();syncNative();
+applyLabRanges();initTips();renderTrack();syncNative();applyLang();watchLang();
+if(!S.settings.langAsked)setTimeout(()=>langPop(true),450);
 if(PUBLIC)setTimeout(showInstall,1400);
 </script>
 </body>
