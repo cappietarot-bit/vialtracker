@@ -51,7 +51,11 @@
   .tnum{font-variant-numeric:tabular-nums}.mono{font-family:var(--mono)}
   .app{max-width:900px;margin:0 auto;min-height:100vh;padding:0 0 84px}
   @media(min-width:860px){.app{padding-left:88px;padding-bottom:0}}
-  .top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:11px 15px}
+  /* black-translucent status bar means iOS draws the page UNDER the clock and
+     battery — the inset keeps the header clear of them */
+  .top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);
+    backdrop-filter:blur(10px);border-bottom:1px solid var(--line);
+    padding:calc(11px + env(safe-area-inset-top)) 15px 11px}
   .brand{display:flex;align-items:center;gap:10px}
   .logo{width:28px;height:28px;flex:0 0 auto}
   .brand h1{font-size:16px;margin:0;letter-spacing:-.02em;font-weight:700}
@@ -281,7 +285,7 @@
     width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.5);
     backdrop-filter:blur(8px);color:#fff;font-size:15px;font-weight:700}
   .ddhero{position:relative;min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;
-    padding:20px 18px 16px;overflow:hidden}
+    padding:calc(20px + env(safe-area-inset-top)) 18px 16px;overflow:hidden}
   .ddscrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.72))}
   .ddhx{position:relative}
   .ddname{font-size:29px;font-weight:800;letter-spacing:-.03em;color:#fff;line-height:1.1;
@@ -329,6 +333,50 @@
   .ddyours{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 15px}
   .ddyh{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
     color:var(--ink3);font-weight:700;margin-bottom:8px}
+  /* Each kind of information gets its own hue, so dosing never reads like a
+     warning and food never reads like evidence. --sc drives the whole card. */
+  .ddcard{--sc:var(--accent);position:relative;border:1px solid var(--line);
+    border-left:3px solid var(--sc);border-radius:11px;padding:14px 15px;margin-bottom:14px;
+    background:color-mix(in srgb,var(--sc) 6%,var(--panel))}
+  .ddcard.dose{--sc:#6b7ae0}
+  .ddcard.src{--sc:var(--ink3)}
+  .ddch{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:10px;
+    letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:var(--sc);margin-bottom:9px}
+  .ddch .dot{width:7px;height:7px;border-radius:50%;background:var(--sc);flex:0 0 auto}
+  .ddp{margin:0 0 9px;font-size:14.5px;line-height:1.6;color:var(--ink2)}
+  .ddp:last-child{margin-bottom:0}
+  .ddp.sm{font-size:13.5px;color:var(--ink3)}
+  .cycrow{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:11px 0}
+  .cyccell{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:9px 11px}
+  .ck{display:block;font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink3);margin-bottom:3px}
+  .cv{display:block;font-size:14px;font-weight:650;letter-spacing:-.01em}
+  .srclist{display:flex;flex-wrap:wrap;gap:7px}
+  .src1{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;text-decoration:none;
+    background:var(--panel2);border:1px solid var(--line2);border-radius:99px;
+    padding:6px 12px;color:var(--ink2)}
+  .src1:hover{border-color:var(--accent);color:var(--accent)}
+  .src1 i{font-style:normal;font-size:10px;opacity:.65}
+  /* collapsed by default — the nutrient detail is opt-in, not wall-of-text */
+  .ddtoggle{--sc:var(--good);width:100%;display:flex;align-items:center;justify-content:space-between;
+    gap:10px;background:color-mix(in srgb,var(--sc) 7%,var(--panel));border:1px solid var(--line);
+    border-left:3px solid var(--sc);border-radius:11px;padding:13px 15px;
+    color:var(--ink);font-size:14px;font-weight:650;margin-bottom:10px;text-align:left}
+  .ddtoggle span{display:flex;align-items:center;gap:7px}
+  .ddtoggle .dot{width:7px;height:7px;border-radius:50%;background:var(--sc);flex:0 0 auto}
+  .ddtoggle:hover{border-color:var(--sc);border-left-color:var(--sc)}
+  .ddchev{font-style:normal;color:var(--ink3);font-size:17px;transition:transform .25s ease}
+  .ddtoggle[aria-expanded="true"] .ddchev{transform:rotate(90deg);color:var(--accent)}
+  .ddsup{display:none;margin-bottom:14px}
+  .ddsup.on{display:block;animation:fade .2s ease}
+  /* food sources, tinted by what they are */
+  .foods{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+  .food1{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;
+    background:color-mix(in srgb,var(--fc) 13%,transparent);
+    border:1px solid color-mix(in srgb,var(--fc) 38%,transparent);
+    color:var(--ink2);border-radius:99px;padding:3px 9px 3px 7px}
+  .food1 i{width:7px;height:7px;border-radius:50%;background:var(--fc);flex:0 0 auto}
+  .foodnote{font-size:11.5px;color:var(--ink3);font-style:italic}
   .ddfoot{font-size:12px;line-height:1.55;color:var(--ink3);margin:18px 0 0;text-align:center}
   .mini.deep{border-color:var(--accent);color:var(--accent)}
   /* colour key lives behind this, closed on every launch */
@@ -590,7 +638,7 @@
 
   /* ---------- workout player (session view) ---------- */
   .plr{height:100%;display:flex;flex-direction:column;max-width:560px;margin:0 auto;background:var(--bg)}
-  .ptop{display:flex;align-items:center;gap:10px;padding:12px 13px 8px}
+  .ptop{display:flex;align-items:center;gap:10px;padding:calc(12px + env(safe-area-inset-top)) 13px 8px}
   .pexbtn{flex:0 0 auto;display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);
     color:var(--ink);border-radius:11px;padding:10px 14px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
   .pexbtn span{color:var(--ink3);font-size:13px}
@@ -1108,7 +1156,7 @@
 
   <nav class="nav" id="nav">
     <button data-tab="track" class="on"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4" stroke-linecap="round"/></svg></span>Today</button>
-    <button data-tab="guide"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 012-2h12v18H6a2 2 0 01-2-2V5Z"/><path d="M8 3v18M12 8h4M12 12h4" stroke-linecap="round"/></svg></span>Guide</button>
+    <button data-tab="guide"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 012-2h12v18H6a2 2 0 01-2-2V5Z"/><path d="M8 3v18M12 8h4M12 12h4" stroke-linecap="round"/></svg></span>Peps</button>
     <button data-tab="gym"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 8v8M3.5 10v4M17.5 8v8M20.5 10v4M6.5 12h11" stroke-linecap="round"/></svg></span>Gym</button>
     <button data-tab="food"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v8a2 2 0 002 2 2 2 0 002-2V3M8 3v8M14 3c-1 3-1 6 1 7v11M18.5 3v18" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 13v8" stroke-linecap="round"/></svg></span>Food</button>
   </nav>
@@ -1150,6 +1198,49 @@ const LUCKY={
 
 /* ---------- cofactor reference: food sources + why it matters, no dose amounts ----------
    Deliberately no mg/IU figures — the right amount depends on bloodwork and a doctor. */
+/* ---------- food colour coding ----------
+   Each food source gets tinted by what it is, so a nutrient's sources read at
+   a glance: greens for vegetables, red for meat, blue for fish, and so on. */
+const FOODC={
+  veg:   {n:"Vegetables", c:"#3f9e54", w:["spinach","broccoli","cabbage","bell pepper","kale","leafy greens","greens","vegetable","asparagus","brussels","avocado"]},
+  meat:  {n:"Meat",       c:"#cf4b3c", w:["beef","red meat","chicken","liver","organ meat","meat","poultry","turkey","pork","lamb"]},
+  fish:  {n:"Fish",       c:"#3b7fd1", w:["fish","salmon","sardines","mackerel","oysters","clams","seafood","tuna","shellfish","anchov"]},
+  fruit: {n:"Fruit",      c:"#e07b2a", w:["citrus","kiwi","berries","fruit","banana","orange","apple","tomato"]},
+  nut:   {n:"Nuts, seeds",c:"#9a6f42", w:["seeds","almonds","cashews","nuts","walnuts","peanut","sesame"]},
+  dairy: {n:"Eggs, dairy",c:"#c9a13a", w:["egg","yogurt","whey","dairy","cheese","milk","kefir"]},
+  grain: {n:"Grains, legumes",c:"#8d8f3a", w:["lentils","legumes","grains","beans","oats","quinoa","rice","chickpea"]},
+  other: {n:"Other",      c:"#7a8a86", w:[]}
+};
+function foodKind(item){
+  const t=item.toLowerCase();
+  for(const k in FOODC){if(FOODC[k].w.some(w=>t.includes(w)))return k;}
+  return "other";
+}
+/* split on commas that sit outside brackets, so "potassium (avocado, potato)"
+   stays one item instead of breaking in half */
+function splitFoods(str){
+  const out=[];let buf="",depth=0;
+  for(const ch of String(str)){
+    if(ch==="(")depth++;
+    else if(ch===")")depth=Math.max(0,depth-1);
+    if(ch===","&&depth===0){out.push(buf);buf="";continue;}
+    buf+=ch;
+  }
+  out.push(buf);
+  return out.map(x=>x.trim()).filter(Boolean);
+}
+/* split a nutrient's source string into individually tinted chips */
+function foodChips(str){
+  if(!str)return "";
+  const parts=splitFoods(str);
+  return `<div class="foods">${parts.map(p=>{
+    const k=foodKind(p),c=FOODC[k].c;
+    const plain=/^\(/.test(p);   // parenthetical notes aren't foods
+    return plain
+      ? `<span class="foodnote">${p}</span>`
+      : `<span class="food1" style="--fc:${c}"><i></i>${p}</span>`;
+  }).join("")}</div>`;
+}
 const N={
 protein:{n:"Protein",f:"eggs, chicken, fish, Greek yogurt, whey",a:"Repair runs on amino acids — eat protein at every meal"},
 zinc:{n:"Zinc",f:"oysters, beef, pumpkin seeds",a:"Food first; balance against copper"},
@@ -1191,12 +1282,12 @@ reta:{cls:"Triple incretin agonist · GLP-1 / GIP / glucagon",tier:"human",
  ev:[["human","Lilly's Phase 2 trial reported roughly 24% mean body-weight loss at 48 weeks — the largest figure seen from any obesity drug to date."],
      ["human","Phase 3 programme is running. Not approved anywhere yet, so everything on the market is compounded or gray-market."],
      ["pre","Long-term safety past a couple of years is simply unknown — the drug is too new for that data to exist."]],
- dose:"Trials titrated from 1 mg weekly up through 4, 8 and 12 mg. The high-dose arms drove the biggest loss and the most nausea.",
+ dose:"Trials stepped up from 1 mg weekly through 4, 8 and 12 mg. The high-dose arms drove the biggest loss and the most nausea.",
  good:["Best-in-class fat loss by a wide margin","Glucagon arm raises energy expenditure rather than only cutting intake","Strong glucose and insulin-sensitivity effects"],
  bad:["Nausea and GI effects are dose-limiting for many","Muscle loss in a deficit is real — protein and lifting are not optional","No approval means no manufacturing oversight on what you're buying","Long-term safety data does not exist yet"],
  t:"Weekly, subq.",
- pair:["protein","electro","fiber","b"],extra:[["Hydration","GLP-1 blunts thirst, drink more than usual"]],
- warn:["Nausea is common, titrate slowly.","In a deficit you can lose muscle, keep protein high and lift.","Never stack with another GLP-1 at the same time."]},
+ pair:["protein","electro","fiber","b"],extra:[["Hydration","This blunts thirst — drink more than feels necessary"]],
+ warn:["Find the lowest dose that works for you rather than climbing to the next one. Most side effects come from going up too fast.","Lift weights while you are on this. Without resistance training a big chunk of what you lose is muscle, not fat.","Eat real protein every day, roughly 0.7-1g per pound of goal bodyweight. This is the single biggest thing protecting your muscle.","Drink more water than feels necessary. This blunts thirst, so you will not notice you are behind until you feel awful.","Keep salt up. Eating far less food means eating far less sodium, and most of the fatigue, headaches and dizziness people blame on the drug is actually low sodium.","Never run this alongside another GLP-1 at the same time."],src:[{"n": "Retatrutide trials", "u": "https://clinicaltrials.gov/search?term=retatrutide"}, {"n": "Phase 2 research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=retatrutide+obesity"}],cyc:{"run": "Ongoing", "off": "None built in", "note": "Run as a continuous weekly treatment, not a cycle. Trials dosed for 48-72 weeks straight. Coming off usually means the weight returns, so the exit plan matters more than the cycle length."}},
 
 tesa:{cls:"GHRH analog",tier:"human",
  what:"Growth-hormone-releasing hormone analog that targets visceral fat. One of the few things here that is an actual approved drug.",
@@ -1208,8 +1299,8 @@ tesa:{cls:"GHRH analog",tier:"human",
  good:["Genuine regulatory approval and real trial data behind it","Preserves pulsatile GH release rather than flooding the system","Specifically targets visceral rather than subcutaneous fat"],
  bad:["Raises IGF-1 — a marker worth tracking on bloodwork","Can worsen glucose tolerance and raise blood sugar","Water retention, joint aches and carpal-tunnel symptoms at higher doses","Effects reverse when you stop"],
  t:"Daily, fasted, before bed.",
- pair:["protein"],extra:[["Fasted dosing","No carbs ~2h around it, insulin blunts GH"]],
- warn:["Can raise blood sugar and IGF-1, that's a key bloodwork marker.","Water retention and joint aches show up at higher doses, stay low."]},
+ pair:["protein"],extra:[["Fasted dosing","No carbs for about 2h either side — insulin shuts down the GH pulse"]],
+ warn:["Check your blood sugar. This can push fasting glucose and HbA1c up, and that is the effect most likely to cause you a real problem. A cheap finger-prick meter is worth having if you run this for more than a few weeks.","Get IGF-1 tested. It is the marker that tells you whether the dose is doing anything and whether it is too much.","Puffiness, joint aches and tingling hands mean the dose is too high. Come down rather than pushing through.","Stay at the lowest dose that gives you an effect instead of working up to the maximum."],src:[{"n": "Tesamorelin label", "u": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=tesamorelin"}, {"n": "Trials", "u": "https://clinicaltrials.gov/search?term=tesamorelin"}],cyc:{"run": "Continuous while wanted", "off": "Effects reverse when you stop", "note": "The approved use is ongoing daily dosing. Visceral fat comes back after stopping, so there is no natural end point — which makes the glucose and IGF-1 monitoring an ongoing job, not a one-off."}},
 
 ss31:{cls:"Mitochondria-targeting tetrapeptide · elamipretide",tier:"pre",
  what:"Binds cardiolipin in the inner mitochondrial membrane. Developed as a real drug candidate — and that development has mostly disappointed.",
@@ -1221,7 +1312,7 @@ ss31:{cls:"Mitochondria-targeting tetrapeptide · elamipretide",tier:"pre",
  good:["Best-characterised mechanism of anything in this category","Passed human safety testing in formal trials","Cardiolipin biology is real and well established"],
  bad:["Repeatedly failed to beat placebo on primary endpoints","Strong mechanism has not translated into demonstrated benefit","Degrades once reconstituted — refrigeration matters","Expensive for a compound with negative Phase 3 results"],
  t:"Daily, AM.",
- pair:["coq10","ala","b"],warn:["Fast-burning cycle item, keep refrigerated once mixed."]},
+ pair:["coq10","ala","b"],warn:["Keep it cold once mixed. This one degrades faster than most, so a warm vial is a wasted vial.", "Know going in that the big human trials missed their targets. The biology is sound, the results were not.", "Give it weeks, not days. Nothing here works on a same-day timescale."],src:[{"n": "Elamipretide trials", "u": "https://clinicaltrials.gov/search?term=elamipretide"}, {"n": "SS-31 research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=elamipretide+SS-31"}],cyc:{"run": "4-12 weeks", "off": "4+ weeks", "note": "Trials dosed continuously for weeks to months. Community use runs shorter cycles, mostly on cost rather than evidence."}},
 
 mots:{cls:"Mitochondrial-derived peptide",tier:"pre",
  what:"A 16-amino-acid peptide encoded in mitochondrial DNA, pitched as an exercise mimetic.",
@@ -1233,7 +1324,7 @@ mots:{cls:"Mitochondrial-derived peptide",tier:"pre",
  good:["Genuinely interesting biology — a peptide your own mitochondria make","Consistent metabolic effects across rodent models","Pairs logically with training"],
  bad:["No human efficacy trial at all","Doses are convention, not evidence","Endogenous levels correlating with health doesn't mean injecting more helps"],
  t:"On training days, pre-workout.",
- pair:["ala"],extra:[["Exercise","Dose before training to stack the effect"]],warn:[]},
+ pair:["ala"],extra:[["Exercise","Dose before training to stack the effect"]],warn:["Dose it before you train. The whole case for this rests on stacking with exercise, not replacing it.", "There is no human trial behind any dose you will see quoted. Treat the numbers as a starting guess.", "Watch your blood sugar if you are diabetic — this acts on the same insulin-sensitivity pathways."],src:[{"n": "MOTS-c research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=MOTS-c+peptide"}],cyc:{"run": "4-8 weeks", "off": "4 weeks", "note": "Typically cycled with training blocks. No human data defines an optimal length — the cycling is convention."}},
 
 nad:{cls:"Redox cofactor",tier:"pre",
  what:"The cofactor that drives hundreds of metabolic reactions and fuels the sirtuins. Levels fall with age, which is the whole pitch.",
@@ -1245,7 +1336,7 @@ nad:{cls:"Redox cofactor",tier:"pre",
  good:["Underlying NAD+ biology is well established and not controversial","Precursor trials confirm blood levels can be raised","Generally well tolerated when administered slowly"],
  bad:["Fast administration causes flushing, chest pressure and nausea — genuinely unpleasant","Whether injected NAD+ enters cells intact is unresolved","Clinical benefits in trials have been smaller than the marketing suggests","Subq injection is notably painful"],
  t:"AM, push slowly.",
- pair:["tmg","api","b"],warn:["Fast push causes flushing and chest pressure, go SLOW."]},
+ pair:["tmg","api","b"],warn:["Push it in slowly. Fast is what causes the flushing, chest tightness and nausea, and slowing down fixes it.", "Expect it to sting. That is normal for this one and not a sign anything is wrong.", "If you want the better-studied route, the oral precursors NR and NMN have more human data behind them."],src:[{"n": "NAD+ and precursor trials", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=nicotinamide+riboside+NAD+clinical+trial"}, {"n": "NAD trials", "u": "https://clinicaltrials.gov/search?term=NAD%2B"}],cyc:{"run": "Short courses", "off": "Weeks between", "note": "Clinic protocols run loading courses over several consecutive days, then space out. Daily indefinite use is not what the research covers."}},
 
 amino:{cls:"NNMT inhibitor",tier:"none",
  what:"Small molecule (not really a peptide) that blocks nicotinamide N-methyltransferase, aimed at fat metabolism.",
@@ -1257,7 +1348,7 @@ amino:{cls:"NNMT inhibitor",tier:"none",
  good:["Coherent mechanism tied to NAD+ biology","Orally active, unlike most of this list","Well tolerated in anecdotal use"],
  bad:["Zero human data of any kind","Sold widely on the strength of a handful of mouse papers","Methyl-group biology means interactions with methylation status are plausible but unstudied"],
  t:"Subq or oral, fasted AM.",
- pair:["tmg","b"],warn:["No human safety data — treat dosing as guesswork."]},
+ pair:["tmg","b"],warn:["There is no human safety data at all for this one. Not thin — none.", "It leans on methyl groups, so if you are already running things that burn methyl donors, TMG or glycine alongside is sensible.", "Start at the bottom of any range you see. Nobody knows the real dose-response in people."],src:[{"n": "NNMT inhibitor research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=NNMT+inhibitor+5-amino-1MQ"}],cyc:{"run": "8-12 weeks", "off": "4 weeks", "note": "No human data on any schedule. Cycling here is pure caution, not evidence."}},
 
 klow:{cls:"Blend · KPV + Larazotide + GHK-Cu + BPC-157/TB-500",tier:"none",
  what:"A multi-peptide recovery and gut blend. Convenient, and completely unstudied as a combination.",
@@ -1269,7 +1360,7 @@ klow:{cls:"Blend · KPV + Larazotide + GHK-Cu + BPC-157/TB-500",tier:"none",
  good:["One injection instead of four","Components are individually plausible for recovery","Convenient for a daily protocol"],
  bad:["Blend has never been studied","You cannot isolate which part is doing anything","Ratios differ between suppliers — 'KLOW' is not a standardised product","Contains BPC-157 and TB-500, both WADA-banned"],
  t:"Daily, one pin.",
- pair:["protein","c","zinc"],warn:["Blend composition varies by supplier — confirm what's actually in yours.","Contains WADA-banned components if you compete."]},
+ pair:["protein","c","zinc"],warn:["Check what is actually in yours. KLOW is not a standard recipe and suppliers mix it differently.", "Because it is a blend, you cannot tell which part helped or which part caused a problem.", "Contains BPC-157 and TB-500, both banned by WADA, if you compete in anything tested."],src:[{"n": "BPC-157 research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=BPC+157"}, {"n": "Larazotide trials", "u": "https://clinicaltrials.gov/search?term=larazotide"}],cyc:{"run": "4-8 weeks", "off": "2-4 weeks", "note": "Cycled like its repair components. No data on the blend at any duration."}},
 
 gluta:{cls:"Tripeptide antioxidant · Glu-Cys-Gly",tier:"human",
  what:"The body's main intracellular antioxidant. Well studied as a molecule, much less so as an injection.",
@@ -1281,7 +1372,7 @@ gluta:{cls:"Tripeptide antioxidant · Glu-Cys-Gly",tier:"human",
  good:["Not exotic — this is a molecule your body already makes in quantity","Injection bypasses the oral absorption problem","Good safety record at typical doses"],
  bad:["Clinical trials have mostly underwhelmed","Skin-lightening use has drawn regulatory safety warnings","Precursors (NAC, glycine) may raise levels more practically","Very short half-life once injected"],
  t:"Daily or several times weekly, with vitamin C.",
- pair:["c","ala","selenium"],warn:["Regulators have flagged safety concerns around high-dose IV use for cosmetic purposes."]},
+ pair:["c","ala","selenium"],warn:["Pair it with vitamin C — it helps recycle glutathione back to its active form.", "Regulators have warned about high-dose IV use for skin lightening. That is the use with the safety complaints.", "If you want a cheaper route, NAC and glycine feed your own production and are far better absorbed than oral glutathione."],src:[{"n": "Glutathione trials", "u": "https://clinicaltrials.gov/search?term=glutathione"}, {"n": "IV glutathione research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=intravenous+glutathione"}],cyc:{"run": "Ongoing or courses", "off": "Optional", "note": "No cycling requirement. Often run as courses simply because injections are a chore."}},
 
 ta1:{cls:"Thymic peptide · thymosin alpha-1",tier:"human",
  what:"An immune modulator that is an approved drug in a large part of the world — one of the better-evidenced items here.",
@@ -1293,7 +1384,7 @@ ta1:{cls:"Thymic peptide · thymosin alpha-1",tier:"human",
  good:["Actual regulatory approval in many countries","Decades of clinical use with a good safety record","Modulates immunity rather than crudely stimulating it"],
  bad:["Not FDA-approved in the US","Immune modulation is a poor idea alongside autoimmune conditions without medical oversight","Injection-site reactions are the common complaint"],
  t:"Two to three times per week.",
- pair:["zinc","c","d"],warn:["Speak to a doctor before using any immune modulator if you have an autoimmune condition."]},
+ pair:["zinc","c","d"],warn:["Talk to a doctor first if you have any autoimmune condition. This nudges the immune system up, which is the wrong direction there.", "This is an approved medicine in much of the world — one of the few things on this list that is.", "Twice weekly is the dose the approval is based on. There is no reason to exceed it."],src:[{"n": "Thymalfasin / Zadaxin research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=thymosin+alpha+1+thymalfasin"}, {"n": "Trials", "u": "https://clinicaltrials.gov/search?term=thymosin+alpha+1"}],cyc:{"run": "4-12 weeks", "off": "Varies", "note": "Approved courses run weeks to months depending on the condition. Twice weekly throughout."}},
 
 epi:{cls:"Pineal bioregulator · Ala-Glu-Asp-Gly",tier:"pre",
  what:"Four-amino-acid analog of a bovine pineal extract, sold on telomere and longevity claims. Recently got its first real independent replication — along with a finding worth knowing.",
@@ -1306,7 +1397,7 @@ epi:{cls:"Pineal bioregulator · Ala-Glu-Asp-Gly",tier:"pre",
  good:["Now has genuine independent in-vitro replication — rare in this space","Short cycles keep total exposure low","Well tolerated in the trials that exist","Melatonin-rhythm angle is more plausible than the telomere story"],
  bad:["Telomerase induction is exactly what ~90% of cancers exploit to become immortal","2025 data showed a cancer-related mechanism activating in tumour cells","No human trial has measured whether telomeres actually change","Human survival claims come from a different substance"],
  t:"Night, short cycles only.",
- pair:["mag","b"],warn:["Telomerase activation is the mechanism cancers use — worth raising with a doctor, especially with family cancer history.","Cycle it. Do not run continuously."]},
+ pair:["mag","b"],warn:["Raise the cancer question with a doctor before your next cycle, especially with any family history. Switching telomerase on is the same trick most cancers use to survive, and 2025 lab work saw exactly that mechanism fire in tumour cells.", "Run it in short cycles with long gaps. Nobody has tested continuous use and there is no reason to be the first.", "The famous survival data is from Epithalamin, the pineal extract, not the synthetic peptide you are injecting."],src:[{"n": "Epitalon / AEDG research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=epitalon+OR+epithalon+AEDG"}, {"n": "Khavinson peptide bioregulators", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=Khavinson+peptide+bioregulator"}],cyc:{"run": "10-20 days", "off": "4-6 months", "note": "This is the one that genuinely must be cycled. The protocols are short courses two to three times a year, never continuous. Given telomerase activation is the mechanism, keeping total exposure low is the whole safety strategy."}},
 
 pineal:{cls:"CNS bioregulator · Glu-Asp-Arg",tier:"none",
  what:"Three-amino-acid peptide from the same Russian programme as Epithalon, sold for brain protection. The thinnest evidence base of anything in this app.",
@@ -1319,7 +1410,7 @@ pineal:{cls:"CNS bioregulator · Glu-Asp-Arg",tier:"none",
  good:["Plausible antioxidant mechanism with consistent cell-culture support","Evidence it reaches the CNS in animals","No adverse-event signal in the limited human exposure","Short cycles, low cost"],
  bad:["Zero completed human efficacy trials after twenty-plus years","The only human study was oral, adjunctive, and measured safety","'Enters the nucleus and regulates genes' is a large claim on small support","Functionally you are the experiment"],
  t:"Night, short cycles.",
- pair:["mag","b"],warn:["No human efficacy data exists — dosing is inherited convention, not evidence."]},
+ pair:["mag","b"],warn:["There is no completed human trial showing this does anything. You are running it on animal data.", "The one human study used capsules alongside normal treatment in brain-injury patients — it measured safety, not benefit.", "Keep to short cycles. With no dose-response data, less exposure is the only conservative lever you have."],src:[{"n": "Pinealon / EDR research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=pinealon+OR+%22Glu-Asp-Arg%22+peptide"}],cyc:{"run": "10-20 days", "off": "3-6 months", "note": "Same short-course pattern as Epithalon, from the same research programme. Continuous use has never been studied."}},
 
 dsip:{cls:"Sleep-associated nonapeptide",tier:"pre",
  what:"Isolated in 1977 from rabbits in induced delta sleep. The most human trial data of the pineal group — and those trials disagree with each other.",
@@ -1332,7 +1423,7 @@ dsip:{cls:"Sleep-associated nonapeptide",tier:"pre",
  good:["Not a GABA-A hypnotic — no dependence signal, no morning hangover","Appears to normalise sleep architecture rather than sedate","Benefit may build over repeated doses","Explored for withdrawal states and chronic pain with some positive signals"],
  bad:["No receptor, no gene — nobody can say what it binds","Cleared in minutes, which sits badly against an eight-hour night","The best-designed trials are the least impressed","Cortisol/ACTH interaction proposed but uncharacterised","Paradoxical responses reported: vivid dreams, worse sleep, next-day flatness"],
  t:"Before bed.",
- pair:["mag","glycine"],warn:["Effects are inconsistent between people — some sleep worse on it."]},
+ pair:["mag","glycine"],warn:["Take it right before bed. It clears in minutes, so timing matters more than dose.", "Some people sleep worse on it, with vivid dreams or a flat next morning. If that is you, it is not going to settle.", "It nudges sleep back toward normal rather than knocking you out — do not expect a sleeping-pill feeling.", "Note that community doses run roughly ten times lower than the doses the studies actually used."],src:[{"n": "DSIP clinical trials", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=delta+sleep+inducing+peptide+insomnia"}, {"n": "DSIP research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=delta+sleep-inducing+peptide"}],cyc:{"run": "Nightly as needed", "off": "Break if it stops working", "note": "No dependence signal, so nightly use is common. If the effect fades, a break is more sensible than raising the dose."}},
 
 ara:{cls:"EPO-derived peptide · cibinetide",tier:"human",
  what:"An 11-amino-acid fragment of erythropoietin that keeps the tissue-repair signalling without the red-blood-cell effects.",
@@ -1344,7 +1435,7 @@ ara:{cls:"EPO-derived peptide · cibinetide",tier:"human",
  good:["Real Phase 2 human data, unusual for this category","Deliberately engineered to avoid EPO's blood-thickening effects","Genuinely targeted at neuropathic pain rather than vague wellness"],
  bad:["No approval, and development has stalled","Best evidence is in specific neuropathy populations, not healthy users","Small trials with soft endpoints"],
  t:"Daily, short courses.",
- pair:["b","ala"],warn:["Evidence comes from neuropathy patients — extrapolating to healthy use is a stretch."]},
+ pair:["b","ala"],warn:["The evidence comes from people with nerve damage, not healthy users. Expect less if nothing is wrong.", "Give it a full course. The trials ran 28 days before measuring anything.", "Unlike EPO itself, this was built specifically not to thicken your blood — that is the point of it."],src:[{"n": "Cibinetide / ARA-290 trials", "u": "https://clinicaltrials.gov/search?term=cibinetide+OR+ARA-290"}, {"n": "Research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=cibinetide+ARA+290"}],cyc:{"run": "28 days", "off": "Reassess after", "note": "The trials used a defined 28-day course and then measured. That is a sensible unit to copy rather than running indefinitely."}},
 
 kiss:{cls:"Reproductive neuropeptide · kisspeptin-10",tier:"human",
  what:"The upstream trigger for the entire reproductive hormone axis. Some of the cleanest human physiology research on this list.",
@@ -1356,7 +1447,7 @@ kiss:{cls:"Reproductive neuropeptide · kisspeptin-10",tier:"human",
  good:["Genuinely well-characterised human physiology behind it","Acts upstream, working with the axis rather than overriding it","Acute effects on LH are reliable and measurable on bloodwork"],
  bad:["Receptor desensitises with continuous exposure — frequency matters","Most human data is acute infusion, not repeated subq self-dosing","Pointless or counterproductive alongside exogenous testosterone, which suppresses the axis it stimulates"],
  t:"Two to three times per week.",
- pair:["zinc","d"],warn:["Continuous exposure desensitises the receptor — pulsed dosing is the point.","Interacts with TRT, which suppresses the axis this works through."]},
+ pair:["zinc","d"],warn:["Pulse it, do not run it daily. Constant exposure desensitises the receptor and you get nothing.", "If you are on TRT this is mostly pointless — testosterone suppresses the very axis this works through.", "LH and FSH on a blood panel will tell you within days whether it is doing anything."],src:[{"n": "Kisspeptin human studies", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=kisspeptin+human+LH"}, {"n": "Trials", "u": "https://clinicaltrials.gov/search?term=kisspeptin"}],cyc:{"run": "4-8 weeks", "off": "2-4 weeks", "note": "Pulsed dosing within a cycle matters more than the cycle itself — continuous exposure desensitises the receptor and the effect dies."}},
 
 lcar:{cls:"Amino acid derivative",tier:"human",
  what:"Shuttles long-chain fatty acids into mitochondria to be burned. Heavily studied, with results more modest than the marketing.",
@@ -1368,7 +1459,7 @@ lcar:{cls:"Amino acid derivative",tier:"human",
  good:["Extensively studied with a well-understood mechanism","Good safety record over decades","Injection bypasses poor oral absorption","May help recovery and reduce muscle soreness"],
  bad:["Fat-loss effects are small and easily overstated","TMAO conversion is a genuine open cardiovascular question","Oral uptake into muscle needs a big insulin spike to work"],
  t:"Pre fasted cardio.",
- pair:["ala","b"],warn:["TMAO production is an open cardiovascular question, particularly at high chronic doses."]},
+ pair:["ala","b"],warn:["The fat-loss effect is real but small — think a kilo or two, not a transformation.", "Gut bacteria turn carnitine into TMAO, which has been linked to heart risk. That is the open question with long-term daily use.", "Oral doses barely reach muscle without a big carb load alongside. Injecting sidesteps that."],src:[{"n": "L-carnitine trials", "u": "https://clinicaltrials.gov/search?term=L-carnitine"}, {"n": "Carnitine and TMAO", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=carnitine+TMAO+cardiovascular"}],cyc:{"run": "Ongoing", "off": "Optional", "note": "No cycling needed. The open question is long-term TMAO exposure, not tolerance."}},
 
 aod:{cls:"hGH fragment 176-191",tier:"none",
  what:"A fragment of growth hormone marketed for fat loss. It was properly tested, and it did not work.",
@@ -1380,7 +1471,7 @@ aod:{cls:"hGH fragment 176-191",tier:"none",
  good:["Clean safety profile — it doesn't raise IGF-1 or affect blood sugar","Tested properly rather than never studied"],
  bad:["Failed its human efficacy trial outright","Still sold on rodent data that human testing did not confirm","Being safe is not the same as being useful"],
  t:"Fasted AM.",
- pair:["b"],warn:["Failed its Phase 2b obesity trial — sold on preclinical data that didn't replicate in people."]},
+ pair:["b"],warn:["This failed its human obesity trial. It did not beat placebo, and it is still sold on the mouse data.", "It is genuinely safe — it just does not appear to do the thing it is sold for.", "If fat loss is the goal, the GLP-1 family has the evidence this one lacks."],src:[{"n": "AOD-9604 research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=AOD-9604"}, {"n": "Trials", "u": "https://clinicaltrials.gov/search?term=AOD-9604"}],cyc:{"run": "12 weeks", "off": "Reassess", "note": "Trials ran 12 weeks. Given it failed those trials, the more useful question is whether to run it at all."}},
 
 /* ---- commonly added, not in the default list ---- */
 
@@ -1390,11 +1481,11 @@ sema:{cls:"GLP-1 receptor agonist",tier:"human",
  ev:[["human","STEP programme: roughly 15% body-weight loss at 68 weeks versus placebo."],
      ["human","SELECT trial showed a 20% reduction in major cardiovascular events in overweight patients with existing cardiovascular disease."],
      ["human","Extensive long-term safety data — a genuine rarity on this list."]],
- dose:"Titrated 0.25 mg weekly up to 2.4 mg for weight management.",
+ dose:"Stepped up from 0.25 mg weekly to 2.4 mg for weight management.",
  good:["Massive high-quality trial base","Proven cardiovascular benefit, not just weight loss","Long-term safety actually characterised"],
  bad:["Nausea, vomiting and constipation are common","Muscle loss in a deficit without resistance training","Weight returns after stopping in most people","Gastroparesis and gallbladder issues reported"],
  t:"Weekly, subq.",pair:["protein","electro","fiber"],
- warn:["Titrate slowly — most side effects come from moving up too fast.","Keep protein high and lift, or you'll lose muscle with the fat."]},
+ warn:["Find the lowest dose that works instead of climbing to the next one. Most side effects come from going up too fast.", "Lift weights and eat real protein, or a large share of what you lose will be muscle.", "Drink more water than usual and keep salt up. Eating less means less sodium, which causes most of the tiredness and headaches.", "Tell a doctor before any surgery or sedation — slowed stomach emptying is an anaesthetic risk.", "Most people regain weight after stopping. Have a plan for what happens next."],src:[{"n": "STEP trials", "u": "https://clinicaltrials.gov/search?term=semaglutide+obesity"}, {"n": "Semaglutide label", "u": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=semaglutide"}],cyc:{"run": "Ongoing", "off": "None built in", "note": "A long-term medication rather than a cycle. Trials ran 68 weeks and beyond. Most people regain weight after stopping."}},
 
 tirz:{cls:"Dual agonist · GIP / GLP-1",tier:"human",
  what:"Dual incretin agonist, more effective than semaglutide in head-to-head testing.",
@@ -1402,11 +1493,11 @@ tirz:{cls:"Dual agonist · GIP / GLP-1",tier:"human",
  ev:[["human","SURMOUNT-1: around 21% body-weight loss at 72 weeks on the highest dose."],
      ["human","SURPASS-2 beat semaglutide directly on both glucose control and weight."],
      ["human","Approved for type 2 diabetes and for obesity."]],
- dose:"Titrated 2.5 mg weekly up to 15 mg.",
+ dose:"Stepped up from 2.5 mg weekly to 15 mg.",
  good:["Outperforms semaglutide head-to-head","Approved with a large trial base","GIP arm may improve GI tolerability"],
  bad:["Same GI side-effect profile as GLP-1 drugs","Same muscle-loss and rebound concerns","Expensive"],
  t:"Weekly, subq.",pair:["protein","electro","fiber"],
- warn:["Titrate slowly.","Protein and resistance training are not optional in a deficit."]},
+ warn:["Find the lowest dose that works instead of climbing to the next one.", "Lift weights and keep protein high, or you will lose muscle alongside the fat.", "Watch your water and salt — eating less means less sodium, and that is what causes most of the tiredness and headaches.", "Tell a doctor before surgery or sedation because of slowed stomach emptying."],src:[{"n": "SURMOUNT / SURPASS trials", "u": "https://clinicaltrials.gov/search?term=tirzepatide"}, {"n": "Tirzepatide label", "u": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=tirzepatide"}],cyc:{"run": "Ongoing", "off": "None built in", "note": "Same pattern as the other GLP-1s — continuous, not cycled. Trials ran 72 weeks."}},
 
 ghkcu:{cls:"Copper tripeptide · Gly-His-Lys-Cu",tier:"pre",
  what:"Copper-binding tripeptide with strong evidence topically for skin, and much thinner evidence injected.",
@@ -1418,7 +1509,7 @@ ghkcu:{cls:"Copper tripeptide · Gly-His-Lys-Cu",tier:"pre",
  good:["Genuinely good evidence for the topical route","Well-characterised, non-exotic mechanism","Also used for hair and scalp with reasonable support"],
  bad:["Injectable use is not what the good evidence covers","Copper accumulation is a real consideration with chronic systemic dosing","Stings notably on injection","Can drive copper–zinc imbalance"],
  t:"Daily or several times weekly.",pair:["zinc","c"],
- warn:["The strong evidence is topical, not injected.","Chronic systemic copper can push zinc down — worth watching on bloodwork."]},
+ warn:["The strong evidence is for putting it on your skin, not injecting it. Those are different use cases with very different support.", "Copper builds up. Long-term systemic dosing can push zinc down, so check both if you run it for months.", "It stings going in. That is normal for copper peptides."],src:[{"n": "GHK-Cu research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=GHK-Cu+copper+peptide"}, {"n": "Skin trials", "u": "https://clinicaltrials.gov/search?term=copper+tripeptide"}],cyc:{"run": "4-12 weeks", "off": "4 weeks", "note": "Worth cycling systemically because of copper accumulation. Topical use has no such limit."}},
 
 bpc:{cls:"Gastric pentadecapeptide BPC-157",tier:"none",
  what:"The most popular repair peptide in the world, and one of the least supported by human data.",
@@ -1430,7 +1521,7 @@ bpc:{cls:"Gastric pentadecapeptide BPC-157",tier:"none",
  good:["Remarkably consistent rodent results across many tissue types","Strong anecdotal reputation for tendon and gut issues","No serious adverse effects reported in the animal literature"],
  bad:["Zero human trials despite twenty years of popularity","Angiogenesis promotion is theoretically unwise with any undiagnosed tumour","WADA-banned","Stability in solution is questionable"],
  t:"Daily, often near the injury site.",pair:["protein","c","zinc"],
- warn:["No human trial data exists.","Promotes angiogenesis — a theoretical concern with any undiagnosed cancer.","WADA-banned if you compete."]},
+ warn:["There is not one published human trial. Twenty years of popularity, zero completed trials.", "It grows new blood vessels, which is exactly what a tumour needs. Worth a doctor's opinion if anything is undiagnosed.", "Banned by WADA since 2022 if you compete.", "Dose it near the injury if you can — that is the pattern the animal work used."],src:[{"n": "BPC-157 research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=BPC+157"}, {"n": "Trials", "u": "https://clinicaltrials.gov/search?term=BPC-157"}],cyc:{"run": "2-6 weeks", "off": "Until next injury", "note": "Used as an injury-driven course rather than a standing protocol. Run it while healing, stop when healed."}},
 
 tb500:{cls:"Thymosin beta-4 fragment",tier:"pre",
  what:"Synthetic fragment of thymosin beta-4, used alongside BPC-157 for systemic repair.",
@@ -1442,7 +1533,7 @@ tb500:{cls:"Thymosin beta-4 fragment",tier:"pre",
  good:["Actin biology is well established","Some genuine human trial history for the parent peptide","Longer-acting than BPC-157, so less frequent dosing"],
  bad:["The human trials were for different indications and different formulations","Promotes cell migration — a theoretical concern with malignancy","WADA-banned","Commonly sold as a fragment that may not match what was studied"],
  t:"Weekly or twice weekly.",pair:["protein","c"],
- warn:["Human trial history is for a different peptide and different indications.","WADA-banned if you compete."]},
+ warn:["The human trials people cite were for a different formulation and different conditions — dry eye and pressure ulcers, not tendons.", "Like BPC-157 it drives cell migration, so the same undiagnosed-cancer caution applies.", "WADA-banned.", "It lasts longer than BPC-157, so weekly dosing is enough — more often is just waste."],src:[{"n": "Thymosin beta-4 trials", "u": "https://clinicaltrials.gov/search?term=thymosin+beta+4"}, {"n": "Research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=thymosin+beta-4+TB-500"}],cyc:{"run": "4-6 weeks loading", "off": "Maintenance or stop", "note": "Typically a loading phase then either maintenance dosing or stopping. Longer-acting than BPC-157, so weekly is enough."}},
 
 kpv:{cls:"Alpha-MSH fragment · Lys-Pro-Val",tier:"none",
  what:"The three-amino-acid tail of alpha-MSH, carrying the anti-inflammatory activity without the pigmentation effects.",
@@ -1453,7 +1544,7 @@ kpv:{cls:"Alpha-MSH fragment · Lys-Pro-Val",tier:"none",
  dose:"No human data. Community use runs 200–500 µg/day, oral or injected depending on the target.",
  good:["Targeted anti-inflammatory action without immune suppression","Avoids alpha-MSH's pigmentation and libido effects","Consistent preclinical results in gut models"],
  bad:["No human trials","Oral versus injected routes target different things and get conflated","Very short half-life"],
- t:"Daily.",pair:["zinc","glutamine"],warn:["No human trial data.","Oral and injected use aren't interchangeable — they target different tissue."]},
+ t:"Daily.",pair:["zinc","glutamine"],warn:["Swallowing it and injecting it do different jobs. Oral targets the gut; injected goes systemic. Do not treat them as the same.", "No human trials exist for this one.", "It calms inflammation without broadly suppressing immunity, which is the main thing in its favour."],src:[{"n": "KPV peptide research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=KPV+peptide+inflammation"}],cyc:{"run": "2-8 weeks", "off": "As needed", "note": "Usually run during a flare rather than continuously. No human data on duration."}},
 
 glow:{cls:"Blend · GHK-Cu + BPC-157 + TB-500",tier:"none",
  what:"Three-peptide blend aimed at skin, hair and connective tissue.",
@@ -1465,7 +1556,7 @@ glow:{cls:"Blend · GHK-Cu + BPC-157 + TB-500",tier:"none",
  good:["Convenient single injection","Components target the same broad goal"],
  bad:["Untested as a combination","Inherits every limitation of its parts","Contains two WADA-banned peptides","Not a standardised product between suppliers"],
  t:"Daily.",pair:["protein","c","zinc"],
- warn:["Contains WADA-banned components.","Blend ratios vary between suppliers."]},
+ warn:["Untested as a blend — everything known is about the parts separately.", "Contains two WADA-banned peptides.", "Ratios differ between suppliers, so two vials labelled GLOW are not the same product."],src:[{"n": "GHK-Cu research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=GHK-Cu+copper+peptide"}, {"n": "BPC-157 research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=BPC+157"}],cyc:{"run": "4-8 weeks", "off": "2-4 weeks", "note": "Same as its parts. Untested as a blend at any length."}},
 
 ipa:{cls:"Ghrelin mimetic / GH secretagogue",tier:"pre",
  what:"Selective GH secretagogue, usually paired with a GHRH analog.",
@@ -1477,7 +1568,7 @@ ipa:{cls:"Ghrelin mimetic / GH secretagogue",tier:"pre",
  good:["Selective — minimal cortisol or prolactin rise","Preserves pulsatile GH release","Good tolerability record anecdotally"],
  bad:["No meaningful human efficacy trials","GH pulses don't automatically mean body-composition change","Stimulates appetite via ghrelin signalling, which works against a deficit"],
  t:"Before bed, fasted.",pair:["protein"],
- warn:["Raises appetite through ghrelin signalling — counterproductive if you're cutting."]},
+ warn:["It makes you hungry. That is the ghrelin pathway doing its job, and it works directly against a fat-loss phase.", "Dose it fasted before bed — food, especially carbs, blunts the GH pulse you are paying for.", "More GH does not automatically mean a better body. That link is assumed, not demonstrated."],src:[{"n": "Ipamorelin research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=ipamorelin"}, {"n": "GH secretagogue trials", "u": "https://clinicaltrials.gov/search?term=growth+hormone+secretagogue"}],cyc:{"run": "8-12 weeks", "off": "4 weeks", "note": "Usually cycled to limit receptor desensitisation, though the evidence for any specific schedule is thin. Nightly dosing within a cycle."}},
 
 cjc:{cls:"GHRH analog · CJC-1295 without DAC",tier:"pre",
  what:"Modified GHRH fragment, usually stacked with a ghrelin mimetic.",
@@ -1489,7 +1580,7 @@ cjc:{cls:"GHRH analog · CJC-1295 without DAC",tier:"pre",
  good:["Confirmed to raise GH and IGF-1 in humans","No-DAC form preserves pulsatility","Synergistic with ghrelin mimetics"],
  bad:["Raising GH is documented; benefit from doing so is not","Raises IGF-1, worth tracking","Water retention and joint aches at higher doses"],
  t:"Before bed, fasted.",pair:["protein"],
- warn:["Raises IGF-1 — track it on bloodwork."]},
+ warn:["Get IGF-1 tested. It is the only practical way to know whether the dose is doing anything.", "Puffy hands, aching joints or tingling fingers mean back off rather than push on.", "Take it fasted, away from carbs, or you are wasting the pulse.", "Raising GH is proven. Raising GH making you better is not."],src:[{"n": "CJC-1295 research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=CJC-1295"}, {"n": "Trials", "u": "https://clinicaltrials.gov/search?term=CJC-1295"}],cyc:{"run": "8-12 weeks", "off": "4 weeks", "note": "Cycled alongside a secretagogue. Watch IGF-1 across the cycle rather than guessing."}},
 
 selank:{cls:"Tuftsin analog anxiolytic",tier:"pre",
  what:"Russian anxiolytic peptide, approved there, essentially unstudied in the West.",
@@ -1500,7 +1591,7 @@ selank:{cls:"Tuftsin analog anxiolytic",tier:"pre",
  dose:"Russian clinical use is typically 250–500 µg intranasally per day.",
  good:["Non-sedating and non-dependence-forming in the available data","Approved somewhere, unlike most of this list","Intranasal avoids injection entirely"],
  bad:["Evidence is almost entirely Russian and not independently replicated","No Western trials","Effects are subtle and easily confused with placebo"],
- t:"Intranasal, as needed.",pair:["mag","b"],warn:["Evidence base is Russian clinical work with no Western replication."]},
+ t:"Intranasal, as needed.",pair:["mag","b"],warn:["The evidence is entirely Russian clinical work that nobody outside has replicated.", "Effects are subtle. If you are expecting something obvious you will likely be disappointed.", "It goes up the nose, not into a muscle — no injection needed."],src:[{"n": "Selank research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=selank+anxiolytic"}],cyc:{"run": "2-4 weeks", "off": "1-2 weeks", "note": "Russian protocols use short courses rather than continuous use."}},
 
 semax:{cls:"ACTH(4-10) analog nootropic",tier:"pre",
  what:"Russian nootropic and neuroprotective peptide, approved there for stroke and cognitive indications.",
@@ -1511,7 +1602,7 @@ semax:{cls:"ACTH(4-10) analog nootropic",tier:"pre",
  dose:"Russian clinical use runs 200 µg–1 mg intranasally daily, higher in acute stroke protocols.",
  good:["Real clinical use history in one country","Neuroprotective mechanism is plausible","Intranasal, no injection"],
  bad:["No Western validation whatsoever","Stroke indication doesn't transfer to healthy cognitive enhancement","Quality and identity of gray-market product is a real question"],
- t:"Intranasal, AM.",pair:["b","omega3"],warn:["Approved use is acute stroke care — that doesn't transfer to healthy nootropic use."]},
+ t:"Intranasal, AM.",pair:["b","omega3"],warn:["What it is approved for in Russia is acute stroke care. That does not transfer to healthy people wanting sharper focus.", "No Western trial has ever tested it.", "Intranasal, so no injection — but nasal absorption varies a lot between people."],src:[{"n": "Semax research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=semax+peptide"}],cyc:{"run": "10-14 days", "off": "2-4 weeks", "note": "Approved use is short acute courses. Long continuous use is not what it was studied for."}},
 
 pt141:{cls:"Melanocortin receptor agonist · bremelanotide",tier:"human",
  what:"An approved drug for sexual desire disorder, acting centrally rather than on blood flow.",
@@ -1523,7 +1614,7 @@ pt141:{cls:"Melanocortin receptor agonist · bremelanotide",tier:"human",
  good:["Genuine FDA approval with published trials","Central mechanism works where blood-flow drugs don't","Works for both men and women"],
  bad:["Nausea is common and frequently severe","Transient blood-pressure rise — not for uncontrolled hypertension","Can cause skin and gum hyperpigmentation with repeated use","Approved trial effect sizes were modest"],
  t:"As needed, well before activity.",pair:["b"],
- warn:["Raises blood pressure transiently — avoid with uncontrolled hypertension.","Nausea is the most common reason people stop."]},
+ warn:["Nausea is the main reason people stop. Take it well before you need it, not right before.", "It briefly raises blood pressure. Skip it if yours is high or uncontrolled.", "Repeated use can darken skin and gums in some people.", "It works on desire in the brain, not blood flow — a different job from the ED drugs."],src:[{"n": "Bremelanotide label", "u": "https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=bremelanotide"}, {"n": "RECONNECT trials", "u": "https://clinicaltrials.gov/search?term=bremelanotide"}],cyc:{"run": "As needed", "off": "Max 8 doses/month", "note": "Not a cycle — an as-needed dose. The label caps it at one dose in 24 hours and eight per month, and that cap exists for a reason."}},
 
 melatonin:{cls:"Pineal hormone",tier:"human",
  what:"The body's own circadian signal. Extensively studied, and almost universally overdosed.",
@@ -1535,7 +1626,7 @@ melatonin:{cls:"Pineal hormone",tier:"human",
  good:["Extensively studied with a strong safety record","Cheap and widely available","Genuinely effective for circadian shifting"],
  bad:["Most retail doses are far too high, which can cause grogginess","It shifts timing rather than inducing sleep — expectations are usually wrong","Timing matters more than dose and is usually got wrong"],
  t:"30–60 min before target sleep time.",pair:["mag","glycine"],
- warn:["Retail doses are typically 10–20x higher than the studied effective dose."]},
+ warn:["Take far less than the bottle suggests. The studied dose is 0.3-0.5 mg and shops sell 5-10 mg.", "Timing beats dose. Take it 30-60 minutes before the time you want to fall asleep, every night, to shift your clock.", "It is a timing signal, not a sedative. If you expect to feel knocked out you will think it failed.", "Too much is what causes the groggy morning."],src:[{"n": "Melatonin trials", "u": "https://clinicaltrials.gov/search?term=melatonin+insomnia"}, {"n": "Dose research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=melatonin+physiological+dose+sleep"}],cyc:{"run": "Nightly or to reset", "off": "Not required", "note": "Fine nightly at a physiological dose. For shifting a sleep schedule, a couple of weeks of consistent timing does the job."}},
 
 cagri:{cls:"Long-acting amylin analog",tier:"human",
  what:"Amylin analog trialled alongside semaglutide as CagriSema.",
@@ -1543,10 +1634,10 @@ cagri:{cls:"Long-acting amylin analog",tier:"human",
  ev:[["human","REDEFINE trials of CagriSema showed weight loss beyond semaglutide alone."],
      ["human","Monotherapy data exists but the combination is where the development effort sits."],
      ["pre","Not yet approved."]],
- dose:"Trials titrated to 2.4 mg weekly, matched to the semaglutide arm.",
+ dose:"Trials stepped up to 2.4 mg weekly, matched to the semaglutide arm.",
  good:["Complementary mechanism to GLP-1","Real Phase 3 trial data","May allow lower GLP-1 doses for the same effect"],
  bad:["Not approved","Adds to the GI side-effect burden when stacked","Little standalone long-term data"],
- t:"Weekly, subq.",pair:["protein","electro"],warn:["Stacking with a GLP-1 compounds nausea — titrate one at a time."]}
+ t:"Weekly, subq.",pair:["protein","electro"],warn:["Stacking this with a GLP-1 doubles up the nausea. Change one thing at a time so you know what caused what.", "Same rules as the GLP-1s: lift, eat protein, keep water and salt up.", "Not approved yet — the trials are still running."],src:[{"n": "CagriSema trials", "u": "https://clinicaltrials.gov/search?term=cagrilintide"}, {"n": "Research", "u": "https://pubmed.ncbi.nlm.nih.gov/?term=cagrilintide"}],cyc:{"run": "Ongoing", "off": "None built in", "note": "Trialled continuously alongside semaglutide rather than in cycles."}}
 };
 const DEF=[
  mk("reta","Retatrutide","GLP-1",1,"mg",{t:"week",days:[1]},30,30,"Weekly, AM"),
@@ -1861,7 +1952,8 @@ function renderTrack(){
     if(g==="workout"){dayTab="workout";openDay(true);
       const w=workoutFor(iso(selDay));if(w&&(w.exercises||[]).some(e=>!exDone(e))){setTimeout(()=>{const st=$("#wkStart");if(st)st.click();},60);}return;}
     if(g==="workout-edit"){dayTab="workout";openDay(true);return;}
-    if(g==="peps"){dayTab="peps";openDay(true);return;}
+    // the peptides card goes to the Peps tab rather than the floating day sheet
+    if(g==="peps"){setTab("guide");return;}
     if(g==="food"){dayTab="food";openDay(true);return;}
   });
 }
@@ -2802,8 +2894,15 @@ function deepDive(id){
       ${block("s","What's suggested","animal, cell or small human data",sugg)}
       ${block("u","What's unknown","no data, or the trial went the wrong way",unknown)}
 
-      ${g.dose?`<div class="ddsec"><h4>Doses used in studies</h4>
-        <div class="dddose">${g.dose}</div></div>`:""}
+      ${g.dose||g.cyc?`<div class="ddcard dose">
+        <div class="ddch"><span class="dot"></span>Dosing &amp; cycles</div>
+        ${g.dose?`<p class="ddp">${g.dose}</p>`:""}
+        ${g.cyc?`<div class="cycrow">
+          <div class="cyccell"><span class="ck">Run for</span><span class="cv">${g.cyc.run}</span></div>
+          <div class="cyccell"><span class="ck">Then off</span><span class="cv">${g.cyc.off}</span></div>
+        </div>
+        <p class="ddp sm">${g.cyc.note}</p>`:""}
+      </div>`:""}
 
       <div class="ddledger">
         ${(g.good||[]).length?`<div class="ddcol good"><h5>Worth it because</h5>
@@ -2815,6 +2914,19 @@ function deepDive(id){
       ${(g.warn||[]).length?`<div class="ddwarn"><div class="ddwh">Before you dose</div>
         <ul>${g.warn.map(w=>`<li>${w}</li>`).join("")}</ul></div>`:""}
 
+      ${((g.pair||[]).length||(g.extra||[]).length)?`
+        <button class="ddtoggle food" id="ddSup" aria-expanded="false">
+          <span><span class="dot"></span>Food &amp; nutrients that support it</span><i class="ddchev">›</i></button>
+        <div class="ddsup" id="ddSupBody">
+          ${(g.pair||[]).map(k=>{const nn=N[k];return nn?`<div class="nut">
+            <div class="nn"><span>${nn.n}</span></div><div class="note">${nn.a}</div>
+            ${foodChips(nn.f)}</div>`:"";}).join("")}
+          ${(g.extra||[]).map(x=>`<div class="nut"><div class="nn"><span>${x[0]}</span></div>
+            <div class="note">${x[1]}</div></div>`).join("")}
+          <div class="bwork">Food sources only, no amounts. What's right for you depends on
+            your bloodwork and your doctor.</div>
+        </div>`:""}
+
       <div class="ddyours">
         <div class="ddyh">Your setup</div>
         <div class="istat"><span class="k">Your dose</span><span class="v">${doseLabel(p)}</span></div>
@@ -2823,9 +2935,23 @@ function deepDive(id){
         <div class="istat"><span class="k">Family</span><span class="v">${pepFamNames(p)}</span></div>
       </div>
 
+      ${(g.src||[]).length?`<div class="ddcard src">
+        <div class="ddch"><span class="dot"></span>Check it yourself</div>
+        <p class="ddp sm">Every claim above comes from published research. These open the
+          literature so you can read it rather than take my word for it.</p>
+        <div class="srclist">${g.src.map(x=>
+          `<a class="src1" href="${x.u}" target="_blank" rel="noopener noreferrer">${x.n}<i>↗</i></a>`).join("")}</div>
+      </div>`:""}
+
       <p class="ddfoot">Summarised from published research. Not medical advice, and
         not a recommendation to start, stop or change a dose.</p>
     </div>`;
+  const sup=$("#ddSup");
+  if(sup)sup.onclick=()=>{
+    const open=sup.getAttribute("aria-expanded")==="true";
+    sup.setAttribute("aria-expanded",String(!open));
+    $("#ddSupBody").classList.toggle("on",!open);
+  };
   $("#deepView").classList.add("on");
   $("#deepView").scrollTop=0;
 }
@@ -3392,12 +3518,7 @@ function renderGuide(){
       <div class="gbody"><div class="gbin">
         ${off?"":`<div class="invline"><div class="invbar"><i style="width:${pct}%"></i></div>
           <div class="invmeta"><span>${round(p.remaining,1)} ${p.unit} left</span>${out?`<span>est. run out <b>${out}</b></span>`:""}</div></div>`}
-        ${g?`<div class="what">${g.what}</div><div class="gt">◷ ${g.t}</div>
-          ${(g.pair||[]).length?`<div class="stacklbl" style="margin:12px 0 2px">◇ Supports it</div>`:""}
-          ${(g.pair||[]).map(k=>{const nn=N[k];return nn?`<div class="nut"><div class="nn"><span>${nn.n}</span></div><div class="note">${nn.a}</div><div class="food">Food sources: ${nn.f}</div></div>`:"";}).join("")}
-          ${(g.extra||[]).map(x=>`<div class="nut"><div class="nn"><span>${x[0]}</span></div><div class="note">${x[1]}</div></div>`).join("")}
-          ${g.warn&&g.warn.length?`<div class="warns"><div class="wl">Warnings</div><ul style="margin:0;padding-left:16px">${g.warn.map(w=>`<li>${w}</li>`).join("")}</ul></div>`:""}
-          <div class="bwork">Food sources only — no amounts. What's right for you depends on your bloodwork and your doctor.</div>`
+        ${g?`<div class="what">${g.what}</div><div class="gt">◷ ${g.t}</div>`
         :`<div class="what">No detailed guide yet for this one. General principle: start low, stay hydrated, and let bloodwork and your doctor guide any changes.</div>`}
         <div class="editrow" style="margin-top:12px">
           ${g?`<button class="mini deep" data-deep="${p.id}">ⓘ Deep dive</button>`:""}
@@ -3605,7 +3726,7 @@ $("#importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new
   r.readAsText(f);e.target.value="";};
 
 /* ============ nav / shell ============ */
-const SUBS={track:"Today",guide:"Guide",gym:"Recovery",food:"Food",settings:"Settings"};
+const SUBS={track:"Today",guide:"Peps",gym:"Recovery",food:"Food",settings:"Settings"};
 let tab="track";
 function setTab(t){tab=t;$$(".view").forEach(v=>v.classList.remove("on"));$("#v-"+t).classList.add("on");
   $$("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
