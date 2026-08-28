@@ -2219,9 +2219,12 @@ function renderTrack(){
   });
   $$("[data-go]",el).forEach(b=>b.onclick=()=>{
     const g=b.dataset.go;
-    if(g==="workout"){dayTab="workout";openDay(true);
-      const w=workoutFor(iso(selDay));if(w&&(w.exercises||[]).some(e=>!exDone(e))){setTimeout(()=>{const st=$("#wkStart");if(st)st.click();},60);}return;}
-    if(g==="workout-edit"){dayTab="workout";openDay(true);return;}
+    // the workout lives in the Gym tab now, not a floating sheet
+    if(g==="workout"){setTab("gym");
+      const w=workoutFor(iso(selDay));
+      if(w&&(w.exercises||[]).some(e=>!exDone(e)))setTimeout(()=>{const b=$("#gymStart");if(b)b.click();},80);
+      return;}
+if(g==="workout-edit"){dayTab="workout";openDay(true);return;}
     // the peptides card goes to the Peps tab rather than the floating day sheet
     if(g==="peps"){setTab("guide");return;}
     // straight to the Food tab — the day sheet still carries the old
@@ -2467,7 +2470,7 @@ const ROUTINES={
   {n:"Dumbbell Incline Bench Press",r:15,w:80,s:3},{n:"Bar Triceps Pushdown",r:15,w:70,s:3},
   {n:"Tricep Extension",r:15,w:20,s:3},{n:"Dumbbell Bicep Curl",r:15,w:90,s:3},
   {n:"Cross Body Hammer Curl",r:10,w:55,s:3},{n:"Cable Wrist Curl",r:15,w:35,s:3}]},
- lower:{n:"Lower",muscles:["quads","glutes","hamstrings","calves"],ex:[
+ lower:{n:"Legs",muscles:["quads","glutes","hamstrings","calves"],ex:[
   {n:"Sled 45 Leg Wide Press",r:15,w:527,s:4},{n:"Forward Lunge Alternating",r:10,w:0,s:3},
   {n:"Leg Extension",r:15,w:170,s:3},{n:"Side Lunge",r:15,w:0,s:3},
   {n:"Walking Low Lunge",r:10,w:0,s:3},{n:"Sled Calf Press",r:22,w:487,s:3},
@@ -2699,8 +2702,13 @@ function openDay(fromCal){
   renderDayBody(key,isToday);
   applyLang();
 }
+/* The workout now lives in the Gym tab, so a refresh from inside it should
+   redraw that tab rather than a sheet that is no longer on screen. */
 function renderDayBody(key,isToday){
-  const el=$("#dayBody");if(!el)return;
+  const gd=$("#gymDay");
+  if(gd&&$("#v-gym").classList.contains("on"))return dayWorkout(gd,key);
+  const el=$("#dayBody");
+  if(!el)return renderGym();
   if(dayTab==="peps")return dayPeps(el,key,isToday);
   if(dayTab==="food")return dayFood(el,key);
   return dayWorkout(el,key);
@@ -2729,7 +2737,7 @@ function dayPeps(el,key,isToday){
     </div>`:""}`;
   if($("#oAck"))$("#oAck").onclick=()=>ackAll(key,isToday);
   $$("[data-log]",el).forEach(b=>b.onclick=()=>{toggleDay2(b.dataset.log,key,isToday);renderDayBody(key,isToday);});
-  $$("[data-info]",el).forEach(b=>b.onclick=()=>{closeDay();infoPop(b.dataset.info);});
+  $$("[data-info]",el).forEach(b=>b.onclick=()=>infoPop(b.dataset.info));
   $$("[data-hist]",el).forEach(b=>b.onclick=ev=>{ev.stopPropagation();pepHistPop(b.dataset.hist);});
   $$("[data-edit]",el).forEach(b=>b.onclick=ev=>{ev.stopPropagation();editVial(b.dataset.edit);});
   const sheet=el.closest(".daysheet");if(sheet)sheet.scrollTop=0;
@@ -2765,7 +2773,7 @@ function dayWorkout(el,key){
           <span class="gcaret">›</span></button>`;}).join("")}</div>
       <button class="ghost" id="restDay" style="margin-top:10px">Rest day</button></div>`;
     $$("[data-rt]",el).forEach(b=>b.onclick=()=>startRoutine(key,b.dataset.rt));
-    $("#restDay").onclick=()=>{toast("Rest day");closeDay();};
+    $("#restDay").onclick=()=>toast("Rest day");
     return;
   }
   const r=ROUTINES[w.routine],st=wkStats(w);
@@ -3019,7 +3027,6 @@ function drawPlayer(){
         <button class="pgh" data-add="20">+20s</button>
         <div class="prest ${PL.left<=0?'over':''}"><span class="prlbl">${PL.left<=0?"Go":"Rest"}</span><span class="prnum">${fmtClock(PL.left)}</span></div>
         <button class="pgh" id="plSkip">${PL.left<=0?"Next":"Skip"}</button>`:`
-        <button class="pgh sq" id="plAllSets" aria-label="Log all remaining sets">✓✓</button>
         <button class="plog" id="plLog">Log set &amp; rest <span>✓</span></button>`}
       </div></div>`;
   el.classList.add("on");
@@ -3038,7 +3045,6 @@ function drawPlayer(){
     // redraw the player, not the day list, so the swap lands on screen
     $("#plSwap").onclick=()=>{swapPop(w,PL.i,PL.key,()=>{stopRest();drawPlayer();});};
     $("#plLog").onclick=logSet;
-    $("#plAllSets").onclick=()=>{sets.forEach(x=>x.done=true);markExercise(e,true);w.touched=Date.now();save();afterExercise();};
   }
 }
 /* exercise list — jump to any exercise mid-session */
@@ -3101,18 +3107,19 @@ function fireAlert(){
 function clearAlert(){const b=$("#alertBorder");if(b)b.classList.remove("on");}
 function finishPlayer(){
   const w=PL.w,key=PL.key,mins=Math.round(PL.elapsed/60);
-  w.exercises.forEach(e=>{ensureSets(e).forEach(x=>x.done=true);markExercise(e,true);});
+  // record only what was actually logged — do not tick off sets you skipped
+  w.exercises.forEach(e=>{markExercise(e,exDone(e));});
   w.touched=Date.now();w.durMin=mins;save();
   clearInterval(PL.tick);PL=null;clearAlert();
   $("#player").classList.remove("on");
   toast("Workout complete · "+mins+" min");
-  selDay=parseISO(key);dayTab="workout";openDay();
+  selDay=parseISO(key);setTab("gym");
 }
 function endPlayer(){
   const key=PL?PL.key:iso(selDay);
   if(PL){clearInterval(PL.tick);PL.w.durMin=Math.round(PL.elapsed/60);save();}
   PL=null;clearAlert();$("#player").classList.remove("on");
-  selDay=parseISO(key);dayTab="workout";openDay();
+  selDay=parseISO(key);setTab("gym");
 }
 function exHistPop(name){
   const h=exHistory(name);
@@ -3138,7 +3145,7 @@ function ackAll(key,isToday){
       if(isToday&&!p.label)p.remaining=Math.max(0,round(p.remaining-doseMg(p),3));}});
     toast("Protocol followed · "+list.length+" logged");
   }
-  save();openDay();
+  save();renderGuide();renderTrack();
 }
 function half(cls,icon,label,list,key,isToday){
   const logd=S.log[key]||{};
@@ -4175,7 +4182,11 @@ function renderGym(){
   const tally=k=>rows.filter(r=>r.s.state===k).length;
   const soonest=rows.filter(r=>r.s.state!=="fresh"&&r.s.state!=="untrained")
     .sort((a,b)=>a.s.hrs-b.s.hrs)[0];
-  el.innerHTML=`<div class="vsub">Muscle recovery</div>
+  const gk=iso(new Date());
+  el.innerHTML=`<div class="vsub">Today's session</div>
+    <div class="vhead"><h2>Gym</h2><div class="spacer"></div></div>
+    <div id="gymDay"></div>
+    <div class="vsub" style="margin-top:26px">Muscle recovery</div>
     <div class="vhead"><h2>Recovery</h2><div class="spacer"></div>
       <span class="chip">${MUSCLES.length} groups</span></div>
     <div class="panel figpanel">
@@ -4188,7 +4199,6 @@ function renderGym(){
       </div>
       ${soonest?`<div class="nextup">Next ready · <b>${soonest.m.n}</b> in ${soonest.s.hrs}h</div>`:""}
     </div>
-    <button class="primary" id="logWorkout" style="margin:0 0 12px">+ Log a workout</button>
     <div class="panel"><div class="lbl">Muscle status</div>
       ${rows.map(({m,s})=>`<div class="row">
         <i class="sdot" style="background:${MCOLOR[s.state]};color:${MCOLOR[s.state]}"></i>
@@ -4206,7 +4216,7 @@ function renderGym(){
       ${recent.length?recent.map(w=>`<div class="row"><div class="ri"><div class="rp">${w.routine&&ROUTINES[w.routine]?ROUTINES[w.routine].n:(w.muscles.map(id=>(MUSCLES.find(m=>m.id===id)||{}).n).filter(Boolean).join(", ")||"—")}</div>
         <div class="rm">${w.date} · ${(INTENSITY[w.intensity]||INTENSITY[2]).n}${w.note?" · "+w.note:""}</div></div>
         <button class="del" data-wdel="${w.id}">×</button></div>`).join(""):`<div class="empty-note">No workouts logged yet.</div>`}</div>`;
-  $("#logWorkout").onclick=workoutModal;
+  dayWorkout($("#gymDay"),gk);
   $$("[data-m]",el).forEach(p=>p.onclick=()=>{const m=MUSCLES.find(x=>x.id===p.dataset.m),s=muscleState(p.dataset.m);
     toast(`${m.n} · ${s.state==="fresh"?"ready to train":s.state==="untrained"?"not trained recently":s.hrs+"h until fresh"}`);});
   $$("[data-wdel]",el).forEach(b=>b.onclick=()=>{S.workouts=S.workouts.filter(w=>w.id!==b.dataset.wdel);save();renderGym();});
