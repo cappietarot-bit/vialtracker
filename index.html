@@ -395,6 +395,38 @@
   .lrv b{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
   .lrv b.dim{color:var(--ink3);font-weight:600}
   .lrv span{display:block;font-family:var(--mono);font-size:9px;color:var(--ink3);margin-top:1px}
+  /* saved meals: one tap to log the same thing again */
+  .mealgrid{display:flex;flex-direction:column;gap:8px}
+  .mealcard{position:relative;display:flex;align-items:stretch;gap:0;
+    background:var(--panel2);border:1px solid var(--line);border-radius:13px;overflow:hidden}
+  .mealcard:hover{border-color:var(--accent)}
+  .mealgo{flex:1;min-width:0;display:flex;align-items:center;gap:11px;padding:9px 10px;
+    background:transparent;border:0;color:var(--ink);text-align:left}
+  .mealpic{flex:0 0 auto;width:46px;height:46px;border-radius:10px;overflow:hidden;
+    background:var(--panel);border:1px solid var(--line);display:grid;place-items:center}
+  .mealpic img{width:100%;height:100%;object-fit:cover;display:block}
+  .mealpic i{font-style:normal;font-size:18px;font-weight:800;color:var(--ink3)}
+  .mealtx{flex:1;min-width:0;display:block}
+  .mealn{display:block;font-size:14px;font-weight:650;line-height:1.25;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mealm{display:block;font-family:var(--mono);font-size:10px;color:var(--ink3);margin-top:3px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .meallog{flex:0 0 auto;font-family:var(--mono);font-size:10px;font-weight:800;letter-spacing:.08em;
+    text-transform:uppercase;background:var(--accent-soft);color:var(--accent-ink);
+    border-radius:7px;padding:6px 11px}
+  .mealcard:active .meallog{background:var(--accent);color:var(--btn-ink)}
+  .mealed{flex:0 0 auto;width:40px;border:0;border-left:1px solid var(--line);
+    background:transparent;color:var(--ink3);font-size:13px}
+  .mealed:hover{color:var(--accent)}
+  body.rtl .mealed{border-left:0;border-right:1px solid var(--line)}
+  /* photo picker in the food sheet */
+  .fphotorow{display:flex;align-items:center;gap:12px;margin-top:12px}
+  .fphoto{width:62px;height:62px;flex:0 0 auto;border-radius:12px;overflow:hidden;
+    background:var(--panel2);border:1px dashed var(--line2);display:grid;place-items:center}
+  .fphoto img{width:100%;height:100%;object-fit:cover;display:block}
+  .fphoto span{font-size:22px;color:var(--ink3)}
+  .fphotoi{flex:1;min-width:0}
+  .fphotob{display:flex;gap:7px;margin-top:6px}
   /* language picker */
   .langlist{display:flex;flex-direction:column;gap:7px;margin-bottom:6px}
   .langbtn{display:flex;align-items:center;gap:12px;width:100%;padding:13px 15px;
@@ -2023,6 +2055,8 @@ function load(){
     events:v.events||[],
     // bloodwork: {marker:[{d,v}]} plus any ranges edited to match a real report
     labs:v.labs||{},labRanges:v.labRanges||{},
+    // meals you've logged once, reusable with a single tap
+    foods:v.foods||[],
     settings:v.settings||{notify:true,theme:null,seenTip:false}
   };
 }
@@ -2216,7 +2250,9 @@ function renderTrack(){
     if(g==="workout-edit"){dayTab="workout";openDay(true);return;}
     // the peptides card goes to the Peps tab rather than the floating day sheet
     if(g==="peps"){setTab("guide");return;}
-    if(g==="food"){dayTab="food";openDay(true);return;}
+    // straight to the Food tab — the day sheet still carries the old
+    // peptide and workout tabs, which only confuses things from here
+    if(g==="food"){setTab("food");return;}
   });
 }
 function monthGrid(key,tdKey){
@@ -4197,32 +4233,113 @@ function renderFood(){
         <div class="kleft">${Math.max(0,Math.round(g.kcal-t.kcal))} kcal left today</div></div>
       <div class="macros">${ring("Protein",t.protein,g.protein,"var(--accent)")}${ring("Carbs",t.carbs,g.carbs,"var(--warn)")}${ring("Fat",t.fat,g.fat,"var(--gold)")}</div></div>
     <button class="primary" id="addMeal" style="margin:0 0 12px">+ Add food</button>
+    ${(S.foods||[]).length?`<div class="panel"><div class="lbl">Your meals</div>
+      <div class="lbl" style="text-transform:none;letter-spacing:0;color:var(--ink3);font-family:var(--sans);margin:0 0 10px">
+        Tap to log it again. Nothing to fill in.</div>
+      <div class="mealgrid">${[...S.foods].sort((a,b)=>(b.used||0)-(a.used||0)||(b.at||0)-(a.at||0))
+        .map(f=>`<div class="mealcard">
+          <button class="mealgo" data-qlog="${f.id}">
+            <span class="mealpic">${f.img?`<img src="${f.img}" alt="">`:`<i>${(f.name||"?").trim().charAt(0).toUpperCase()}</i>`}</span>
+            <span class="mealtx"><span class="mealn">${f.name}</span>
+              <span class="mealm">${Math.round(f.kcal)} kcal · P${Math.round(f.protein||0)} C${Math.round(f.carbs||0)} F${Math.round(f.fat||0)}</span></span>
+            <span class="meallog">Log</span></button>
+          <button class="mealed" data-qedit="${f.id}" aria-label="Edit ${f.name}">✎</button>
+        </div>`).join("")}</div></div>`:""}
     <div class="panel"><div class="lbl">Today</div>
       ${today.length?today.map(m=>`<div class="row"><div class="ri"><div class="rp">${m.name}</div>
         <div class="rm">${Math.round(m.kcal)} kcal · P${Math.round(m.protein||0)} C${Math.round(m.carbs||0)} F${Math.round(m.fat||0)}</div></div>
         <button class="del" data-mdel="${m.id}">×</button></div>`).join("")
       :`<div class="empty-note">Nothing logged yet today.<br><span style="opacity:.7">Tap “Add food” to start.</span></div>`}</div>`;
-  $("#addMeal").onclick=mealModal;$("#setMacros").onclick=macroModal;
+  $("#addMeal").onclick=()=>mealModal();$("#setMacros").onclick=macroModal;
+  $$("[data-qlog]",el).forEach(b=>b.onclick=()=>quickLog(b.dataset.qlog));
+  $$("[data-qedit]",el).forEach(b=>b.onclick=()=>mealModal(null,null,b.dataset.qedit));
   $$("[data-mdel]",el).forEach(b=>b.onclick=()=>{S.meals=S.meals.filter(m=>m.id!==b.dataset.mdel);save();renderFood();});
 }
-function mealModal(forDate,after){
-  $("#sheet").innerHTML=`<h3>Add food</h3><div class="msub">Log what you ate</div>
-    <div class="fld"><label>What was it?</label><input id="fName" type="text" placeholder="chicken and rice"></div>
+/* ---------- saved meals ----------
+   People eat the same things over and over, so anything logged once becomes a
+   one-tap button afterwards. Photos are optional and downscaled hard, because
+   this all lives in the browser's storage alongside everything else. */
+function foodKey(n){return String(n||"").trim().toLowerCase();}
+function saveFoodItem(m,img){
+  S.foods=S.foods||[];
+  const k=foodKey(m.name);
+  const ex=S.foods.find(f=>foodKey(f.name)===k);
+  if(ex){
+    ex.kcal=m.kcal;ex.protein=m.protein;ex.carbs=m.carbs;ex.fat=m.fat;
+    ex.used=(ex.used||0)+1;ex.at=Date.now();
+    if(img!==undefined)ex.img=img;
+  }else{
+    S.foods.push({id:Date.now()+""+Math.random().toString(36).slice(2,5),name:m.name,
+      kcal:m.kcal,protein:m.protein,carbs:m.carbs,fat:m.fat,img:img||null,used:1,at:Date.now()});
+  }
+}
+/* log a saved meal straight onto a day, no form */
+function quickLog(id,forDate,after){
+  const f=(S.foods||[]).find(x=>x.id===id);if(!f)return;
+  S.meals.push({id:Date.now()+"",date:forDate||iso(new Date()),name:f.name,
+    kcal:f.kcal,protein:f.protein,carbs:f.carbs,fat:f.fat});
+  f.used=(f.used||0)+1;f.at=Date.now();
+  save();if(after)after();else renderFood();toast(f.name+" logged");
+}
+/* shrink a chosen photo enough to live in local storage */
+function readFoodPhoto(file,cb){
+  if(!file)return cb(null);
+  const fr=new FileReader();
+  fr.onload=()=>{
+    const im=new Image();
+    im.onload=()=>{
+      const S2=190,r=Math.min(S2/im.width,S2/im.height,1);
+      const c=document.createElement("canvas");
+      c.width=Math.round(im.width*r);c.height=Math.round(im.height*r);
+      c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+      cb(c.toDataURL("image/jpeg",0.7));
+    };
+    im.onerror=()=>cb(null);
+    im.src=fr.result;
+  };
+  fr.onerror=()=>cb(null);
+  fr.readAsDataURL(file);
+}
+function mealModal(forDate,after,editId){
+  const ed=editId?(S.foods||[]).find(f=>f.id===editId):null;
+  let photo=ed?ed.img:null;
+  $("#sheet").innerHTML=`<h3>${ed?"Edit saved meal":"Add food"}</h3>
+    <div class="msub">${ed?"Changes apply next time you log it":"Log what you ate"}</div>
+    <div class="fld"><label>What was it?</label><input id="fName" type="text" placeholder="chicken and rice" value="${ed?ed.name.replace(/"/g,"&quot;"):""}"></div>
     <div class="grid2" style="margin-top:9px">
-      <div class="fld"><label>Calories</label><input class="mono" id="fKcal" type="number" inputmode="decimal"></div>
-      <div class="fld"><label>Protein (g)</label><input class="mono" id="fPro" type="number" inputmode="decimal"></div>
-      <div class="fld"><label>Carbs (g)</label><input class="mono" id="fCarb" type="number" inputmode="decimal"></div>
-      <div class="fld"><label>Fat (g)</label><input class="mono" id="fFat" type="number" inputmode="decimal"></div></div>
+      <div class="fld"><label>Calories</label><input class="mono" id="fKcal" type="number" inputmode="decimal" value="${ed?ed.kcal:""}"></div>
+      <div class="fld"><label>Protein (g)</label><input class="mono" id="fPro" type="number" inputmode="decimal" value="${ed?ed.protein:""}"></div>
+      <div class="fld"><label>Carbs (g)</label><input class="mono" id="fCarb" type="number" inputmode="decimal" value="${ed?ed.carbs:""}"></div>
+      <div class="fld"><label>Fat (g)</label><input class="mono" id="fFat" type="number" inputmode="decimal" value="${ed?ed.fat:""}"></div></div>
     <div class="src" id="fCalc" style="margin-top:10px">Enter macros and calories fill in automatically if left blank.</div>
-    <button class="primary" id="fSave">Add</button>`;
+    <div class="fphotorow">
+      <div class="fphoto" id="fPhotoBox">${photo?`<img src="${photo}" alt="">`:`<span>+</span>`}</div>
+      <div class="fphotoi"><div class="lbl">Photo (optional)</div>
+        <div class="fphotob"><button class="mini" id="fPick">${photo?"Change":"Add photo"}</button>
+        ${photo?`<button class="mini" id="fDrop">Remove</button>`:""}</div></div>
+    </div>
+    <input type="file" id="fFile" accept="image/*" style="display:none">
+    <button class="primary" id="fSave">${ed?"Save changes":"Add"}</button>
+    ${ed?`<button class="ghost danger" id="fDel">Remove from saved meals</button>`:""}`;
   $("#modal").classList.add("on");
   const est=()=>{const p=+$("#fPro").value||0,c=+$("#fCarb").value||0,f=+$("#fFat").value||0;
     const k=p*4+c*4+f*9;$("#fCalc").innerHTML=k?`From macros: <b class="rec">${Math.round(k)} kcal</b>`:"Enter macros and calories fill in automatically if left blank.";};
-  ["fPro","fCarb","fFat"].forEach(i=>$("#"+i).oninput=est);
+  ["fPro","fCarb","fFat"].forEach(i=>$("#"+i).oninput=est);est();
+  $("#fPick").onclick=()=>$("#fFile").click();
+  $("#fFile").onchange=e=>readFoodPhoto(e.target.files[0],d=>{
+    if(!d){toast("Couldn't read that image");return;}
+    photo=d;$("#fPhotoBox").innerHTML=`<img src="${d}" alt="">`;$("#fPick").textContent="Change";});
+  if($("#fDrop"))$("#fDrop").onclick=()=>{photo=null;$("#fPhotoBox").innerHTML="<span>+</span>";
+    $("#fDrop").remove();$("#fPick").textContent="Add photo";};
+  if($("#fDel"))$("#fDel").onclick=()=>{S.foods=(S.foods||[]).filter(f=>f.id!==ed.id);
+    save();closeModal();renderFood();toast("Removed from saved meals");};
   $("#fSave").onclick=()=>{const n=$("#fName").value.trim();if(!n){toast("Name the food");return;}
     const p=+$("#fPro").value||0,c=+$("#fCarb").value||0,f=+$("#fFat").value||0;
     const k=+$("#fKcal").value||Math.round(p*4+c*4+f*9);
-    S.meals.push({id:Date.now()+"",date:forDate||iso(new Date()),name:n,kcal:k,protein:p,carbs:c,fat:f});
+    const m={name:n,kcal:k,protein:p,carbs:c,fat:f};
+    if(ed){Object.assign(ed,m,{img:photo});save();closeModal();renderFood();toast("Saved");return;}
+    S.meals.push({id:Date.now()+"",date:forDate||iso(new Date()),...m});
+    saveFoodItem(m,photo);
     save();closeModal();if(after)after();else renderFood();toast("Food logged");};
 }
 function macroModal(){
@@ -5107,6 +5224,8 @@ const PUBLIC=!!window.VIALBACK_PUBLIC;
 /* init */
 $("#deepClose").onclick=closeDeep;
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#deepView").classList.contains("on"))closeDeep();});
+if(!S.foods.length&&S.meals.length){const seen={};
+  S.meals.forEach(m=>{const k=foodKey(m.name);if(!seen[k]){seen[k]=1;saveFoodItem(m);}});save();}
 applyLabRanges();initTips();renderTrack();syncNative();applyLang();watchLang();
 if(!S.settings.langAsked)setTimeout(()=>langPop(true),450);
 if(PUBLIC)setTimeout(showInstall,1400);
