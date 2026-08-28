@@ -508,6 +508,31 @@
   .pbc{font-family:var(--mono);font-size:9.5px;color:var(--ink3)}
   .pband.done .pbn,.pband.off .pbn{color:var(--ink3);font-weight:400}
 
+
+  /* ---- what connects ---- */
+  .inslist{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+  .ins{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:0 11px 11px 0;padding:11px 13px}
+  .ins.warn{border-left-color:var(--warn)}
+  .ins.good{border-left-color:var(--good)}
+  .ins.info{border-left-color:var(--accent)}
+  .instag{font-family:var(--mono);font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:5px;font-weight:700}
+  .ins.warn .instag{color:var(--warn)}
+  .ins.good .instag{color:var(--good)}
+  .insb{font-size:13px;line-height:1.55;color:var(--ink2)}
+  .insb b{color:var(--ink);font-weight:700}
+  .ins.warn .insb b{color:var(--warn)}
+  .ins.good .insb b{color:var(--good)}
+  .insmore{background:transparent;border:1px dashed var(--line2);border-radius:9px;
+    padding:8px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink3);cursor:pointer;width:100%}
+  .insmore:hover{border-color:var(--accent);color:var(--accent)}
+  .inshead{display:flex;align-items:center;gap:9px;margin:22px 2px 2px}
+  .inshead .ih{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink2);font-weight:700}
+  .inshead .il{flex:1;height:1px;background:var(--line)}
+
   /* language picker */
   .langlist{display:flex;flex-direction:column;gap:7px;margin-bottom:6px}
   .langbtn{display:flex;align-items:center;gap:12px;width:100%;padding:13px 15px;
@@ -2266,8 +2291,10 @@ function renderTrack(){
           <div class="bcsub dim">${meals.length} item${meals.length===1?"":"s"} logged</div>
           <div class="bcbtns"><button class="bcgo" data-go="food">LOG FOOD</button></div>
         </div></div>
+      ${(()=>{const c=insightCards(3);return c?`<div class="inshead"><span class="ih">What connects</span><i class="il"></i></div>${c}`:"";})()}
     </div>`;
 
+  if($("#insMore"))$("#insMore").onclick=insightsPop;
   $("#wPrev").onclick=()=>{selDay=new Date(+selDay-7*DAY);renderTrack();};
   $("#wNext").onclick=()=>{selDay=new Date(+selDay+7*DAY);renderTrack();};
   $$("[data-day]",el).forEach(b=>{if(!b.classList.contains('empty'))b.onclick=()=>{selDay=parseISO(b.dataset.day);renderTrack();};});
@@ -3462,6 +3489,315 @@ function firstDoseDate(p){
   return f;
 }
 
+
+/* ---------- what acts on what ----------
+   Receptor and pathway targets, kept separate from the colour families: those
+   group things that look related, this groups things that compete for the same
+   binding site. Kisspeptin is coloured with the hormone family but acts on
+   KISS1R, nowhere near the GHRH receptor. */
+const TARGETS={
+ glp1r:{n:"the GLP-1 receptor", off:28, stack:"Two GLP-1 agonists at once is one larger dose with the gastrointestinal load of both.", soon:"Semaglutide is still circulating for roughly five weeks after the last shot, so starting another this soon runs the two together."},
+ gipr: {n:"the GIP receptor",   off:28, stack:"Both cover the GIP receptor, so this is a bigger dose rather than a second effect."},
+ gcgr: {n:"the glucagon receptor", off:21, stack:"Both carry glucagon activity — energy expenditure and hepatic effects add up."},
+ amylin:{n:"amylin receptors",  off:21, stack:"Both act on the amylin satiation pathway through the area postrema."},
+ ghrhr:{n:"the GHRH receptor",  off:28, stack:"All GHRH analogues push the same pituitary receptor. Two does not make two pulses, it makes one larger one, with more water retention and a higher IGF-1 than either alone.", soon:"Somatotrophs need the trough between pulses. Rolling straight from one GHRH analogue into another is one continuous cycle on the same receptor, which is the pattern receptors downregulate against."},
+ ghsr: {n:"the ghrelin receptor", off:21, stack:"Both are ghrelin mimetics hitting GHS-R1a — additive hunger and additive GH release."},
+ kiss1r:{n:"the kisspeptin receptor", off:14, soon:"Continuous exposure desensitises KISS1R. If you have run kisspeptin recently, more of it does less rather than more."},
+ mc4r: {n:"melanocortin receptors", off:14, stack:"Both are melanocortin agonists — nausea, flushing and pigmentation all add up."},
+ actriib:{n:"the activin IIB receptor", off:60},
+ epor: {n:"the erythropoietin receptor", off:60},
+ thymic:{n:"thymic immune signalling", off:21, stack:"Both push adaptive immunity through thymic peptide signalling, which is redundant rather than doubly effective."},
+ enkeph:{n:"enkephalin breakdown", off:14, stack:"Both work by slowing the enzymes that clear your own enkephalins, so the effect stacks on one mechanism."},
+ nadpool:{n:"the NAD and methyl pool", off:14, stack:"NAD+ precursors are cleared by NNMT, and 5-Amino-1MQ blocks NNMT. Run together, nicotinamide accumulates rather than clearing."},
+ copper:{n:"systemic copper", off:21, stack:"Copper adds up across products, and copper competes with zinc for absorption."},
+ vegfr2:{n:"VEGFR2 angiogenesis", off:14},
+ actin:{n:"the actin pool", off:14},
+ pept1:{n:"PepT1 uptake", off:14}
+};
+/* peptide key -> targets it acts on */
+const PTARGET={
+ retatrutide:["glp1r","gipr","gcgr"], semaglutide:["glp1r"], tirzepatide:["glp1r","gipr"],
+ cagrilintide:["amylin"], cagrisema:["amylin","glp1r"],
+ tesamorelin:["ghrhr"], sermorelin:["ghrhr"], cjc1295nodac:["ghrhr"], ipamorelin:["ghsr"],
+ kisspeptin10:["kiss1r"], kisspeptin:["kiss1r"],
+ pt141:["mc4r"], mt2:["mc4r"],
+ ace031:["actriib"], epo:["epor"],
+ thymosinalpha1:["thymic"], thymalin:["thymic"],
+ selank:["enkeph"], semax:["enkeph"], dsip:["enkeph"],
+ nad:["nadpool"], "5amino1mq":["nadpool"],
+ ghkcu:["copper"], ahkcu:["copper"],
+ bpc157:["vegfr2"], tb500:["actin"], kpv:["pept1"],
+ klow:["copper","vegfr2","actin","pept1"], glow:["copper","vegfr2","actin"],
+ wolverine:["vegfr2","actin"], bpc157tb500:["vegfr2","actin"]
+};
+/* blends and what is actually inside them */
+const BLEND={
+ klow:["KPV","Larazotide","GHK-Cu","BPC-157","TB-500"],
+ glow:["GHK-Cu","BPC-157","TB-500"],
+ wolverine:["BPC-157","TB-500"],
+ bpc157tb500:["BPC-157","TB-500"]
+};
+/* pairs that are deliberate, not accidents */
+const SYNERGY=[["ghrhr","ghsr"],["amylin","glp1r"]];
+function isSynergy(a,b){return SYNERGY.some(p=>(p[0]===a&&p[1]===b)||(p[1]===a&&p[0]===b));}
+function pepTargets(p){return PTARGET[pepKey(p&&p.name)]||[];}
+
+/* last day a peptide was logged, and how long that run was */
+function lastRun(p){
+  const days=Object.keys(S.log).filter(k=>S.log[k][p.id]).sort();
+  if(!days.length)return null;
+  const last=days[days.length-1];
+  let start=last;
+  for(let i=days.length-1;i>0;i--){
+    const gap=(parseISO(days[i]).getTime()-parseISO(days[i-1]).getTime())/DAY;
+    if(gap>14)break; start=days[i-1];
+  }
+  return {last,start,
+    daysSince:Math.floor((Date.now()-parseISO(last).getTime())/DAY),
+    runDays:Math.round((parseISO(last).getTime()-parseISO(start).getTime())/DAY)+1};
+}
+
+/* ---------- nutrition dependencies ----------
+   Specific, mechanistic ones only. "Eat well" is not a finding. */
+const DEPENDS={
+ gluta:{n:"selenium", food:["brazil","selen","tuna","sardine","egg"],
+   why:"Glutathione peroxidase is a selenoprotein — without selenium the enzyme that uses glutathione cannot be built."},
+ ss31:{n:"omega-3 and CoQ10", food:["salmon","sardine","mackerel","fish","walnut","organ meat","oil"],
+   why:"Cardiolipin, the lipid SS-31 binds, is built from dietary fatty acids."},
+ mots:{n:"folate and B12", food:["spinach","leafy greens","lentil","legume","liver","egg","beans"],
+   why:"MOTS-c acts through the folate-methionine cycle, so the pathway needs its substrates."},
+ nad:{n:"methyl donors", food:["beet","spinach","egg","quinoa","betaine","whole grain"],
+   why:"Clearing excess nicotinamide spends a methyl group each time, drawing on the same pool as DNA methylation."},
+ reta:{n:"protein and sodium", food:["chicken","beef","whey","egg","fish","yogurt","salt"],
+   why:"Nothing in the mechanism protects lean tissue, and appetite suppression cuts sodium intake with everything else."},
+ sema:{n:"protein and sodium", food:["chicken","beef","whey","egg","fish","yogurt","salt"],
+   why:"A large share of rapid weight loss is lean tissue unless protein and training prevent it."},
+ tirz:{n:"protein and sodium", food:["chicken","beef","whey","egg","fish","yogurt","salt"],
+   why:"A large share of rapid weight loss is lean tissue unless protein and training prevent it."},
+ cagri:{n:"protein", food:["chicken","beef","whey","egg","fish","yogurt"],
+   why:"Same lean-mass problem as the rest of this class."},
+ ghkcu:{n:"zinc", food:["oyster","beef","pumpkin seed","cashew","zinc"],
+   why:"Systemic copper competes with zinc, and zinc is needed by the same repair enzymes."},
+ klow:{n:"zinc and collagen", food:["oyster","beef","pumpkin seed","gelatin","broth","collagen"],
+   why:"It carries copper, which pushes zinc down, and the repair it drives needs raw material."},
+ glow:{n:"zinc and collagen", food:["oyster","beef","pumpkin seed","gelatin","broth","collagen"],
+   why:"It carries copper, which pushes zinc down, and the repair it drives needs raw material."}
+};
+/* ---------- which markers a compound is judged on ---------- */
+const WATCH={
+ tesa:["igf1","hba1c"], sermorelin:["igf1"], cjc:["igf1","hba1c"], ipa:["igf1"],
+ reta:["hba1c","alt","crp"], sema:["hba1c","alt"], tirz:["hba1c","alt"], cagri:["hba1c"],
+ amino:["hba1c","insulin"], mots:["hba1c","insulin"], nad:["hba1c"],
+ gluta:["alt","ast","ggt"], ss31:["alt"],
+ epo:["hgb","hct"], ace031:["hgb"],
+ ghkcu:["copper","zinc"], klow:["copper","zinc"], glow:["copper","zinc"],
+ ta1:["wbc","crp"], thymalin:["wbc"],
+ kiss:["testt","testf"], lcar:["trig"]
+};
+function labAge(k){
+  const rec=(S.labs||{})[k];
+  if(!rec)return null;
+  const d=Array.isArray(rec)?rec[rec.length-1]:rec;
+  const when=d&&(d.date||d.d);
+  if(!when)return null;
+  return Math.floor((Date.now()-parseISO(when).getTime())/DAY);
+}
+function labName(k){const m=LABS.find(x=>x.k===k);return m?m.n:k;}
+
+/* ---------- the engine ---------- */
+function insights(){
+  const out=[],today=new Date(),tk=iso(today);
+  const act=activeTrack().filter(p=>!p.label);
+  const seen={};
+
+  // 1. two active peptides on the same target
+  act.forEach(a=>act.forEach(b=>{
+    if(a.id>=b.id)return;
+    const shared=pepTargets(a).filter(t=>pepTargets(b).includes(t)&&TARGETS[t]);
+    if(!shared.length)return;
+    const id="stack"+a.id+b.id;if(seen[id])return;seen[id]=1;
+    const named=shared.map(t=>TARGETS[t].n);
+    const lead=shared.map(t=>TARGETS[t].stack).filter(Boolean)[0];
+    if(!lead&&shared.length===1)return;
+    out.push({kind:"warn",tag:"same receptor",
+      body:`<b>${a.name}</b> and <b>${b.name}</b> both act on ${
+        named.length===1?named[0]:named.slice(0,-1).join(", ")+" and "+named[named.length-1]}. ${lead||""}`});
+  }));
+
+  // 2. deliberate pairings, flagged as intended rather than as a problem
+  act.forEach(a=>act.forEach(b=>{
+    if(a.id>=b.id)return;
+    pepTargets(a).forEach(ta=>pepTargets(b).forEach(tb=>{
+      if(!isSynergy(ta,tb))return;
+      const id="syn"+ta+tb+a.id+b.id;if(seen[id])return;seen[id]=1;
+      out.push({kind:"good",tag:"working together",
+        body:`<b>${a.name}</b> and <b>${b.name}</b> hit different points on purpose — one pushes, the other lifts the brake. This pairing is deliberate, not a clash.`});
+    }));
+  }));
+
+  // 3. started on a target something else only just finished
+  act.forEach(a=>{
+    const ra=lastRun(a);
+    if(!ra||ra.runDays>7)return;                 // only for something recently begun
+    S.track.forEach(b=>{
+      if(b.id===a.id)return;
+      const rb=lastRun(b);if(!rb)return;
+      const shared=pepTargets(a).filter(t=>pepTargets(b).includes(t));
+      shared.forEach(t=>{
+        const T=TARGETS[t];if(!T)return;
+        if(rb.daysSince<1||rb.daysSince>=T.off)return;
+        const id="soon"+t+a.id+b.id;if(seen[id])return;seen[id]=1;
+        out.push({kind:"warn",tag:"too soon",
+          body:`You finished <b>${b.name}</b> ${rb.daysSince} days ago after ${rb.runDays} days on it. <b>${a.name}</b> works on ${T.n} too — ${T.soon||`starting now continues that cycle rather than beginning a new one. The usual gap is around ${T.off} days.`}`});
+      });
+    });
+  });
+
+  // 4. a blend whose components you are also running on their own
+  act.forEach(a=>{
+    const parts=BLEND[pepKey(a.name)];if(!parts)return;
+    const dupes=act.filter(b=>b.id!==a.id&&parts.some(c=>pepKey(c)===pepKey(b.name)));
+    if(!dupes.length)return;
+    out.push({kind:"warn",tag:"doubled up",
+      body:`<b>${a.name}</b> already contains ${dupes.map(d=>`<b>${d.name}</b>`).join(" and ")}. Running them separately as well is a double dose of the same peptide.`});
+  });
+
+  // 5. pre-workout compounds on a training day
+  const trainedToday=(S.workouts||[]).some(w=>w.date===tk);
+  act.forEach(p=>{
+    const g=guideFor(p);if(!g||!g.t)return;
+    if(!/pre-?workout|before you train|before training/i.test(g.t+" "+(g.key||[]).join(" ")))return;
+    if(!dueOn(p,today))return;
+    if(S.log[tk]&&S.log[tk][p.id])return;
+    out.push({kind:trainedToday?"good":"info",tag:"timing",
+      body:trainedToday?`<b>${p.name} before you lift.</b> A session is logged for today and the case for this compound rests on stacking with training.`
+        :`<b>${p.name}</b> is meant to go before training, and nothing is logged for today yet.`});
+  });
+
+  // 6. a marker this compound is judged on, going stale
+  act.forEach(p=>{
+    const k=guideKeyFor(p.name),w=WATCH[k];if(!w)return;
+    const r=lastRun(p);if(!r||r.runDays<21)return;
+    const stale=w.filter(mk=>{const a=labAge(mk);return a==null||a>=120;});
+    if(!stale.length)return;
+    const never=stale.every(mk=>labAge(mk)==null);
+    out.push({kind:"info",tag:"bloodwork",
+      body:`${r.runDays} days on <b>${p.name}</b>. ${stale.map(mk=>`<b>${labName(mk)}</b>`).join(", ")}
+        ${never?(stale.length>1?"have never been recorded":"has never been recorded")
+          :"has not been measured in months"}, and ${stale.length>1?"those are numbers":"that is a number"} this compound is judged on.`});
+  });
+
+  // 7. a nutrient the compound actually depends on, missing from the food log
+  const recentFood=[];
+  for(let i=0;i<10;i++){const k=iso(new Date(Date.now()-i*DAY));
+    (S.meals||[]).filter(m=>m.date===k).forEach(m=>recentFood.push((m.name||"").toLowerCase()));}
+  act.forEach(p=>{
+    const d=DEPENDS[guideKeyFor(p.name)];if(!d)return;
+    const r=lastRun(p);if(!r||r.daysSince>3)return;
+    if(recentFood.some(f=>d.food.some(w=>f.includes(w))))return;
+    const id="dep"+p.id;if(seen[id])return;seen[id]=1;
+    out.push({kind:"warn",tag:"nutrition",
+      body:`<b>${p.name}</b> depends on <b>${d.n}</b>. ${d.why} Nothing matching it in your food log for 10 days.`});
+  });
+
+  // 8. vials past their date, as one card rather than one per vial
+  const past=[],soon=[];
+  act.forEach(p=>{const x=expiryInfo(p);if(!x||x.state==="ok")return;
+    (x.left<0?past:soon).push({p,x});});
+  if(past.length)out.push({kind:"warn",tag:"vial",
+    body:past.length===1
+      ?`<b>${past[0].p.name}</b> was mixed ${past[0].x.used} days ago, past the ${past[0].x.total}-day mark. Potency after that is a guess.`
+      :`${past.length} vials are past their mixed-by date: ${past.map(v=>`<b>${v.p.name}</b>`).join(", ")}. Potency after that is a guess.`});
+  if(soon.length)out.push({kind:"info",tag:"vial",
+    body:soon.length===1
+      ?`<b>${soon[0].p.name}</b> has <b>${soon[0].x.left} days</b> left on the mixed vial.`
+      :`${soon.length} vials are within a week of their mixed-by date: ${soon.map(v=>`<b>${v.p.name}</b>`).join(", ")}.`});
+
+  // 9. an injection site being overused
+  const sl=siteLog();
+  if(sl.length>=6){
+    const recent=sl.filter(x=>(Date.now()-x.at)/DAY<=7);
+    const counts={};recent.forEach(x=>counts[x.site]=(counts[x.site]||0)+1);
+    const worst=Object.keys(counts).sort((a,b)=>counts[b]-counts[a])[0];
+    if(worst&&counts[worst]>=4){
+      const alt=suggestSite();
+      out.push({kind:"info",tag:"rotation",
+        body:`<b>${SITEBY[worst].n}</b> has taken ${counts[worst]} of the last week's shots. ${alt&&alt!==worst?`<b>${SITEBY[alt].n}</b> has rested longest.`:""}`});
+    }
+  }
+  // warnings first, then things worth doing, then the merely interesting
+  const w={warn:0,good:1,info:2};
+  return out.sort((a,b)=>w[a.kind]-w[b.kind]);
+}
+function insightCards(max){
+  const list=insights();
+  if(!list.length)return "";
+  const show=max?list.slice(0,max):list;
+  return `<div class="inslist">${show.map(i=>`<div class="ins ${i.kind}">
+      <div class="instag">${i.tag}</div><div class="insb">${i.body}</div></div>`).join("")}
+    ${list.length>show.length?`<button class="insmore" id="insMore">${list.length-show.length} more</button>`:""}</div>`;
+}
+
+/* what a peptide about to be added would collide with */
+function addClash(p){
+  const out=[];
+  const mine=pepTargets(p);
+  activeTrack().filter(x=>!x.label&&x.id!==p.id).forEach(o=>{
+    // one card per peptide, not one per shared target — three overlaps with the
+    // same vial is still one decision
+    const shared=mine.filter(t=>pepTargets(o).includes(t)&&TARGETS[t]);
+    if(shared.length){
+      const named=shared.map(t=>TARGETS[t].n);
+      const lead=shared.map(t=>TARGETS[t].stack).filter(Boolean)[0];
+      out.push({kind:"stack",with:o.name,t:shared[0],
+        text:shared.length===1?(lead||`Both act on ${named[0]}.`)
+          :`Both act on ${named.slice(0,-1).join(", ")} and ${named[named.length-1]}.${lead?" "+lead:""}`});
+    }
+    // blends containing what you already run, and the reverse
+    const parts=BLEND[pepKey(p.name)]||[];
+    if(parts.some(c=>pepKey(c)===pepKey(o.name)))
+      out.push({kind:"dup",with:o.name,text:`${p.name} already contains ${o.name}.`});
+    const oParts=BLEND[pepKey(o.name)]||[];
+    if(oParts.some(c=>pepKey(c)===pepKey(p.name)))
+      out.push({kind:"dup",with:o.name,text:`${o.name} already contains ${p.name}.`});
+  });
+  // recently finished on the same target
+  S.track.filter(x=>x.id!==p.id).forEach(o=>{
+    const r=lastRun(o);if(!r)return;
+    mine.filter(t=>pepTargets(o).includes(t)).forEach(t=>{
+      const T=TARGETS[t];if(!T||r.daysSince<1||r.daysSince>=T.off)return;
+      out.push({kind:"soon",with:o.name,t,
+        text:`You finished ${o.name} ${r.daysSince} days ago. ${T.soon||`It works on ${T.n} too, and the usual gap is around ${T.off} days.`}`});
+    });
+  });
+  return out;
+}
+function clashPop(p,list){
+  $("#sheet").innerHTML=`<h3>${p.name} added</h3>
+    <div class="msub">Worth knowing before your first dose</div>
+    <div class="inslist">${list.map(c=>`<div class="ins warn">
+      <div class="instag">${c.kind==="dup"?"doubled up":c.kind==="soon"?"too soon":"same receptor"}</div>
+      <div class="insb">${c.text}</div></div>`).join("")}</div>
+    <button class="primary" id="clOk">Got it</button>
+    <button class="ghost" id="clRemove">Remove ${p.name} again</button>`;
+  $("#modal").classList.add("on");
+  $("#clOk").onclick=closeModal;
+  $("#clRemove").onclick=()=>{S.track=S.track.filter(x=>x.id!==p.id);save();closeModal();
+    renderTrack();toast(p.name+" removed");};
+}
+
+function insightsPop(){
+  const list=insights();
+  $("#sheet").innerHTML=`<h3>What connects</h3>
+    <div class="msub">Everything the app noticed across your peptides, training, food and bloodwork</div>
+    ${list.length?`<div class="inslist">${list.map(i=>`<div class="ins ${i.kind}">
+      <div class="instag">${i.tag}</div><div class="insb">${i.body}</div></div>`).join("")}</div>`
+      :`<div class="empty-note">Nothing to flag right now.</div>`}
+    <button class="ghost" id="inClose">Close</button>`;
+  $("#modal").classList.add("on");
+  $("#inClose").onclick=closeModal;
+}
+
 /* ---------- deep dive ----------
    The long-form page for one peptide: what's actually established, what's only
    suggested, and what nobody knows yet — kept out of the card so the list stays
@@ -3879,7 +4215,11 @@ function addFinal(name,size,vialUnit,dose,du,bac,tm){
     time:arch?(arch.time||"am"):(tm||"am"),clock:arch?(arch.clock||""):"",
     bacMl:bac||2,mixDate:iso(new Date()),timing:arch?arch.timing:"Daily",label:arch?arch.label:null,status:"active",guideKey:guideId};
   if(arch)S.archive=S.archive.filter(a=>a.name!==name);
-  S.track.push(p);save();closeModal();setTab("track");toast(name+" added");
+  // check for a receptor clash before it lands, not after
+  const clash=addClash(p);
+  S.track.push(p);save();closeModal();
+  if(clash.length){setTab("track");setTimeout(()=>clashPop(p,clash),120);}
+  else{setTab("track");toast(name+" added");}
 }
 
 /* ============ EDIT VIAL (dose, size, water, schedule) ============ */
