@@ -291,6 +291,8 @@
   .ddname{font-size:29px;font-weight:800;letter-spacing:-.03em;color:#fff;line-height:1.1;
     text-shadow:0 2px 10px rgba(0,0,0,.5)}
   .ddcls{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:rgba(255,255,255,.82);margin-top:5px}
+  .ddalias{font-family:var(--mono);font-size:9.5px;line-height:1.55;margin-top:6px;
+    color:rgba(255,255,255,.66);max-width:36ch}
   .ddtier{position:relative;align-self:flex-start;margin-top:11px;font-family:var(--mono);font-size:9.5px;
     font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:4px 10px;border-radius:6px;
     background:rgba(0,0,0,.45);color:#fff;border:1px solid rgba(255,255,255,.28)}
@@ -1146,6 +1148,8 @@
   .sheet h3{margin:0 0 3px;font-size:15px}
   .msub{font-family:var(--mono);font-size:10px;color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:13px}
   .srch{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--ink);font-size:14px;margin-bottom:10px}
+  .calso{font-family:var(--mono);font-size:9px;color:var(--ink3);margin-top:2px;
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:30ch}
   .catlist{display:flex;flex-direction:column;gap:1px}
   .catrow{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:9px;cursor:pointer}
   .catrow:hover{background:var(--panel2)}
@@ -1914,7 +1918,14 @@ const PFAM={
   antiox:   {n:"Antioxidant",    c:"#35d6ae"},
   gut:      {n:"Gut",            c:"#b5813f"},
   sleep:    {n:"Sleep",          c:"#8ea2ff"},
-  other:    {n:"Other",          c:"#8a9a95"}
+  neuro:    {n:"Neuro",          c:"#00b4d8"},
+  melano:   {n:"Melanocortin",   c:"#d64ad0"},
+  muscle:   {n:"Muscle",         c:"#a3d63a"},
+  blood:    {n:"Blood / oxygen", c:"#b3123c"},
+  supply:   {n:"Supply",         c:"#9c6644"},
+  /* nothing should ever land here — checkfams.py fails the build if it does.
+     Loud on purpose so a gap shows up rather than blending in. */
+  other:    {n:"Unsorted",       c:"#ff0055"}
 };
 /* the GLPs share a family but step from hot magenta down through softer pinks,
    with retatrutide the most magenta */
@@ -1923,7 +1934,7 @@ const PSHADE={retatrutide:"#ff1f8f",tirzepatide:"#ff62b4",semaglutide:"#ff96cf",
 const PMAP={
   retatrutide:["glp"],tirzepatide:["glp"],semaglutide:["glp"],cagrilintide:["glp"],
   "5amino1mq":["metabolic"],aod9604:["metabolic"],lcarnitine:["metabolic"],lemonbottle:["metabolic"],
-  ghkcu:["copper"],
+  ghkcu:["copper"],ahkcu:["copper"],
   ss31:["mito"],motsc:["mito"],nad:["mito"],
   bpc157:["regen"],tb500:["regen"],ara290:["regen"],
   "bpc157tb500":["regen","regen"],wolverine:["regen","regen"],
@@ -1931,18 +1942,34 @@ const PMAP={
   klow:["immune","gut","copper","regen"],
   tesamorelin:["gh"],sermorelin:["gh"],ipamorelin:["gh"],cjc1295nodac:["gh"],
   kisspeptin10:["gh"],kisspeptin:["gh"],
-  thymosinalpha1:["immune"],kpv:["immune"],
+  thymosinalpha1:["immune"],kpv:["immune"],vip:["immune"],
   epithalon:["pineal"],pinealon:["pineal"],
   glutathione:["antiox"],
   dsip:["sleep"],melatonin:["sleep"],
-  selank:["other"],semax:["other"],pt141:["other"],
-  thymalin:["immune"],cerebrolysin:["other"],
-  ace031:["other"],adipotide:["metabolic"],epo:["other"]
+  selank:["neuro"],semax:["neuro"],dihexa:["neuro"],cerebrolysin:["neuro"],
+  pt141:["melano"],mt2:["melano"],
+  thymalin:["immune"],
+  ace031:["muscle"],adipotide:["metabolic"],epo:["blood"],
+  bacwater:["supply"],aceticacid:["supply"]
 };
+/* the proper name and the names people actually use — a forum post says
+   GLP-3, a trial paper says LY3437943, a box says Zepbound. All of them
+   should find the same card. */
+const ALIAS={"retatrutide": ["LY3437943", "GLP-3", "Reta", "triple G"], "tirzepatide": ["Mounjaro", "Zepbound", "LY3298176", "Tirz"], "semaglutide": ["Ozempic", "Wegovy", "Rybelsus", "Sema"], "cagrilintide": ["AM833", "Cagri"], "cagrisema": ["CagriSema", "cagrilintide + semaglutide"], "tesamorelin": ["Egrifta", "TH9507", "Tesa"], "sermorelin": ["Geref", "GRF (1-29)", "GHRH (1-29)"], "ipamorelin": ["NNC 26-0161", "Ipa"], "cjc1295nodac": ["Modified GRF (1-29)", "Mod GRF", "CJC-1295 without DAC"], "ss31": ["Elamipretide", "Forzinity", "MTP-131", "Bendavia"], "motsc": ["Mitochondrial ORF of the 12S rRNA type-c", "MOTS-c"], "nad": ["Nicotinamide adenine dinucleotide", "NAD+"], "5amino1mq": ["5-amino-1-methylquinolinium", "5A1MQ", "NNMT inhibitor"], "bpc157": ["Body Protection Compound 157", "Pentadecapeptide BPC 157", "PL 14736", "BPC"], "tb500": ["Thymosin Beta-4 fragment", "TB4", "Tb-500"], "ghkcu": ["Copper tripeptide-1", "Gly-His-Lys-Cu", "GHK copper"], "ahkcu": ["Ala-His-Lys-Cu", "AHK copper peptide"], "kpv": ["Lys-Pro-Val", "alpha-MSH (11-13)"], "glutathione": ["GSH", "L-glutathione", "gamma-glutamyl-cysteinyl-glycine"], "thymosinalpha1": ["Zadaxin", "Thymalfasin", "Talpha1", "TA-1"], "epithalon": ["Epitalon", "AEDG", "Ala-Glu-Asp-Gly", "Epithalamin (the extract)"], "pinealon": ["EDR", "Glu-Asp-Arg"], "dsip": ["Delta Sleep-Inducing Peptide"], "ara290": ["Cibinetide", "ARA290", "EPO helix-B peptide"], "kisspeptin10": ["KP-10", "Metastin (1-54) fragment", "Kiss1"], "lcarnitine": ["Levocarnitine", "L-carnitine L-tartrate", "LCLT"], "aod9604": ["hGH fragment 176-191", "AOD"], "pt141": ["Bremelanotide", "Vyleesi", "PT141"], "mt2": ["Melanotan II", "MT-II"], "selank": ["TP-7", "tuftsin analogue"], "semax": ["ACTH (4-10) analogue", "Met-Glu-His-Phe-Pro-Gly-Pro"], "dihexa": ["N-hexanoic-Tyr-Ile-(6) aminohexanoic amide", "PNB-0408"], "cerebrolysin": ["FPF-1070", "Cere"], "melatonin": ["N-acetyl-5-methoxytryptamine"], "ace031": ["Ramatercept", "ActRIIB-Fc", "soluble activin receptor IIB"], "adipotide": ["FTPP", "prohibitin-targeting peptidomimetic"], "epo": ["Erythropoietin", "Epoetin alfa", "Procrit", "Epogen"], "thymalin": ["Thymus polypeptide extract", "Thymalinum"], "klow": ["KPV + Larazotide + GHK-Cu + BPC-157/TB-500"], "glow": ["GHK-Cu + BPC-157 + TB-500"], "wolverine": ["BPC-157 + TB-500"], "bpc157tb500": ["Wolverine blend", "BPC-157 + TB-500"], "vip": ["Vasoactive Intestinal Peptide"], "larazotide": ["Larazotide acetate", "AT-1001", "INN-202"], "hexarelin": ["Examorelin", "EP-23905"], "ghrp2": ["Pralmorelin", "GHRP-2"], "ghrp6": ["GHRP-6", "growth hormone releasing peptide 6"], "hcg": ["Human chorionic gonadotropin"], "bacwater": ["Bacteriostatic water", "0.9% benzyl alcohol water"], "aceticacid": ["Acetic acid", "dilute acetic acid diluent"]};
+function pepAlias(p){return ALIAS[pepKey(p&&p.name)]||[];}
+/* does this peptide answer to the typed text, by name or by any alias? */
+function pepMatches(name,q){
+  q=String(q||"").toLowerCase().replace(/[^a-z0-9]/g,"");
+  if(!q)return true;
+  if(pepKey(name).includes(q))return true;
+  return (ALIAS[pepKey(name)]||[]).some(a=>a.toLowerCase().replace(/[^a-z0-9]/g,"").includes(q));
+}
 /* fall back on the peptide's own category label when the name is unknown */
 const CATFAM={"glp-1":"glp","gh axis":"gh",mitochondria:"mito",metabolic:"metabolic",recovery:"regen",
   nerve:"regen",detox:"antiox",immune:"immune",longevity:"pineal",sleep:"sleep",hormone:"gh","fat-ox":"metabolic",
-  "fat loss":"metabolic"};
+  "fat loss":"metabolic",nootropic:"neuro",cognitive:"neuro",tanning:"melano","anti-inflam":"immune",
+  "recovery/skin":"regen",skin:"copper",gut:"gut",muscle:"muscle",blood:"blood",supply:"supply",
+  peptide:"regen",other:"regen"};
 function pepKey(name){return String(name||"").toLowerCase().replace(/[^a-z0-9]/g,"");}
 function pepFams(p){
   if(p&&Array.isArray(p.fams)&&p.fams.length)return p.fams;
@@ -3196,7 +3223,8 @@ function deepDive(id){
     <div class="ddhero" style="background:${pepPaint(p)}">
       <div class="ddscrim"></div>
       <div class="ddhx"><div class="ddname">${p.name}</div>
-        <div class="ddcls">${g.cls||pepFamNames(p)}</div></div>
+        <div class="ddcls">${g.cls||pepFamNames(p)}</div>
+        ${pepAlias(p).length?`<div class="ddalias">Also known as ${pepAlias(p).join(" · ")}</div>`:""}</div>
       <span class="ddtier ${g.tier||"pre"}">${TIERN[g.tier]||"Limited evidence"}</span>
     </div>
     ${g.danger?`<div class="ddanger"><span class="dgi">!</span>
@@ -3422,10 +3450,15 @@ function openAdd(){
     <div class="catlist" id="catList"></div>`;
   $("#modal").classList.add("on");
   const draw=q=>{const list=$("#catList");list.innerHTML="";
-    names.filter(n=>n.toLowerCase().includes(q.toLowerCase())).forEach(n=>{
+    // match the brand and street names too, not just the label we happen to use
+    names.filter(n=>pepMatches(n,q)).forEach(n=>{
       const it=LUCKY[n];const row=document.createElement("div");row.className="catrow";
-      row.innerHTML=`<div class="cn">${n}</div><div class="cc">${it.c}</div>`;
-      row.onclick=()=>pickSize(n);list.appendChild(row);});};
+      const fam=pepFams({name:n,cat:it.c})[0],col=(PFAM[fam]||PFAM.other).c;
+      const also=pepAlias({name:n}).slice(0,3).join(" · ");
+      row.innerHTML=`<div><div class="cn">${n}</div>${also?`<div class="calso">${also}</div>`:""}</div>
+        <div class="cc" style="color:${col};border-color:${col}44">${(PFAM[fam]||PFAM.other).n}</div>`;
+      row.onclick=()=>pickSize(n);list.appendChild(row);});
+    if(!list.children.length)list.innerHTML=`<div class="empty-note">Nothing matches that name.</div>`;};
   draw("");
   $("#catSearch").oninput=e=>draw(e.target.value);
   $("#catSearch").focus();
