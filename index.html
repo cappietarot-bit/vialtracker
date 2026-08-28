@@ -273,6 +273,64 @@
   .pephalf{margin-top:9px}
   .pephalf .lbl{display:flex;align-items:center;gap:6px;margin-bottom:6px}
   .pepnone{font-family:var(--mono);font-size:10.5px;color:var(--ink3)}
+  /* ---- peptide deep dive ---- */
+  .deepview{position:fixed;inset:0;z-index:70;background:var(--bg);display:none;overflow-y:auto;
+    -webkit-overflow-scrolling:touch}
+  .deepview.on{display:block;animation:fade .22s ease}
+  .deepx{position:fixed;top:calc(12px + env(safe-area-inset-top));right:14px;z-index:2;
+    width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.5);
+    backdrop-filter:blur(8px);color:#fff;font-size:15px;font-weight:700}
+  .ddhero{position:relative;min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;
+    padding:20px 18px 16px;overflow:hidden}
+  .ddscrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.72))}
+  .ddhx{position:relative}
+  .ddname{font-size:29px;font-weight:800;letter-spacing:-.03em;color:#fff;line-height:1.1;
+    text-shadow:0 2px 10px rgba(0,0,0,.5)}
+  .ddcls{font-family:var(--mono);font-size:11px;letter-spacing:.05em;color:rgba(255,255,255,.82);margin-top:5px}
+  .ddtier{position:relative;align-self:flex-start;margin-top:11px;font-family:var(--mono);font-size:9.5px;
+    font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:4px 10px;border-radius:6px;
+    background:rgba(0,0,0,.45);color:#fff;border:1px solid rgba(255,255,255,.28)}
+  .ddwrap{max-width:640px;margin:0 auto;padding:18px 16px calc(46px + env(safe-area-inset-bottom))}
+  .ddlede{font-size:16px;line-height:1.6;color:var(--ink);margin:0 0 20px}
+  .ddsec{margin-bottom:20px}
+  .ddsec h4{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+    color:var(--ink3);margin:0 0 8px;font-weight:700}
+  .ddsec p{margin:0;font-size:14.5px;line-height:1.62;color:var(--ink2)}
+  .dddose{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:13px 15px;
+    font-size:14.5px;line-height:1.6;color:var(--ink2)}
+  /* the three evidence buckets, colour-keyed by how solid they are */
+  .ddblock{border:1px solid var(--line);border-left-width:3px;border-radius:11px;
+    padding:13px 15px;margin-bottom:12px;background:var(--panel)}
+  .ddblock.k{border-left-color:var(--good)}
+  .ddblock.s{border-left-color:var(--warn)}
+  .ddblock.u{border-left-color:var(--crit)}
+  .ddbh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:9px}
+  .ddbt{font-size:14px;font-weight:700;letter-spacing:-.01em}
+  .ddblock.k .ddbt{color:var(--good)}
+  .ddblock.s .ddbt{color:var(--warn)}
+  .ddblock.u .ddbt{color:var(--crit)}
+  .ddbn{font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;color:var(--ink3)}
+  .ddblock ul{margin:0;padding-left:17px;display:flex;flex-direction:column;gap:8px}
+  .ddblock li{font-size:14px;line-height:1.55;color:var(--ink2)}
+  .ddledger{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin:18px 0}
+  @media(max-width:560px){.ddledger{grid-template-columns:1fr}}
+  .ddcol{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:13px 15px}
+  .ddcol h5{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+    margin:0 0 9px;font-weight:700}
+  .ddcol.good h5{color:var(--good)}
+  .ddcol.bad h5{color:var(--crit)}
+  .ddcol ul{margin:0;padding-left:16px;display:flex;flex-direction:column;gap:7px}
+  .ddcol li{font-size:13.5px;line-height:1.5;color:var(--ink2)}
+  .ddwarn{background:var(--crit-soft);border:1px solid var(--crit);border-radius:11px;padding:13px 15px;margin-bottom:18px}
+  .ddwh{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+    color:var(--crit);font-weight:700;margin-bottom:8px}
+  .ddwarn ul{margin:0;padding-left:16px;display:flex;flex-direction:column;gap:7px}
+  .ddwarn li{font-size:13.5px;line-height:1.5}
+  .ddyours{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 15px}
+  .ddyh{font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+    color:var(--ink3);font-weight:700;margin-bottom:8px}
+  .ddfoot{font-size:12px;line-height:1.55;color:var(--ink3);margin:18px 0 0;text-align:center}
+  .mini.deep{border-color:var(--accent);color:var(--accent)}
   /* colour key lives behind this, closed on every launch */
   .keybtn{position:absolute;top:11px;right:11px;width:24px;height:24px;border-radius:50%;
     border:1px solid var(--line2);background:var(--panel2);color:var(--ink3);
@@ -1042,6 +1100,10 @@
   <div class="install" id="installBar"></div>
   <div class="dayoverlay" id="dayOverlay"></div>
   <div class="player" id="player"></div>
+  <div class="deepview" id="deepView">
+    <button class="deepx" id="deepClose" aria-label="Close">✕</button>
+    <div id="deepBody"></div>
+  </div>
   <div class="alertborder" id="alertBorder"></div>
 
   <nav class="nav" id="nav">
@@ -1113,49 +1175,379 @@ acar:{n:"Acetyl-L-carnitine",f:"red meat",a:"Supports nerve and mitochondrial fu
 api:{n:"Apigenin",f:"chamomile, parsley, celery",a:"Traditionally an evening, calming compound"}};
 
 /* ---------- guides (only shown for tracked peptides) ---------- */
+/* ---------- peptide guides ----------
+   Each entry carries an honest evidence grade alongside the practical notes:
+     human = real human trials exist (approved drugs, or published RCTs)
+     pre   = animal / cell / small-or-mixed human data only
+     none  = no completed human efficacy trial
+   `ev` lists individual findings with their own grade, so a compound with one
+   strong result and three weak ones reads that way instead of averaging out. */
+const TIERN={human:"Human trials",pre:"Preclinical / limited",none:"No human efficacy data"};
 const GUIDES={
-reta:{what:"Triple agonist (GLP-1/GIP/glucagon) for appetite, fat loss and glucose control.",t:"Weekly, subq.",
+
+reta:{cls:"Triple incretin agonist · GLP-1 / GIP / glucagon",tier:"human",
+ what:"Triple agonist for appetite, fat loss and glucose control. The most powerful weight-loss agent yet tested in humans.",
+ mech:"Hits three receptors at once. GLP-1 and GIP cut appetite and slow gastric emptying; the glucagon arm raises energy expenditure, which is what separates it from semaglutide and tirzepatide.",
+ ev:[["human","Lilly's Phase 2 trial reported roughly 24% mean body-weight loss at 48 weeks — the largest figure seen from any obesity drug to date."],
+     ["human","Phase 3 programme is running. Not approved anywhere yet, so everything on the market is compounded or gray-market."],
+     ["pre","Long-term safety past a couple of years is simply unknown — the drug is too new for that data to exist."]],
+ dose:"Trials titrated from 1 mg weekly up through 4, 8 and 12 mg. The high-dose arms drove the biggest loss and the most nausea.",
+ good:["Best-in-class fat loss by a wide margin","Glucagon arm raises energy expenditure rather than only cutting intake","Strong glucose and insulin-sensitivity effects"],
+ bad:["Nausea and GI effects are dose-limiting for many","Muscle loss in a deficit is real — protein and lifting are not optional","No approval means no manufacturing oversight on what you're buying","Long-term safety data does not exist yet"],
+ t:"Weekly, subq.",
  pair:["protein","electro","fiber","b"],extra:[["Hydration","GLP-1 blunts thirst, drink more than usual"]],
  warn:["Nausea is common, titrate slowly.","In a deficit you can lose muscle, keep protein high and lift.","Never stack with another GLP-1 at the same time."]},
-tesa:{what:"GHRH analog that targets visceral fat and lifts the GH pulse.",t:"Daily, fasted, before bed.",
+
+tesa:{cls:"GHRH analog",tier:"human",
+ what:"Growth-hormone-releasing hormone analog that targets visceral fat. One of the few things here that is an actual approved drug.",
+ mech:"Stimulates the pituitary to release GH in a pulsatile pattern closer to natural secretion than injecting GH itself. Raises IGF-1 downstream.",
+ ev:[["human","FDA-approved as Egrifta for HIV-associated lipodystrophy, on the back of proper randomised trials showing visceral adipose reduction."],
+     ["human","Visceral fat reductions of roughly 15–18% versus placebo in the registration trials."],
+     ["pre","Use in healthy people for body composition is off-label and much less studied than the approved indication."]],
+ dose:"Approved dosing is 2 mg daily subq. Community use for body composition typically runs well below that.",
+ good:["Genuine regulatory approval and real trial data behind it","Preserves pulsatile GH release rather than flooding the system","Specifically targets visceral rather than subcutaneous fat"],
+ bad:["Raises IGF-1 — a marker worth tracking on bloodwork","Can worsen glucose tolerance and raise blood sugar","Water retention, joint aches and carpal-tunnel symptoms at higher doses","Effects reverse when you stop"],
+ t:"Daily, fasted, before bed.",
  pair:["protein"],extra:[["Fasted dosing","No carbs ~2h around it, insulin blunts GH"]],
  warn:["Can raise blood sugar and IGF-1, that's a key bloodwork marker.","Water retention and joint aches show up at higher doses, stay low."]},
-ss31:{what:"Mitochondrial (cardiolipin) peptide for cellular energy and oxidative repair.",t:"Daily, AM.",
+
+ss31:{cls:"Mitochondria-targeting tetrapeptide · elamipretide",tier:"pre",
+ what:"Binds cardiolipin in the inner mitochondrial membrane. Developed as a real drug candidate — and that development has mostly disappointed.",
+ mech:"Cardiolipin is the lipid that holds the electron transport chain in the right shape. SS-31 binds it, stabilising cristae structure and reducing electron leak, which should mean better ATP output and less oxidative stress.",
+ ev:[["human","Multiple company-run human trials as elamipretide (Stealth Biotherapeutics) — meaning it cleared safety and reached efficacy testing."],
+     ["none","MMPOWER-3, the Phase 3 trial in primary mitochondrial myopathy, missed its primary endpoint. Several other trials also failed to hit primary outcomes."],
+     ["pre","Mechanistic and animal data remain genuinely strong — the biology is well characterised even where the clinical results aren't."]],
+ dose:"Trials used around 40 mg/day subq. Community protocols usually run far lower.",
+ good:["Best-characterised mechanism of anything in this category","Passed human safety testing in formal trials","Cardiolipin biology is real and well established"],
+ bad:["Repeatedly failed to beat placebo on primary endpoints","Strong mechanism has not translated into demonstrated benefit","Degrades once reconstituted — refrigeration matters","Expensive for a compound with negative Phase 3 results"],
+ t:"Daily, AM.",
  pair:["coq10","ala","b"],warn:["Fast-burning cycle item, keep refrigerated once mixed."]},
-mots:{what:"Mitochondrial-derived peptide for insulin sensitivity and metabolism.",t:"On training days, pre-workout.",
+
+mots:{cls:"Mitochondrial-derived peptide",tier:"pre",
+ what:"A 16-amino-acid peptide encoded in mitochondrial DNA, pitched as an exercise mimetic.",
+ mech:"Appears to act through AMPK activation and the folate–methionine cycle, shifting metabolism toward glucose utilisation. Levels drop with age and rise with exercise, which is where the 'exercise in a vial' framing comes from.",
+ ev:[["pre","Rodent work shows improved insulin sensitivity, reduced diet-induced obesity and better exercise capacity."],
+     ["pre","Human observational data links higher endogenous MOTS-c to better metabolic health — association, not causation."],
+     ["none","No completed randomised trial of injected MOTS-c in humans."]],
+ dose:"No human dose-finding exists. Community protocols cluster around 5–10 mg, two to three times weekly.",
+ good:["Genuinely interesting biology — a peptide your own mitochondria make","Consistent metabolic effects across rodent models","Pairs logically with training"],
+ bad:["No human efficacy trial at all","Doses are convention, not evidence","Endogenous levels correlating with health doesn't mean injecting more helps"],
+ t:"On training days, pre-workout.",
  pair:["ala"],extra:[["Exercise","Dose before training to stack the effect"]],warn:[]},
-nad:{what:"Cellular energy and repair cofactor.",t:"AM, push slowly.",
+
+nad:{cls:"Redox cofactor",tier:"pre",
+ what:"The cofactor that drives hundreds of metabolic reactions and fuels the sirtuins. Levels fall with age, which is the whole pitch.",
+ mech:"NAD+ is consumed by sirtuins and PARPs during DNA repair and metabolic signalling. Raising it should support both — though whether injected NAD+ reaches cells intact is contested.",
+ ev:[["pre","Most decent human data is on precursors (NR, NMN), not NAD+ itself — those reliably raise blood NAD+ but clinical outcomes have been modest."],
+     ["none","Injected and IV NAD+ has minimal controlled human evidence despite widespread clinic use."],
+     ["pre","Open question whether intact NAD+ crosses cell membranes or is broken down to precursors first."]],
+ dose:"IV clinic protocols run 250–1000 mg over hours. Subq community use is typically 50–100 mg, limited by how much it stings.",
+ good:["Underlying NAD+ biology is well established and not controversial","Precursor trials confirm blood levels can be raised","Generally well tolerated when administered slowly"],
+ bad:["Fast administration causes flushing, chest pressure and nausea — genuinely unpleasant","Whether injected NAD+ enters cells intact is unresolved","Clinical benefits in trials have been smaller than the marketing suggests","Subq injection is notably painful"],
+ t:"AM, push slowly.",
  pair:["tmg","api","b"],warn:["Fast push causes flushing and chest pressure, go SLOW."]},
-amino:{what:"NNMT inhibitor, raises NAD and energy expenditure, supports fat loss.",t:"Subq, fasted AM.",
- pair:["tmg","b"],warn:["Newer compound with thin human data, keep it low and slow."]},
-klow:{what:"Recovery blend: BPC-157 + GHK-Cu + TB-500 + KPV in one shot.",t:"Daily, one injection.",
- pair:["vitc","zinc","copper","coll","glut"],extra:[["Acetic acid","Reconstitute with it so the blend doesn't gel"]],
- warn:["GHK adds copper, keep zinc and copper balanced."]},
-gluta:{what:"Master antioxidant, supports liver and kidney.",t:"Daily, with vitamin C.",
- pair:["nac","vitc","ala","sel"],warn:["Take with vitamin C, it recycles glutathione back to active form."]},
-ta1:{what:"Thymosin Alpha-1, immune T-cell modulation.",t:"2x per week.",pair:["vitd","zinc","vitc"],warn:[]},
-epi:{what:"Epithalon, telomerase and pineal support, anti-aging.",t:"Night, short 10-20 day cycle.",
- pair:["mag"],extra:[["Cycle","Pulse it 1-2x per year, not continuous"]],warn:[]},
-pineal:{what:"Pinealon, pineal peptide for cognition and rhythm.",t:"Night, short cycle.",
- pair:["mag"],warn:["Limited human data, keep to short cycles."]},
-dsip:{what:"Delta Sleep-Inducing Peptide for deeper sleep.",t:"Before bed.",
- pair:["mag","thea","gly"],warn:["Response varies a lot person to person."]},
-ara:{what:"Ara-290 (Cibinetide) for nerve repair and inflammation.",t:"Daily.",pair:["ala","acar","b12"],warn:[]},
-kiss:{what:"Kisspeptin-10, upstream HPG hormone signal.",t:"2-3x per week MAX.",
- pair:["zinc","vitd"],warn:["More often desensitizes the axis, cap at 2-3x per week."]},
-lcar:{what:"L-Carnitine, shuttles fatty acids into the mitochondria to be burned.",t:"Pre fasted cardio.",pair:["ala"],warn:[]},
-aod:{what:"AOD-9604, GH fat-loss fragment with no IGF-1 or glucose effect.",t:"Fasted AM or pre-cardio.",
- pair:[],extra:[["Fasted only","Works when insulin is low"]],warn:[]}};
 
-/* ---------- vendor sourcing for the Buy tab (box price for a reorder) ---------- */
-const SRC={
-reta:{l:["RT30",250],p:["RT30",165]},tesa:{l:["TSM10",206],p:["TSM10",169]},ss31:{l:["2S50",413],p:["2S50",400]},
-mots:{l:["MS10",73],p:["MS10",59]},nad:{l:["NJ500",83],p:["NJ500",59]},amino:{l:["10AM",79],p:["50AM",106]},
-klow:{l:["KLOW80",267],p:["KLOW80",250]},gluta:{l:["LW150",84],p:["GTT1500",59]},ta1:{l:["TA5",94],p:["TA5",94]},
-epi:{l:["ET10",47],p:["ET10",42]},pineal:{l:["PIN10",68],p:["PI10",60]},dsip:{l:["DS5",45],p:["DS5",38]},
-ara:{l:["ARA10",68],p:["RA10",73]},kiss:{l:["KS5",64],p:["KS5",52]},lcar:{l:["LC600",59],p:["LC600",50]},aod:{l:["2AD",63],p:["5AD",94]}};
+amino:{cls:"NNMT inhibitor",tier:"none",
+ what:"Small molecule (not really a peptide) that blocks nicotinamide N-methyltransferase, aimed at fat metabolism.",
+ mech:"NNMT consumes methyl groups and regulates NAD+ salvage in fat tissue. Inhibiting it is proposed to raise NAD+ locally in adipocytes and shift them toward fat burning.",
+ ev:[["pre","Mouse work showed reduced fat mass and improved metabolic markers on a high-fat diet."],
+     ["none","No published human trial. None registered that has completed."],
+     ["none","Human dose, absorption and safety profile are all unestablished."]],
+ dose:"Community use is typically 50–150 mg orally or 1–5 mg injected. Neither figure comes from a human study.",
+ good:["Coherent mechanism tied to NAD+ biology","Orally active, unlike most of this list","Well tolerated in anecdotal use"],
+ bad:["Zero human data of any kind","Sold widely on the strength of a handful of mouse papers","Methyl-group biology means interactions with methylation status are plausible but unstudied"],
+ t:"Subq or oral, fasted AM.",
+ pair:["tmg","b"],warn:["No human safety data — treat dosing as guesswork."]},
 
-/* ---------- default tracked stack (all editable) ---------- */
+klow:{cls:"Blend · KPV + Larazotide + GHK-Cu + BPC-157/TB-500",tier:"none",
+ what:"A multi-peptide recovery and gut blend. Convenient, and completely unstudied as a combination.",
+ mech:"Each component has its own proposed action — KPV anti-inflammatory, Larazotide tightening gut junctions, GHK-Cu on tissue remodelling, BPC-157 and TB-500 on repair. The blend assumes these add up without interfering.",
+ ev:[["none","No trial has ever tested this combination."],
+     ["pre","Individual components range from moderately studied (GHK-Cu topically, Larazotide in coeliac trials) to rodent-only (BPC-157)."],
+     ["none","No way to attribute any effect to a specific component."]],
+ dose:"Sold as a fixed blend, typically dosed as one pin of roughly 4 mg total. Ratios vary by supplier and are often undisclosed.",
+ good:["One injection instead of four","Components are individually plausible for recovery","Convenient for a daily protocol"],
+ bad:["Blend has never been studied","You cannot isolate which part is doing anything","Ratios differ between suppliers — 'KLOW' is not a standardised product","Contains BPC-157 and TB-500, both WADA-banned"],
+ t:"Daily, one pin.",
+ pair:["protein","c","zinc"],warn:["Blend composition varies by supplier — confirm what's actually in yours.","Contains WADA-banned components if you compete."]},
+
+gluta:{cls:"Tripeptide antioxidant · Glu-Cys-Gly",tier:"human",
+ what:"The body's main intracellular antioxidant. Well studied as a molecule, much less so as an injection.",
+ mech:"Directly neutralises reactive oxygen species and is the substrate for glutathione peroxidase. Central to phase II liver detoxification.",
+ ev:[["human","IV glutathione has been trialled in Parkinson's disease — results were mixed to negative on clinical endpoints."],
+     ["human","Widely used for skin lightening, particularly across Asia; evidence is weak and regulators have warned about IV use."],
+     ["pre","Oral glutathione is poorly absorbed — most of the supplement market rests on shaky pharmacokinetics."]],
+ dose:"IV clinic protocols run 600–2400 mg. Subq community use is commonly 200–600 mg.",
+ good:["Not exotic — this is a molecule your body already makes in quantity","Injection bypasses the oral absorption problem","Good safety record at typical doses"],
+ bad:["Clinical trials have mostly underwhelmed","Skin-lightening use has drawn regulatory safety warnings","Precursors (NAC, glycine) may raise levels more practically","Very short half-life once injected"],
+ t:"Daily or several times weekly, with vitamin C.",
+ pair:["c","ala","selenium"],warn:["Regulators have flagged safety concerns around high-dose IV use for cosmetic purposes."]},
+
+ta1:{cls:"Thymic peptide · thymosin alpha-1",tier:"human",
+ what:"An immune modulator that is an approved drug in a large part of the world — one of the better-evidenced items here.",
+ mech:"Matures T-cells and shifts dendritic cell signalling, raising Th1 immune response. Modulates rather than blanket-stimulates, which is why it's used in both under- and over-active immune states.",
+ ev:[["human","Approved as Zadaxin in around 35 countries for hepatitis B and C."],
+     ["human","Used as an adjuvant in sepsis and oncology; sepsis trials have shown mortality signals worth taking seriously."],
+     ["human","Studied during COVID-19 with some positive results in severe disease."]],
+ dose:"Approved dosing is 1.6 mg subq twice weekly. That's also the standard community protocol — a rare case of alignment.",
+ good:["Actual regulatory approval in many countries","Decades of clinical use with a good safety record","Modulates immunity rather than crudely stimulating it"],
+ bad:["Not FDA-approved in the US","Immune modulation is a poor idea alongside autoimmune conditions without medical oversight","Injection-site reactions are the common complaint"],
+ t:"Two to three times per week.",
+ pair:["zinc","c","d"],warn:["Speak to a doctor before using any immune modulator if you have an autoimmune condition."]},
+
+epi:{cls:"Pineal bioregulator · Ala-Glu-Asp-Gly",tier:"pre",
+ what:"Four-amino-acid analog of a bovine pineal extract, sold on telomere and longevity claims. Recently got its first real independent replication — along with a finding worth knowing.",
+ mech:"Proposed to induce telomerase (hTERT) and restore melatonin rhythm. The wider framework claims short peptides bind promoter DNA to regulate genes — a strong claim with limited support outside the group that proposed it.",
+ ev:[["pre","Khavinson 2003: telomerase activity and telomere elongation in human fetal fibroblasts, cells passing the Hayflick limit."],
+     ["pre","2025, Brunel University London: independent replication of dose-dependent telomere elongation in normal human cells — the first strong Western confirmation."],
+     ["none","The same 2025 work reported epithalon activating a cancer-related telomere maintenance mechanism in tumour cells."],
+     ["none","The famous human mortality data used Epithalamin, the pineal extract — not synthetic AEDG. Related, not identical."]],
+ dose:"Common protocol is 5–10 mg/day for 10–20 days, cycled two to three times a year. Inherited from Epithalamin work, not from an AEDG dose-finding trial.",
+ good:["Now has genuine independent in-vitro replication — rare in this space","Short cycles keep total exposure low","Well tolerated in the trials that exist","Melatonin-rhythm angle is more plausible than the telomere story"],
+ bad:["Telomerase induction is exactly what ~90% of cancers exploit to become immortal","2025 data showed a cancer-related mechanism activating in tumour cells","No human trial has measured whether telomeres actually change","Human survival claims come from a different substance"],
+ t:"Night, short cycles only.",
+ pair:["mag","b"],warn:["Telomerase activation is the mechanism cancers use — worth raising with a doctor, especially with family cancer history.","Cycle it. Do not run continuously."]},
+
+pineal:{cls:"CNS bioregulator · Glu-Asp-Arg",tier:"none",
+ what:"Three-amino-acid peptide from the same Russian programme as Epithalon, sold for brain protection. The thinnest evidence base of anything in this app.",
+ mech:"Claimed to cross the blood-brain barrier, reach the nucleus and modulate neuronal gene expression, with antioxidant and anti-apoptotic effects.",
+ ev:[["pre","Dose-dependent suppression of reactive oxygen species in rat cerebellar granule cell cultures — the clearest finding attached to it."],
+     ["pre","Radiolabelled EDR showed distribution consistent with CNS penetration in rodents."],
+     ["none","One human study: 72 patients with traumatic brain injury sequelae, oral dosing alongside standard therapy, reporting no significant adverse events. Safety observation, not efficacy."],
+     ["none","As of 2026 there is no completed randomised controlled trial in humans."]],
+ dose:"Typically 1–10 mg/day for 10–20 days. No human dose-finding study exists, so these numbers are convention.",
+ good:["Plausible antioxidant mechanism with consistent cell-culture support","Evidence it reaches the CNS in animals","No adverse-event signal in the limited human exposure","Short cycles, low cost"],
+ bad:["Zero completed human efficacy trials after twenty-plus years","The only human study was oral, adjunctive, and measured safety","'Enters the nucleus and regulates genes' is a large claim on small support","Functionally you are the experiment"],
+ t:"Night, short cycles.",
+ pair:["mag","b"],warn:["No human efficacy data exists — dosing is inherited convention, not evidence."]},
+
+dsip:{cls:"Sleep-associated nonapeptide",tier:"pre",
+ what:"Isolated in 1977 from rabbits in induced delta sleep. The most human trial data of the pineal group — and those trials disagree with each other.",
+ mech:"Genuinely unresolved. No receptor has been identified in nearly fifty years, and the gene for endogenous DSIP has never been found — so it can't be confirmed that synthetic DSIP matches the natural molecule.",
+ ev:[["pre","Open trial: seven severe insomniacs given ten injections, sleep normalised in six across a 3–7 month follow-up."],
+     ["none","A double-blind study found effects weak, possibly placebo drift, and concluded short-term DSIP is 'not likely to be of major therapeutic benefit'."],
+     ["pre","An intermediate-term study found sleep efficiency reaching normal levels with repeated dosing, plus improved daytime alertness."],
+     ["none","Never developed into an approved drug anywhere despite five decades."]],
+ dose:"Research doses were around 25 µg/kg — roughly 2 mg at 80 kg. Community use of 100–300 µg runs about ten times lower than the studies it cites.",
+ good:["Not a GABA-A hypnotic — no dependence signal, no morning hangover","Appears to normalise sleep architecture rather than sedate","Benefit may build over repeated doses","Explored for withdrawal states and chronic pain with some positive signals"],
+ bad:["No receptor, no gene — nobody can say what it binds","Cleared in minutes, which sits badly against an eight-hour night","The best-designed trials are the least impressed","Cortisol/ACTH interaction proposed but uncharacterised","Paradoxical responses reported: vivid dreams, worse sleep, next-day flatness"],
+ t:"Before bed.",
+ pair:["mag","glycine"],warn:["Effects are inconsistent between people — some sleep worse on it."]},
+
+ara:{cls:"EPO-derived peptide · cibinetide",tier:"human",
+ what:"An 11-amino-acid fragment of erythropoietin that keeps the tissue-repair signalling without the red-blood-cell effects.",
+ mech:"Binds the innate repair receptor (a complex of EPO receptor and beta-common receptor) rather than the classical EPO receptor. That separates anti-inflammatory and nerve-repair signalling from erythropoiesis.",
+ ev:[["human","Phase 2 trials in sarcoidosis-related small fibre neuropathy showed improvements in nerve fibre density and pain measures."],
+     ["human","Studied in diabetic neuropathy and neuropathic pain with encouraging but not definitive results."],
+     ["pre","Development has been slow; no approval anywhere."]],
+ dose:"Trials used 4 mg/day subq for 28 days. Community protocols commonly run 1–3 mg/day.",
+ good:["Real Phase 2 human data, unusual for this category","Deliberately engineered to avoid EPO's blood-thickening effects","Genuinely targeted at neuropathic pain rather than vague wellness"],
+ bad:["No approval, and development has stalled","Best evidence is in specific neuropathy populations, not healthy users","Small trials with soft endpoints"],
+ t:"Daily, short courses.",
+ pair:["b","ala"],warn:["Evidence comes from neuropathy patients — extrapolating to healthy use is a stretch."]},
+
+kiss:{cls:"Reproductive neuropeptide · kisspeptin-10",tier:"human",
+ what:"The upstream trigger for the entire reproductive hormone axis. Some of the cleanest human physiology research on this list.",
+ mech:"Acts on KISS1R neurons in the hypothalamus to drive GnRH release, which in turn drives LH and FSH from the pituitary, which drives testosterone or oestrogen production.",
+ ev:[["human","Extensively studied in humans at Imperial College London — reliably raises LH, FSH and downstream sex hormones."],
+     ["human","Trials have examined effects on sexual and emotional brain processing, with measurable changes."],
+     ["pre","Long-term or repeated dosing in healthy men is much less studied than acute administration."]],
+ dose:"Human research used a wide range, often infused rather than bolused. Community protocols run roughly 50–200 µg, two to three times weekly.",
+ good:["Genuinely well-characterised human physiology behind it","Acts upstream, working with the axis rather than overriding it","Acute effects on LH are reliable and measurable on bloodwork"],
+ bad:["Receptor desensitises with continuous exposure — frequency matters","Most human data is acute infusion, not repeated subq self-dosing","Pointless or counterproductive alongside exogenous testosterone, which suppresses the axis it stimulates"],
+ t:"Two to three times per week.",
+ pair:["zinc","d"],warn:["Continuous exposure desensitises the receptor — pulsed dosing is the point.","Interacts with TRT, which suppresses the axis this works through."]},
+
+lcar:{cls:"Amino acid derivative",tier:"human",
+ what:"Shuttles long-chain fatty acids into mitochondria to be burned. Heavily studied, with results more modest than the marketing.",
+ mech:"Carnitine is required to transport fatty acids across the inner mitochondrial membrane. The theory is that more carnitine means more fat oxidation — which holds only if carnitine is the limiting factor, and usually it isn't.",
+ ev:[["human","Large body of human research; meta-analyses show small but real weight-loss effects, typically 1–2 kg."],
+     ["human","Muscle carnitine is hard to raise — oral dosing needs high insulin to drive uptake."],
+     ["pre","Gut bacteria convert carnitine to TMAO, which has been associated with cardiovascular risk in observational work."]],
+ dose:"Oral trials used 2–4 g/day. Injectable community use is commonly 200–600 mg.",
+ good:["Extensively studied with a well-understood mechanism","Good safety record over decades","Injection bypasses poor oral absorption","May help recovery and reduce muscle soreness"],
+ bad:["Fat-loss effects are small and easily overstated","TMAO conversion is a genuine open cardiovascular question","Oral uptake into muscle needs a big insulin spike to work"],
+ t:"Pre fasted cardio.",
+ pair:["ala","b"],warn:["TMAO production is an open cardiovascular question, particularly at high chronic doses."]},
+
+aod:{cls:"hGH fragment 176-191",tier:"none",
+ what:"A fragment of growth hormone marketed for fat loss. It was properly tested, and it did not work.",
+ mech:"Proposed to reproduce GH's lipolytic effect without the growth-promoting or glucose effects, by acting on beta-3 adrenergic receptors in fat tissue.",
+ ev:[["none","Failed a Phase 2b obesity trial — did not significantly outperform placebo on weight loss."],
+     ["pre","Rodent data was positive, which is why it reached human trials at all."],
+     ["none","Development was discontinued for obesity after the trial result."]],
+ dose:"Trials used up to 1 mg/day orally. Injectable community use is around 300 µg/day.",
+ good:["Clean safety profile — it doesn't raise IGF-1 or affect blood sugar","Tested properly rather than never studied"],
+ bad:["Failed its human efficacy trial outright","Still sold on rodent data that human testing did not confirm","Being safe is not the same as being useful"],
+ t:"Fasted AM.",
+ pair:["b"],warn:["Failed its Phase 2b obesity trial — sold on preclinical data that didn't replicate in people."]},
+
+/* ---- commonly added, not in the default list ---- */
+
+sema:{cls:"GLP-1 receptor agonist",tier:"human",
+ what:"The drug that started the current wave. Enormous trial base, approved for diabetes and obesity.",
+ mech:"GLP-1 receptor agonism slows gastric emptying, increases satiety centrally, and improves glucose-dependent insulin secretion.",
+ ev:[["human","STEP programme: roughly 15% body-weight loss at 68 weeks versus placebo."],
+     ["human","SELECT trial showed a 20% reduction in major cardiovascular events in overweight patients with existing cardiovascular disease."],
+     ["human","Extensive long-term safety data — a genuine rarity on this list."]],
+ dose:"Titrated 0.25 mg weekly up to 2.4 mg for weight management.",
+ good:["Massive high-quality trial base","Proven cardiovascular benefit, not just weight loss","Long-term safety actually characterised"],
+ bad:["Nausea, vomiting and constipation are common","Muscle loss in a deficit without resistance training","Weight returns after stopping in most people","Gastroparesis and gallbladder issues reported"],
+ t:"Weekly, subq.",pair:["protein","electro","fiber"],
+ warn:["Titrate slowly — most side effects come from moving up too fast.","Keep protein high and lift, or you'll lose muscle with the fat."]},
+
+tirz:{cls:"Dual agonist · GIP / GLP-1",tier:"human",
+ what:"Dual incretin agonist, more effective than semaglutide in head-to-head testing.",
+ mech:"Adds GIP receptor agonism to GLP-1. The GIP arm appears to improve tolerability and add metabolic benefit beyond GLP-1 alone.",
+ ev:[["human","SURMOUNT-1: around 21% body-weight loss at 72 weeks on the highest dose."],
+     ["human","SURPASS-2 beat semaglutide directly on both glucose control and weight."],
+     ["human","Approved for type 2 diabetes and for obesity."]],
+ dose:"Titrated 2.5 mg weekly up to 15 mg.",
+ good:["Outperforms semaglutide head-to-head","Approved with a large trial base","GIP arm may improve GI tolerability"],
+ bad:["Same GI side-effect profile as GLP-1 drugs","Same muscle-loss and rebound concerns","Expensive"],
+ t:"Weekly, subq.",pair:["protein","electro","fiber"],
+ warn:["Titrate slowly.","Protein and resistance training are not optional in a deficit."]},
+
+ghkcu:{cls:"Copper tripeptide · Gly-His-Lys-Cu",tier:"pre",
+ what:"Copper-binding tripeptide with strong evidence topically for skin, and much thinner evidence injected.",
+ mech:"Binds copper and modulates genes involved in tissue remodelling — collagen synthesis, wound healing, antioxidant response. Copper is a required cofactor for lysyl oxidase, which cross-links collagen.",
+ ev:[["human","Good controlled evidence for topical use: improved skin density, wrinkle depth and wound healing."],
+     ["pre","Systemic injection evidence is far weaker — mostly animal and mechanistic work."],
+     ["pre","Gene-expression studies show broad effects on remodelling pathways."]],
+ dose:"Topical products use 1–3 mg/mL. Injectable community use runs 1–3 mg/day, unsupported by human trials.",
+ good:["Genuinely good evidence for the topical route","Well-characterised, non-exotic mechanism","Also used for hair and scalp with reasonable support"],
+ bad:["Injectable use is not what the good evidence covers","Copper accumulation is a real consideration with chronic systemic dosing","Stings notably on injection","Can drive copper–zinc imbalance"],
+ t:"Daily or several times weekly.",pair:["zinc","c"],
+ warn:["The strong evidence is topical, not injected.","Chronic systemic copper can push zinc down — worth watching on bloodwork."]},
+
+bpc:{cls:"Gastric pentadecapeptide BPC-157",tier:"none",
+ what:"The most popular repair peptide in the world, and one of the least supported by human data.",
+ mech:"Proposed to promote angiogenesis via VEGFR2, modulate nitric oxide, and accelerate tendon, ligament and gut healing.",
+ ev:[["pre","Extensive rodent literature covering tendon, ligament, muscle, gut and nerve healing — consistently positive."],
+     ["none","No published randomised controlled trial in humans. Not one."],
+     ["none","Banned by WADA since 2022."]],
+ dose:"No human dosing data. Community protocols run 250–500 µg/day, often split.",
+ good:["Remarkably consistent rodent results across many tissue types","Strong anecdotal reputation for tendon and gut issues","No serious adverse effects reported in the animal literature"],
+ bad:["Zero human trials despite twenty years of popularity","Angiogenesis promotion is theoretically unwise with any undiagnosed tumour","WADA-banned","Stability in solution is questionable"],
+ t:"Daily, often near the injury site.",pair:["protein","c","zinc"],
+ warn:["No human trial data exists.","Promotes angiogenesis — a theoretical concern with any undiagnosed cancer.","WADA-banned if you compete."]},
+
+tb500:{cls:"Thymosin beta-4 fragment",tier:"pre",
+ what:"Synthetic fragment of thymosin beta-4, used alongside BPC-157 for systemic repair.",
+ mech:"Regulates actin, the cytoskeletal protein central to cell migration. That migration is what lets repair cells reach damaged tissue.",
+ ev:[["pre","Animal data supports cardiac repair, wound healing and reduced fibrosis."],
+     ["human","RegeneRx ran early human trials of thymosin beta-4 for dry eye and pressure ulcers with some positive results."],
+     ["none","No human trials of TB-500 itself for the musculoskeletal uses it's sold for. WADA-banned."]],
+ dose:"No human dosing data for this use. Community protocols run 2–5 mg weekly, often front-loaded.",
+ good:["Actin biology is well established","Some genuine human trial history for the parent peptide","Longer-acting than BPC-157, so less frequent dosing"],
+ bad:["The human trials were for different indications and different formulations","Promotes cell migration — a theoretical concern with malignancy","WADA-banned","Commonly sold as a fragment that may not match what was studied"],
+ t:"Weekly or twice weekly.",pair:["protein","c"],
+ warn:["Human trial history is for a different peptide and different indications.","WADA-banned if you compete."]},
+
+kpv:{cls:"Alpha-MSH fragment · Lys-Pro-Val",tier:"none",
+ what:"The three-amino-acid tail of alpha-MSH, carrying the anti-inflammatory activity without the pigmentation effects.",
+ mech:"Appears to act intracellularly, inhibiting NF-kB and inflammasome signalling. Much of the interest is in gut inflammation.",
+ ev:[["pre","Animal models of colitis show reduced inflammation, often with oral dosing."],
+     ["pre","Cell work supports NF-kB inhibition as the mechanism."],
+     ["none","No completed human trial."]],
+ dose:"No human data. Community use runs 200–500 µg/day, oral or injected depending on the target.",
+ good:["Targeted anti-inflammatory action without immune suppression","Avoids alpha-MSH's pigmentation and libido effects","Consistent preclinical results in gut models"],
+ bad:["No human trials","Oral versus injected routes target different things and get conflated","Very short half-life"],
+ t:"Daily.",pair:["zinc","glutamine"],warn:["No human trial data.","Oral and injected use aren't interchangeable — they target different tissue."]},
+
+glow:{cls:"Blend · GHK-Cu + BPC-157 + TB-500",tier:"none",
+ what:"Three-peptide blend aimed at skin, hair and connective tissue.",
+ mech:"Combines GHK-Cu's remodelling effects with the two repair peptides. As with any blend, the assumption that the parts add cleanly is untested.",
+ ev:[["none","No trial on the combination."],
+     ["pre","GHK-Cu has good topical evidence; BPC-157 has none in humans; TB-500 has none for this use."],
+     ["none","Ratios vary by supplier and are frequently undisclosed."]],
+ dose:"Sold as a fixed blend, typically one pin of around 4 mg.",
+ good:["Convenient single injection","Components target the same broad goal"],
+ bad:["Untested as a combination","Inherits every limitation of its parts","Contains two WADA-banned peptides","Not a standardised product between suppliers"],
+ t:"Daily.",pair:["protein","c","zinc"],
+ warn:["Contains WADA-banned components.","Blend ratios vary between suppliers."]},
+
+ipa:{cls:"Ghrelin mimetic / GH secretagogue",tier:"pre",
+ what:"Selective GH secretagogue, usually paired with a GHRH analog.",
+ mech:"Agonist at the ghrelin receptor, triggering GH release. Selective enough that it largely avoids raising cortisol and prolactin, which is what distinguishes it from older secretagogues.",
+ ev:[["pre","Reliably raises GH acutely in animal and limited human work."],
+     ["none","No large controlled human trial for body composition or anti-ageing use."],
+     ["pre","Never pursued to approval."]],
+ dose:"Community protocols run 200–300 µg, one to three times daily. No approved dosing exists.",
+ good:["Selective — minimal cortisol or prolactin rise","Preserves pulsatile GH release","Good tolerability record anecdotally"],
+ bad:["No meaningful human efficacy trials","GH pulses don't automatically mean body-composition change","Stimulates appetite via ghrelin signalling, which works against a deficit"],
+ t:"Before bed, fasted.",pair:["protein"],
+ warn:["Raises appetite through ghrelin signalling — counterproductive if you're cutting."]},
+
+cjc:{cls:"GHRH analog · CJC-1295 without DAC",tier:"pre",
+ what:"Modified GHRH fragment, usually stacked with a ghrelin mimetic.",
+ mech:"Extends GHRH's very short half-life so it survives long enough to produce a meaningful pulse. The no-DAC version keeps pulses short rather than raising GH continuously.",
+ ev:[["pre","Human pharmacokinetic studies confirm it raises GH and IGF-1."],
+     ["none","No controlled trial for body composition or anti-ageing outcomes."],
+     ["pre","The DAC version produced sustained elevation, which is generally considered less physiological."]],
+ dose:"Community protocols run 100–300 µg alongside a secretagogue. No approved dosing.",
+ good:["Confirmed to raise GH and IGF-1 in humans","No-DAC form preserves pulsatility","Synergistic with ghrelin mimetics"],
+ bad:["Raising GH is documented; benefit from doing so is not","Raises IGF-1, worth tracking","Water retention and joint aches at higher doses"],
+ t:"Before bed, fasted.",pair:["protein"],
+ warn:["Raises IGF-1 — track it on bloodwork."]},
+
+selank:{cls:"Tuftsin analog anxiolytic",tier:"pre",
+ what:"Russian anxiolytic peptide, approved there, essentially unstudied in the West.",
+ mech:"Modulates GABA and serotonin signalling and raises BDNF, without the sedation or dependence associated with benzodiazepines.",
+ ev:[["human","Approved in Russia for anxiety disorders, on the back of Russian clinical work."],
+     ["pre","Animal studies show anxiolytic effects with no sedation or withdrawal."],
+     ["none","No Western regulatory review or independent replication of the clinical work."]],
+ dose:"Russian clinical use is typically 250–500 µg intranasally per day.",
+ good:["Non-sedating and non-dependence-forming in the available data","Approved somewhere, unlike most of this list","Intranasal avoids injection entirely"],
+ bad:["Evidence is almost entirely Russian and not independently replicated","No Western trials","Effects are subtle and easily confused with placebo"],
+ t:"Intranasal, as needed.",pair:["mag","b"],warn:["Evidence base is Russian clinical work with no Western replication."]},
+
+semax:{cls:"ACTH(4-10) analog nootropic",tier:"pre",
+ what:"Russian nootropic and neuroprotective peptide, approved there for stroke and cognitive indications.",
+ mech:"Fragment of ACTH stripped of hormonal activity, proposed to raise BDNF and NGF and modulate dopaminergic and serotonergic signalling.",
+ ev:[["human","Approved in Russia for stroke, transient ischaemic attack and cognitive disorders."],
+     ["pre","Animal work supports neuroprotection in ischaemia models."],
+     ["none","No Western trials or independent replication."]],
+ dose:"Russian clinical use runs 200 µg–1 mg intranasally daily, higher in acute stroke protocols.",
+ good:["Real clinical use history in one country","Neuroprotective mechanism is plausible","Intranasal, no injection"],
+ bad:["No Western validation whatsoever","Stroke indication doesn't transfer to healthy cognitive enhancement","Quality and identity of gray-market product is a real question"],
+ t:"Intranasal, AM.",pair:["b","omega3"],warn:["Approved use is acute stroke care — that doesn't transfer to healthy nootropic use."]},
+
+pt141:{cls:"Melanocortin receptor agonist · bremelanotide",tier:"human",
+ what:"An approved drug for sexual desire disorder, acting centrally rather than on blood flow.",
+ mech:"Agonist at MC3R and MC4R in the central nervous system, affecting desire pathways directly — a different route entirely from PDE5 inhibitors like sildenafil.",
+ ev:[["human","FDA-approved in 2019 as Vyleesi for hypoactive sexual desire disorder in premenopausal women."],
+     ["human","RECONNECT trials showed statistically significant improvement in desire and reduced distress."],
+     ["human","Effect sizes were modest, and nausea caused notable trial dropout."]],
+ dose:"Approved dosing is 1.75 mg subq as needed, no more than once in 24 hours and eight times monthly.",
+ good:["Genuine FDA approval with published trials","Central mechanism works where blood-flow drugs don't","Works for both men and women"],
+ bad:["Nausea is common and frequently severe","Transient blood-pressure rise — not for uncontrolled hypertension","Can cause skin and gum hyperpigmentation with repeated use","Approved trial effect sizes were modest"],
+ t:"As needed, well before activity.",pair:["b"],
+ warn:["Raises blood pressure transiently — avoid with uncontrolled hypertension.","Nausea is the most common reason people stop."]},
+
+melatonin:{cls:"Pineal hormone",tier:"human",
+ what:"The body's own circadian signal. Extensively studied, and almost universally overdosed.",
+ mech:"Signals biological night to the suprachiasmatic nucleus. It's a timing cue, not a sedative — which is why timing matters far more than dose.",
+ ev:[["human","Large meta-analyses confirm modest reductions in sleep latency and shifts in circadian phase."],
+     ["human","Strong evidence for jet lag and delayed sleep phase disorder specifically."],
+     ["human","Physiological doses of 0.3–0.5 mg match or beat the 5–10 mg found in shops."]],
+ dose:"Research-supported doses are 0.3–0.5 mg taken 30–60 minutes before target sleep time. Retail products are typically ten to twenty times that.",
+ good:["Extensively studied with a strong safety record","Cheap and widely available","Genuinely effective for circadian shifting"],
+ bad:["Most retail doses are far too high, which can cause grogginess","It shifts timing rather than inducing sleep — expectations are usually wrong","Timing matters more than dose and is usually got wrong"],
+ t:"30–60 min before target sleep time.",pair:["mag","glycine"],
+ warn:["Retail doses are typically 10–20x higher than the studied effective dose."]},
+
+cagri:{cls:"Long-acting amylin analog",tier:"human",
+ what:"Amylin analog trialled alongside semaglutide as CagriSema.",
+ mech:"Amylin acts alongside insulin to signal satiety and slow gastric emptying, via a pathway distinct from GLP-1 — which is why combining them adds effect.",
+ ev:[["human","REDEFINE trials of CagriSema showed weight loss beyond semaglutide alone."],
+     ["human","Monotherapy data exists but the combination is where the development effort sits."],
+     ["pre","Not yet approved."]],
+ dose:"Trials titrated to 2.4 mg weekly, matched to the semaglutide arm.",
+ good:["Complementary mechanism to GLP-1","Real Phase 3 trial data","May allow lower GLP-1 doses for the same effect"],
+ bad:["Not approved","Adds to the GI side-effect burden when stacked","Little standalone long-term data"],
+ t:"Weekly, subq.",pair:["protein","electro"],warn:["Stacking with a GLP-1 compounds nausea — titrate one at a time."]}
+};
 const DEF=[
  mk("reta","Retatrutide","GLP-1",1,"mg",{t:"week",days:[1]},30,30,"Weekly, AM"),
  mk("tesa","Tesamorelin","GH axis",.5,"mg",{t:"daily"},10,10,"Fasted, before bed"),
@@ -2377,6 +2769,68 @@ function toggleDay2(id,key,isToday){
   else S.events=S.events.filter(e=>!(e.pep===p.id&&e.type==="empty"&&e.date===key));
   save();
 }
+/* ---------- deep dive ----------
+   The long-form page for one peptide: what's actually established, what's only
+   suggested, and what nobody knows yet — kept out of the card so the list stays
+   scannable. Findings are grouped by the evidence grade stored on each entry. */
+function deepDive(id){
+  const p=pById(id);if(!p)return;
+  const g=GUIDES[p.guideKey||p.id];if(!g)return;
+  const ev=g.ev||[];
+  const bucket=t=>ev.filter(e=>e[0]===t).map(e=>e[1]);
+  const known=bucket("human"),sugg=bucket("pre"),unknown=bucket("none");
+  const cols=pepColors(p);
+  const block=(cls,title,note,items)=>items.length?`
+    <div class="ddblock ${cls}">
+      <div class="ddbh"><span class="ddbt">${title}</span><span class="ddbn">${note}</span></div>
+      <ul>${items.map(x=>`<li>${x}</li>`).join("")}</ul>
+    </div>`:"";
+  $("#deepBody").innerHTML=`
+    <div class="ddhero" style="background:${pepPaint(p)}">
+      <div class="ddscrim"></div>
+      <div class="ddhx"><div class="ddname">${p.name}</div>
+        <div class="ddcls">${g.cls||pepFamNames(p)}</div></div>
+      <span class="ddtier ${g.tier||"pre"}">${TIERN[g.tier]||"Limited evidence"}</span>
+    </div>
+    <div class="ddwrap">
+      <p class="ddlede">${g.what||""}</p>
+
+      <div class="ddsec"><h4>How it's thought to work</h4>
+        <p>${g.mech||"Mechanism not well characterised."}</p></div>
+
+      ${block("k","What's established","backed by human trials",known)}
+      ${block("s","What's suggested","animal, cell or small human data",sugg)}
+      ${block("u","What's unknown","no data, or the trial went the wrong way",unknown)}
+
+      ${g.dose?`<div class="ddsec"><h4>Doses used in studies</h4>
+        <div class="dddose">${g.dose}</div></div>`:""}
+
+      <div class="ddledger">
+        ${(g.good||[]).length?`<div class="ddcol good"><h5>Worth it because</h5>
+          <ul>${g.good.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:""}
+        ${(g.bad||[]).length?`<div class="ddcol bad"><h5>Against it</h5>
+          <ul>${g.bad.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:""}
+      </div>
+
+      ${(g.warn||[]).length?`<div class="ddwarn"><div class="ddwh">Before you dose</div>
+        <ul>${g.warn.map(w=>`<li>${w}</li>`).join("")}</ul></div>`:""}
+
+      <div class="ddyours">
+        <div class="ddyh">Your setup</div>
+        <div class="istat"><span class="k">Your dose</span><span class="v">${doseLabel(p)}</span></div>
+        <div class="istat"><span class="k">Schedule</span><span class="v">${schedLabel(p)}${p.time==="pm"?" · night":" · morning"}</span></div>
+        <div class="istat"><span class="k">Vial</span><span class="v">${round(p.remaining,2)} / ${p.vialMg} ${p.unit} left</span></div>
+        <div class="istat"><span class="k">Family</span><span class="v">${pepFamNames(p)}</span></div>
+      </div>
+
+      <p class="ddfoot">Summarised from published research. Not medical advice, and
+        not a recommendation to start, stop or change a dose.</p>
+    </div>`;
+  $("#deepView").classList.add("on");
+  $("#deepView").scrollTop=0;
+}
+function closeDeep(){$("#deepView").classList.remove("on");}
+
 /* ---------- per-peptide history ----------
    A month at a time: a dot for every day it was taken, a star for the day a
    new vial was opened, and an empty-vial mark for the day one ran dry. */
@@ -2946,6 +3400,7 @@ function renderGuide(){
           <div class="bwork">Food sources only — no amounts. What's right for you depends on your bloodwork and your doctor.</div>`
         :`<div class="what">No detailed guide yet for this one. General principle: start low, stay hydrated, and let bloodwork and your doctor guide any changes.</div>`}
         <div class="editrow" style="margin-top:12px">
+          ${g?`<button class="mini deep" data-deep="${p.id}">ⓘ Deep dive</button>`:""}
           <button class="mini" data-ged="${p.id}">✎ Edit</button>
           ${off?"":`<button class="mini" data-gref="${p.id}">↺ Refill vial</button>`}
           <button class="mini" data-ginfo="${p.id}">Stats</button></div>
@@ -2956,6 +3411,7 @@ function renderGuide(){
   $$("[data-g]",el).forEach(b=>b.onclick=()=>{openGuide=(openGuide===b.dataset.g)?null:b.dataset.g;renderGuide();});
   $$("[data-ged]",el).forEach(b=>b.onclick=e=>{e.stopPropagation();editVial(b.dataset.ged);});
   $$("[data-gref]",el).forEach(b=>b.onclick=e=>{e.stopPropagation();refill(b.dataset.gref);renderGuide();});
+  $$("[data-deep]",el).forEach(b=>b.onclick=e=>{e.stopPropagation();deepDive(b.dataset.deep);});
   $$("[data-ginfo]",el).forEach(b=>b.onclick=e=>{e.stopPropagation();infoPop(b.dataset.ginfo);});
 }
 function showDisclaimer(){
@@ -3190,6 +3646,8 @@ const PUBLIC=!!window.VIALBACK_PUBLIC;
 
 
 /* init */
+$("#deepClose").onclick=closeDeep;
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#deepView").classList.contains("on"))closeDeep();});
 initTips();renderTrack();syncNative();
 if(PUBLIC)setTimeout(showInstall,1400);
 </script>
