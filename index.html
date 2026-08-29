@@ -780,6 +780,10 @@
     padding:7px 12px;font:inherit;font-size:12.5px;cursor:pointer}
   .cgchip.on{border-color:var(--accent);background:var(--accent-soft);color:var(--ink);font-weight:600}
   .cycper{margin-top:4px}
+  .medgrid{display:flex;flex-wrap:wrap;gap:6px}
+  .medchip{border:1px solid var(--line2);background:var(--panel2);color:var(--ink2);
+    border-radius:99px;padding:7px 12px;font:inherit;font-size:12.5px;cursor:pointer}
+  .medchip.on{border-color:var(--accent);background:var(--accent-soft);color:var(--ink);font-weight:600}
   .ddchev{font-style:normal;color:var(--ink3);font-size:17px;transition:transform .25s ease}
   .ddtoggle[aria-expanded="true"] .ddchev{transform:rotate(90deg);color:var(--accent)}
   .ddsup{display:none;margin-bottom:14px}
@@ -3872,6 +3876,14 @@ const INSTPL={
   soondef:off=>`empezar ahora contin\u00faa ese ciclo en lugar de comenzar uno nuevo. El intervalo habitual ronda los ${off} d\u00edas.`}
 };
 function INS(){return INSTPL[curLang()]||INSTPL.en;}
+const MEDTAGL={en:"prescription",es:"receta"};
+function MEDTAG(){return MEDTAGL[curLang()]||MEDTAGL.en;}
+/* "with" is the only connecting word, but it still has to come from a
+   table rather than the template, and the body is translated as it is
+   spliced in so it never reaches the DOM as a fragment. */
+const MEDPAIR={en:(a,b,t)=>`<b>${a}</b> with <b>${b}</b>. ${t}`,
+               es:(a,b,t)=>`<b>${a}</b> con <b>${b}</b>. ${t}`};
+function MEDP(){return MEDPAIR[curLang()]||MEDPAIR.en;}
 const CQTPL={
  en:{both:(a,b)=>`Can I take ${a} and ${b} together?`,
   blood:a=>`What bloodwork should I be doing on ${a}?`,
@@ -3974,6 +3986,15 @@ function insights(){
         tn.length===1?tn[0]:tn.slice(0,-1).join(", ")+TP.andw+tn[tn.length-1],
         lead?L(lead):"")});
   }));
+
+  // 1b. anything prescribed that meets what is being run
+  medHits().forEach(h=>{
+    const id="med"+h.mk+h.lvl+h.t.slice(0,12);
+    if(seen[id])return;seen[id]=1;
+    out.push({kind:h.lvl==="bad"?"warn":h.lvl==="good"?"good":h.lvl==="warn"?"warn":"plain",
+      tag:MEDTAG(),
+      body:MEDP()(L(h.med),h.peps.join(", "),L(h.t))});
+  });
 
   // 2. deliberate pairings, flagged as intended rather than as a problem
   act.forEach(a=>act.forEach(b=>{
@@ -4200,6 +4221,115 @@ function guideView(p){
   return o;
 }
 
+
+/* ================= PRESCRIPTIONS =================
+   Interactions with a mechanism behind them, in both directions. `fam` targets
+   a whole family where the mechanism is shared by the class; `key` targets one
+   molecule where it is not. lvl is bad / warn / good / plain. */
+const MEDS={
+ stimulant:{n:"Amphetamine or methylphenidate",cls:"Stimulant",
+  alias:["Adderall","Vyvanse","Dexedrine","Ritalin","Concerta","lisdexamfetamine","dextroamphetamine","methylphenidate"],
+  hits:[
+   {fam:"glp",lvl:"warn",t:"Both raise resting heart rate. GLP-1 agonists add roughly 3 to 7 beats per minute on their own, stimulants add their own on top, and nobody has studied the combination. Resting heart rate at home costs nothing and is the one number worth watching here."},
+   {key:"reta",lvl:"warn",t:"Retatrutide's heart-rate rise is the largest of the class, around 6.7 bpm at 12 mg, because the glucagon arm pushes the same direction as the GLP-1 arm. Stacking a stimulant on that is the combination to be most deliberate about."},
+   {fam:"glp",lvl:"warn",t:"Appetite suppression is additive and this is where people get into trouble. A stimulant plus a GLP-1 can take intake low enough that protein, sodium and total calories all fall below what you need, which is the usual cause of the fatigue people blame on the peptide."},
+   {fam:"glp",lvl:"good",t:"Reduced stimulant need is a real reported effect rather than a placebo. GLP-1 receptor agonists act on the same mesolimbic reward pathways that drive craving, which is why reduced alcohol and nicotine use keep showing up in this drug class and why trials in substance use are running. If your stimulant dose feels like too much, that is worth raising with whoever prescribes it rather than self-adjusting."}]},
+ ssri:{n:"SSRI or SNRI antidepressant",cls:"Antidepressant",
+  alias:["Prozac","fluoxetine","Zoloft","sertraline","Lexapro","escitalopram","Celexa","citalopram","Paxil","paroxetine","Effexor","venlafaxine","Cymbalta","duloxetine","Wellbutrin","bupropion"],
+  hits:[
+   {fam:"glp",lvl:"warn",t:"Nausea is the overlap. Both cause it through serotonergic signalling, and starting or escalating one while the other is settling makes it hard to tell which is responsible. Change one thing at a time."},
+   {key:"pt141",lvl:"plain",t:"Bremelanotide acts on melanocortin receptors, not serotonin, so it does not clash with an SSRI directly. It is often reached for because of the sexual side effects SSRIs cause, which is a different question and one worth asking a prescriber."},
+   {fam:"neuro",lvl:"warn",t:"Selank and Semax are studied as anxiolytics and modulate the same broad systems. There is no interaction data with SSRIs at all, so this is unknown rather than safe."}]},
+ insulin:{n:"Insulin or sulfonylurea",cls:"Glucose lowering",
+  alias:["insulin","Lantus","Humalog","Novolog","glipizide","glyburide","glimepiride","Amaryl","gliclazide"],
+  hits:[
+   {fam:"glp",lvl:"bad",t:"This is the combination that causes real hypoglycaemia. GLP-1 agonists lower glucose on their own, and stacking them on insulin or a sulfonylurea without reducing those doses is the single most likely way to end up in trouble. The dose review happens before you start, not after."}]},
+ metformin:{n:"Metformin",cls:"Glucose lowering",
+  alias:["Glucophage","metformin"],
+  hits:[
+   {fam:"glp",lvl:"plain",t:"Commonly prescribed together and generally fine. Metformin does not cause hypoglycaemia the way insulin does. The overlap is gastrointestinal: both cause nausea and loose stools, so escalating both at once makes a rough fortnight."}]},
+ thyroid:{n:"Levothyroxine",cls:"Thyroid hormone",
+  alias:["Synthroid","Levoxyl","levothyroxine","Euthyrox","T4","liothyronine","T3","Cytomel"],
+  hits:[
+   {fam:"glp",lvl:"warn",t:"Delayed gastric emptying changes when and how much levothyroxine is absorbed, and it has a narrow margin. Keep the timing rigid, and get thyroid function rechecked a couple of months after any dose change rather than assuming it held."}]},
+ contraceptive:{n:"Oral contraceptive",cls:"Hormonal",
+  alias:["the pill","combined pill","ethinylestradiol","levonorgestrel","desogestrel","drospirenone","Yasmin","Yaz"],
+  hits:[
+   {fam:"glp",lvl:"warn",t:"Slowed gastric emptying can reduce absorption, and vomiting during dose escalation can lose a pill outright. Backup contraception during the weeks you are climbing is the standard advice, and it is worth confirming with a prescriber rather than guessing."},
+   {key:"kiss",lvl:"warn",t:"Kisspeptin acts on the axis that hormonal contraception deliberately suppresses. Running them together works against the point of both."}]},
+ anticoag:{n:"Warfarin or a DOAC",cls:"Anticoagulant",
+  alias:["warfarin","Coumadin","apixaban","Eliquis","rivaroxaban","Xarelto","dabigatran","clopidogrel","Plavix"],
+  hits:[
+   {fam:"glp",lvl:"warn",t:"Absorption timing shifts with gastric emptying, and warfarin has almost no margin. INR needs checking more often than usual while a dose is being escalated."},
+   {fam:"regen",lvl:"plain",t:"BPC-157 and TB-500 promote new blood vessel growth. Whether that matters alongside an anticoagulant has never been studied in humans, so this is genuinely unknown rather than reassuring."},
+   {fam:"gear",lvl:"bad",t:"Anabolic steroids potentiate warfarin, sometimes dramatically, and the effect builds over weeks. This one is well documented and has caused serious bleeding. It needs a prescriber managing the INR, not a guess."}]},
+ diuretic:{n:"Diuretic",cls:"Blood pressure and fluid",
+  alias:["furosemide","Lasix","hydrochlorothiazide","HCTZ","spironolactone","Aldactone","chlorthalidone","bumetanide"],
+  hits:[
+   {fam:"glp",lvl:"warn",t:"This is the real dehydration risk. A GLP-1 cuts how much you drink and eat while a diuretic increases what you lose, and vomiting during escalation adds a third route out. Acute kidney injury on this class is usually a fluid story, and this is the combination that writes it."}]},
+ bp:{n:"Blood pressure medication",cls:"Cardiovascular",
+  alias:["lisinopril","ramipril","losartan","valsartan","amlodipine","atenolol","metoprolol","bisoprolol","propranolol","carvedilol"],
+  hits:[
+   {fam:"glp",lvl:"warn",t:"Losing meaningful weight lowers blood pressure by itself, so a dose that was right at the start can become too much. Light-headedness on standing is usually the first sign, and it means a review rather than pushing through."},
+   {fam:"glp",lvl:"plain",t:"If that medication is a beta blocker it will blunt the heart-rate rise this class causes, which is fine, but it also masks the early warning signs of low blood sugar. That matters more if insulin is in the picture too."}]},
+ steroidrx:{n:"Corticosteroid",cls:"Anti-inflammatory",
+  alias:["prednisone","prednisolone","dexamethasone","hydrocortisone","methylprednisolone"],
+  hits:[
+   {fam:"glp",lvl:"warn",t:"Corticosteroids raise blood glucose and appetite, which is the opposite of what the peptide is doing. On a course of them expect the numbers to move the wrong way, and know that it is the steroid rather than a failure of the protocol."},
+   {fam:"gh",lvl:"warn",t:"Corticosteroids suppress the GH axis directly. Running a GHRH analogue through a steroid course is largely wasted."},
+   {fam:"regen",lvl:"warn",t:"Steroids suppress the inflammatory phase that tissue repair actually needs. They work against what BPC-157 and TB-500 are being used for."}]},
+ statin:{n:"Statin",cls:"Lipid lowering",
+  alias:["atorvastatin","Lipitor","rosuvastatin","Crestor","simvastatin","pravastatin"],
+  hits:[
+   {fam:"glp",lvl:"good",t:"No interaction, and they pull the same direction. Weight loss on this class improves non-HDL cholesterol and triglycerides on its own, so lipids are worth rechecking rather than assuming the statin dose still fits."},
+   {key:"ss31",lvl:"plain",t:"Statins can lower CoQ10, and SS-31 works on the same mitochondrial machinery CoQ10 serves. The interaction is theoretical rather than demonstrated, but it is the reason CoQ10 keeps coming up alongside both."}]},
+ finasteride:{n:"Finasteride or dutasteride",cls:"5-alpha reductase inhibitor",
+  alias:["Propecia","Proscar","finasteride","Avodart","dutasteride"],
+  hits:[
+   {fam:"gear",lvl:"warn",t:"Blocks the conversion of testosterone to DHT, so it changes what a testosterone ester actually does rather than simply reducing hair loss. It does nothing at all against 19-nor compounds or DHT derivatives, which is a common and expensive misunderstanding."}]},
+ antipsych:{n:"Second-generation antipsychotic",cls:"Psychiatric",
+  alias:["olanzapine","Zyprexa","quetiapine","Seroquel","risperidone","aripiprazole","Abilify"],
+  hits:[
+   {fam:"glp",lvl:"good",t:"Weight gain on these is one of the main reasons people stop taking them, and GLP-1 agonists are being trialled specifically to counter it. This is one of the better-supported reasons to combine a prescription and this drug class."}]},
+ opioid:{n:"Opioid",cls:"Analgesic",
+  alias:["oxycodone","hydrocodone","codeine","tramadol","morphine","Percocet","Vicodin"],
+  hits:[
+   {fam:"glp",lvl:"warn",t:"Opioids slow the gut and so do GLP-1 agonists. Together the constipation is worse than either alone and can become the thing that stops the protocol."}]},
+ ppi:{n:"Proton pump inhibitor",cls:"Acid reduction",
+  alias:["omeprazole","Prilosec","esomeprazole","Nexium","pantoprazole","lansoprazole"],
+  hits:[
+   {fam:"glp",lvl:"plain",t:"Long-term acid suppression reduces B12, magnesium and iron absorption. On a peptide that already cuts how much you eat, that is two forces pushing the same micronutrients down at once."}]},
+ isotret:{n:"Isotretinoin",cls:"Dermatology",
+  alias:["Accutane","isotretinoin","Roaccutane"],
+  hits:[
+   {fam:"copper",lvl:"plain",t:"Isotretinoin thins the skin barrier while it works. Copper peptides are being used for the opposite reason, so expect more irritation than either would cause alone."},
+   {fam:"gear",lvl:"warn",t:"Both load the liver and both move lipids the wrong way. Liver enzymes and a lipid panel are the two tests worth having in hand before combining them."}]}
+};
+function medList(){return (S.meds=S.meds||[]);}
+function medOn(k){return medList().indexOf(k)>=0;}
+function medToggle(k){
+  const m=medList(),i=m.indexOf(k);
+  if(i>=0)m.splice(i,1);else m.push(k);
+  save();
+}
+/* every interaction between a recorded prescription and something tracked */
+function medHits(){
+  const out=[];
+  medList().forEach(mk=>{
+    const med=MEDS[mk];
+    if(!med)return;
+    (med.hits||[]).forEach(h=>{
+      const peps=activeTrack().filter(p=>{
+        if(p.label)return false;
+        if(h.key)return guideKeyFor(p.name)===h.key;
+        return pepFams(p).indexOf(h.fam)>=0;
+      });
+      if(peps.length)out.push({med:med.n,mk:mk,lvl:h.lvl,t:h.t,
+        peps:peps.map(p=>p.name)});
+    });
+  });
+  return out;
+}
 
 /* ================= CYCLE AND RHYTHM ==================
    Guidance here is driven by what gets logged, not by what phase the calendar
@@ -4437,6 +4567,14 @@ function coachIndex(){
   const lc=curLang();
   if(_cidx&&_cidxLang===lc)return _cidx;
   const out=[];
+  // prescriptions are searchable by brand name, whether or not they are ticked
+  Object.keys(MEDS).forEach(mk=>{
+    const m=MEDS[mk];
+    (m.hits||[]).forEach(h=>{
+      const who=h.key?h.key:h.fam;
+      out.push({key:h.key||"",sec:m.n,text:m.n+" ("+(m.alias||[]).join(", ")+"): "+h.t,w:2.2});
+    });
+  });
   // the index has to be in the language the question will be asked in,
   // otherwise Spanish words are scored against English prose and match nothing
   const SEC=s=>{const v=lc==="en"?null:tr(s,lc);return v!=null?v:s;};
@@ -4487,6 +4625,9 @@ function guideName(key){
   const n=Object.keys(LUCKY).find(x=>guideKeyFor(x)===key);
   return n||key;
 }
+/* index rows about a prescription carry no peptide key, so they label with
+   the section on its own rather than an empty name and a stray separator */
+function srcLabel(h){return h.key?guideName(h.key)+" · "+h.sec:h.sec;}
 function coachSearch(q,limit){
   const toks=cTok(q);
   if(!toks.length)return [];
@@ -4514,7 +4655,7 @@ const CTPL={
   tOverlap:"Do these overlap?", tMeasure:"What to measure", tWhen:"When to take it",
   tSteady:"Has it reached a steady level?", tTaking:"Are you actually taking it?",
   tDiet:"What it needs from your diet", tSays:"What the guides say about that",
-  tFound:"From the guides", tNone:"Nothing found",
+  tFound:"From the guides", tNone:"Nothing found", tRx:"With what you are prescribed",
   noneT2:'No passage in the guides matches that. Try a peptide name, or a word like "stack", "bloodwork", "timing" or "nausea".',
   tAlong:n=>`Running ${n} alongside what you already take`,
   andw:" and ",
@@ -4541,7 +4682,7 @@ const CTPL={
   tOverlap:"\u00bfSe solapan estos dos?", tMeasure:"Qu\u00e9 medir", tWhen:"Cu\u00e1ndo tomarlo",
   tSteady:"\u00bfHa alcanzado un nivel estable?", tTaking:"\u00bfDe verdad te lo est\u00e1s poniendo?",
   tDiet:"Qu\u00e9 necesita de tu dieta", tSays:"Lo que dicen las gu\u00edas sobre eso",
-  tFound:"De las gu\u00edas", tNone:"No se ha encontrado nada",
+  tFound:"De las gu\u00edas", tNone:"No se ha encontrado nada", tRx:"Con lo que tienes recetado",
   noneT2:'Ning\u00fan pasaje de las gu\u00edas coincide con eso. Prueba con el nombre de un p\u00e9ptido, o con una palabra como "combinar", "anal\u00edtica", "cu\u00e1ndo" o "n\u00e1useas".',
   tAlong:n=>`Usar ${n} junto a lo que ya tomas`,
   andw:" y ",
@@ -4610,7 +4751,9 @@ function ciStack(q,keys){
   return blocks.length?{title:CT().tOverlap,blocks,sources:keys}:null;
 }
 function ciLabs(q,keys){
-  if(!/\b(blood|bloodwork|test|marker|panel|check|lab|labs|sangre|anal\u00edtic|analitic|analisis|an\u00e1lisis|marcador|prueba|laboratorio|revis)/i.test(q))return null;
+  // "test" on its own means testosterone at least as often as it means a
+  // blood test now that gear is in the app, so it needs a clearer word
+  if(!/\b(blood|bloodwork|blood test|marker|panel|lab|labs|assay|sangre|anal\u00edtic|analitic|analisis|an\u00e1lisis|marcador|laboratorio)/i.test(q))return null;
   const list=keys.length?keys:S.track.map(p=>guideKeyFor(p.name)).filter(Boolean);
   const blocks=[];
   [...new Set(list)].forEach(k=>{
@@ -4686,16 +4829,51 @@ function ciSideEffect(q,keys){
   const hits=coachSearch(q,5);
   if(!hits.length)return null;
   return {title:CT().tSays,
-    blocks:hits.map(h=>({kind:"plain",text:`<b>${guideName(h.key)} · ${h.sec}</b><br>${h.text}`})),
-    sources:[...new Set(hits.map(h=>h.key))]};
+    blocks:hits.map(h=>({kind:"plain",text:`<b>${srcLabel(h)}</b><br>${h.text}`})),
+    sources:[...new Set(hits.map(h=>h.key).filter(Boolean))]};
 }
 
 /* the router */
+/* which prescriptions a question names */
+function coachMeds(q){
+  const t=" "+String(q||"").toLowerCase().replace(/[^a-z0-9 ]/g," ")+" ";
+  return Object.keys(MEDS).filter(mk=>{
+    const m=MEDS[mk];
+    return [m.n].concat(m.alias||[]).some(a=>{
+      const x=String(a).toLowerCase().replace(/[^a-z0-9 ]/g," ").trim();
+      return x.length>3&&t.indexOf(" "+x+" ")>=0;
+    });
+  });
+}
+function ciMeds(q,keys){
+  const mks=coachMeds(q);
+  if(!mks.length)return null;
+  const C=CT(),blocks=[];
+  mks.forEach(mk=>{
+    const m=MEDS[mk];
+    (m.hits||[]).forEach(h=>{
+      // if the question named peptides, only answer about those
+      if(keys.length){
+        const rel=keys.some(k=>h.key?h.key===k:(PMAP[pepKey(guideName(k))]||[]).indexOf(h.fam)>=0);
+        if(!rel)return;
+      }
+      const who=h.key?guideName(h.key):(PFAM[h.fam]||{}).n||h.fam;
+      blocks.push({kind:h.lvl==="bad"?"warn":h.lvl==="good"?"good":h.lvl==="warn"?"warn":"plain",
+        text:MEDP()(L(m.n),L(who),L(h.t))});
+    });
+  });
+  if(!blocks.length)return null;
+  // the dangerous one leads, rather than whichever family happened to sort first
+  const rank={warn:0,plain:1,good:2};
+  blocks.sort((x,y)=>(rank[x.kind]==null?1:rank[x.kind])-(rank[y.kind]==null?1:rank[y.kind]));
+  return {title:C.tRx,blocks:blocks.slice(0,6),
+    sources:mks.map(mk=>(MEDS[mk].hits||[]).map(h=>h.key).filter(Boolean)[0]).filter(Boolean)};
+}
 function coachAnswer(q){
   const keys=coachPeps(q);
   // most specific first: a question naming a peptide and a nutrient is a
   // nutrition question, not a stacking question that happens to contain "with"
-  const handlers=[ciNutrition,ciLabs,ciAdherence,ciSideEffect,ciLevel,ciTiming,ciStack];
+  const handlers=[ciMeds,ciNutrition,ciLabs,ciAdherence,ciSideEffect,ciLevel,ciTiming,ciStack];
   for(const h of handlers){
     let r=null;try{r=h(q,keys);}catch(e){}
     if(r&&r.blocks&&r.blocks.length)return r;
@@ -4705,8 +4883,8 @@ function coachAnswer(q){
     blocks:[{kind:"plain",text:CT().noneT2}],
     sources:[]};
   return {title:CT().tFound,
-    blocks:hits.map(h=>({kind:"plain",text:`<b>${guideName(h.key)} · ${h.sec}</b><br>${h.text}`})),
-    sources:[...new Set(hits.map(h=>h.key))]};
+    blocks:hits.map(h=>({kind:"plain",text:`<b>${srcLabel(h)}</b><br>${h.text}`})),
+    sources:[...new Set(hits.map(h=>h.key).filter(Boolean))]};
 }
 
 /* ---------- deep dive ----------
@@ -6453,6 +6631,12 @@ function renderSettings(){
         <div class="stoline" id="stoBackup"></div>
         <div class="stonote">Everything is stored in this browser and nowhere else.
           Export regularly — it is the only copy that survives a cleared browser or a lost phone.</div></div>
+      </div>
+    <div class="panel"><div class="lbl" style="margin-bottom:6px">My prescriptions</div>
+      <div class="lbl" style="text-transform:none;letter-spacing:0;color:var(--ink3);font-family:var(--sans);margin-bottom:9px">Tick anything you take. Nothing leaves the phone; this only decides which interaction notes you see.</div>
+      <div class="medgrid">${Object.keys(MEDS).map(k=>`<button class="medchip${medOn(k)?" on":""}" data-med="${k}">${MEDS[k].n}</button>`).join("")}</div>
+      </div>
+    <div class="panel">
       <button class="primary" id="setExport">↓ Export backup (.json)</button>
       <button class="ghost" id="setImport">↑ Import backup</button>
       <button class="ghost danger" id="setReset">Reset everything to defaults</button>
@@ -6460,6 +6644,7 @@ function renderSettings(){
   // the month grid is a log-browsing view now, not a tracking surface
   {const L=LANGS.find(x=>x.c===curLang())||LANGS[0];
    $("#langNow").textContent=L.f+" "+L.n;}
+  $$("[data-med]",el).forEach(b=>b.onclick=()=>{medToggle(b.dataset.med);renderSettings();});
   $("#langBtn").onclick=()=>langPop(false);
   $("#calToggle").onclick=()=>{calMode=calMode==="month"?"week":"month";renderSettings();};
   $("#wAdd").onclick=()=>{const v=parseFloat($("#wV").value),n=$("#wN").value.trim();if(!v&&!n){toast("Enter a weight or note");return;}S.weights.push({id:Date.now()+"",weight:v||"",note:n,date:$("#wD").value||iso(new Date())});save();renderSettings();toast("Logged");};
@@ -6530,7 +6715,7 @@ $("#importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new
     // macros, events, labs, labRanges and foods, so restoring a backup lost the
     // gym, the food log and every blood result
     ["track","archive","workouts","meals","macros","log","sales","resale",
-     "weights","events","labs","labRanges","foods","settings","cycle"].forEach(k=>{
+     "weights","events","labs","labRanges","foods","settings","cycle","meds"].forEach(k=>{
       if(d[k]!==undefined)S[k]=d[k];});
     save();applyTheme();renderAll();setTab("track");
     toast("Imported "+Object.keys(d).length+" sections");
@@ -6555,6 +6740,54 @@ const NOTR=new Set(["mg","mcg","ml","iu","lb","kcal","g","mg/dL","min","ApoB","N
 
 const I18N={
 es:{
+/* --- prescriptions --- */
+"My prescriptions":"Mis recetas",
+"Tick anything you take. Nothing leaves the phone; this only decides which interaction notes you see.":"Marca lo que tomes. Nada sale del tel\u00e9fono; esto solo decide qu\u00e9 notas de interacci\u00f3n ves.",
+"Amphetamine or methylphenidate":"Anfetamina o metilfenidato",
+"SSRI or SNRI antidepressant":"Antidepresivo ISRS o IRSN",
+"Insulin or sulfonylurea":"Insulina o sulfonilurea",
+"Metformin":"Metformina",
+"Levothyroxine":"Levotiroxina",
+"Oral contraceptive":"Anticonceptivo oral",
+"Warfarin or a DOAC":"Warfarina o un ACOD",
+"Diuretic":"Diur\u00e9tico",
+"Blood pressure medication":"Medicaci\u00f3n para la tensi\u00f3n",
+"Corticosteroid":"Corticoide",
+"Statin":"Estatina",
+"Finasteride or dutasteride":"Finasterida o dutasterida",
+"Second-generation antipsychotic":"Antipsic\u00f3tico de segunda generaci\u00f3n",
+"Opioid":"Opioide",
+"Proton pump inhibitor":"Inhibidor de la bomba de protones",
+"Isotretinoin":"Isotretino\u00edna",
+"Absorption timing shifts with gastric emptying, and warfarin has almost no margin. INR needs checking more often than usual while a dose is being escalated.":"El momento de la absorci\u00f3n cambia con el vaciado g\u00e1strico, y la warfarina no tiene casi margen. El INR hay que controlarlo m\u00e1s a menudo de lo normal mientras se sube una dosis.",
+"Anabolic steroids potentiate warfarin, sometimes dramatically, and the effect builds over weeks. This one is well documented and has caused serious bleeding. It needs a prescriber managing the INR, not a guess.":"Los esteroides anab\u00f3licos potencian la warfarina, a veces de forma dr\u00e1stica, y el efecto se acumula durante semanas. Este est\u00e1 bien documentado y ha causado hemorragias graves. Necesita que alguien que recete controle el INR, no una suposici\u00f3n.",
+"Appetite suppression is additive and this is where people get into trouble. A stimulant plus a GLP-1 can take intake low enough that protein, sodium and total calories all fall below what you need, which is the usual cause of the fatigue people blame on the peptide.":"La supresi\u00f3n del apetito es aditiva y aqu\u00ed es donde la gente se mete en problemas. Un estimulante m\u00e1s un GLP-1 puede bajar la ingesta lo suficiente como para que la prote\u00edna, el sodio y las calor\u00edas totales queden por debajo de lo que necesitas, que es la causa habitual de la fatiga que la gente le achaca al p\u00e9ptido.",
+"BPC-157 and TB-500 promote new blood vessel growth. Whether that matters alongside an anticoagulant has never been studied in humans, so this is genuinely unknown rather than reassuring.":"El BPC-157 y el TB-500 promueven el crecimiento de vasos sangu\u00edneos nuevos. Si eso importa junto a un anticoagulante no se ha estudiado nunca en humanos, as\u00ed que esto es genuinamente desconocido, no tranquilizador.",
+"Blocks the conversion of testosterone to DHT, so it changes what a testosterone ester actually does rather than simply reducing hair loss. It does nothing at all against 19-nor compounds or DHT derivatives, which is a common and expensive misunderstanding.":"Bloquea la conversi\u00f3n de testosterona en DHT, as\u00ed que cambia lo que realmente hace un \u00e9ster de testosterona en lugar de solo reducir la ca\u00edda del pelo. No hace absolutamente nada frente a los compuestos 19-nor ni a los derivados de la DHT, que es un malentendido com\u00fan y caro.",
+"Both load the liver and both move lipids the wrong way. Liver enzymes and a lipid panel are the two tests worth having in hand before combining them.":"Los dos cargan el h\u00edgado y los dos mueven los l\u00edpidos en la direcci\u00f3n equivocada. Las enzimas hep\u00e1ticas y un perfil lip\u00eddico son los dos an\u00e1lisis que merece tener a mano antes de combinarlos.",
+"Both raise resting heart rate. GLP-1 agonists add roughly 3 to 7 beats per minute on their own, stimulants add their own on top, and nobody has studied the combination. Resting heart rate at home costs nothing and is the one number worth watching here.":"Los dos suben la frecuencia card\u00edaca en reposo. Los agonistas GLP-1 a\u00f1aden de 3 a 7 latidos por minuto por su cuenta, los estimulantes a\u00f1aden lo suyo encima, y nadie ha estudiado la combinaci\u00f3n. Medir la frecuencia en reposo en casa no cuesta nada y es el \u00fanico n\u00famero que merece vigilar aqu\u00ed.",
+"Bremelanotide acts on melanocortin receptors, not serotonin, so it does not clash with an SSRI directly. It is often reached for because of the sexual side effects SSRIs cause, which is a different question and one worth asking a prescriber.":"La bremelanotida act\u00faa sobre receptores de melanocortina, no sobre la serotonina, as\u00ed que no choca directamente con un ISRS. Se suele recurrir a ella por los efectos sexuales que causan los ISRS, que es otra cuesti\u00f3n y merece preguntarla a quien receta.",
+"Commonly prescribed together and generally fine. Metformin does not cause hypoglycaemia the way insulin does. The overlap is gastrointestinal: both cause nausea and loose stools, so escalating both at once makes a rough fortnight.":"Se recetan juntos con frecuencia y en general va bien. La metformina no causa hipoglucemia como la insulina. El solapamiento es digestivo: los dos causan n\u00e1useas y heces blandas, as\u00ed que subir los dos a la vez da un par de semanas duras.",
+"Corticosteroids raise blood glucose and appetite, which is the opposite of what the peptide is doing. On a course of them expect the numbers to move the wrong way, and know that it is the steroid rather than a failure of the protocol.":"Los corticoides suben la glucosa y el apetito, que es lo contrario de lo que hace el p\u00e9ptido. Durante una tanda espera que los n\u00fameros vayan en la direcci\u00f3n equivocada, y ten claro que es el corticoide y no un fallo del protocolo.",
+"Corticosteroids suppress the GH axis directly. Running a GHRH analogue through a steroid course is largely wasted.":"Los corticoides suprimen el eje de la GH directamente. Usar un an\u00e1logo de GHRH durante una tanda de corticoides se desperdicia en buena parte.",
+"Delayed gastric emptying changes when and how much levothyroxine is absorbed, and it has a narrow margin. Keep the timing rigid, and get thyroid function rechecked a couple of months after any dose change rather than assuming it held.":"El vaciado g\u00e1strico retrasado cambia cu\u00e1ndo y cu\u00e1nta levotiroxina se absorbe, y tiene un margen estrecho. Mant\u00e9n el horario r\u00edgido, y haz revisar la funci\u00f3n tiroidea un par de meses despu\u00e9s de cualquier cambio de dosis en lugar de dar por hecho que sigue igual.",
+"If that medication is a beta blocker it will blunt the heart-rate rise this class causes, which is fine, but it also masks the early warning signs of low blood sugar. That matters more if insulin is in the picture too.":"Si esa medicaci\u00f3n es un betabloqueante amortiguar\u00e1 la subida de frecuencia card\u00edaca que causa esta clase, lo cual est\u00e1 bien, pero tambi\u00e9n enmascara las primeras se\u00f1ales de az\u00facar bajo. Eso importa m\u00e1s si adem\u00e1s hay insulina de por medio.",
+"Isotretinoin thins the skin barrier while it works. Copper peptides are being used for the opposite reason, so expect more irritation than either would cause alone.":"La isotretino\u00edna adelgaza la barrera cut\u00e1nea mientras act\u00faa. Los p\u00e9ptidos de cobre se usan por la raz\u00f3n contraria, as\u00ed que espera m\u00e1s irritaci\u00f3n de la que causar\u00eda cualquiera por separado.",
+"Kisspeptin acts on the axis that hormonal contraception deliberately suppresses. Running them together works against the point of both.":"La kisspeptina act\u00faa sobre el eje que la anticoncepci\u00f3n hormonal suprime a prop\u00f3sito. Usarlos juntos va en contra del sentido de ambos.",
+"Long-term acid suppression reduces B12, magnesium and iron absorption. On a peptide that already cuts how much you eat, that is two forces pushing the same micronutrients down at once.":"La supresi\u00f3n de \u00e1cido a largo plazo reduce la absorci\u00f3n de B12, magnesio y hierro. Con un p\u00e9ptido que ya recorta cu\u00e1nto comes, son dos fuerzas empujando los mismos micronutrientes hacia abajo a la vez.",
+"Losing meaningful weight lowers blood pressure by itself, so a dose that was right at the start can become too much. Light-headedness on standing is usually the first sign, and it means a review rather than pushing through.":"Perder peso de forma significativa baja la tensi\u00f3n por s\u00ed solo, as\u00ed que una dosis que era correcta al principio puede pasarse. El mareo al levantarse suele ser la primera se\u00f1al, y significa una revisi\u00f3n en lugar de aguantar.",
+"Nausea is the overlap. Both cause it through serotonergic signalling, and starting or escalating one while the other is settling makes it hard to tell which is responsible. Change one thing at a time.":"Las n\u00e1useas son el solapamiento. Los dos las causan por se\u00f1alizaci\u00f3n serotonin\u00e9rgica, y empezar o subir uno mientras el otro se est\u00e1 asentando hace dif\u00edcil saber cu\u00e1l es el responsable. Cambia una cosa cada vez.",
+"No interaction, and they pull the same direction. Weight loss on this class improves non-HDL cholesterol and triglycerides on its own, so lipids are worth rechecking rather than assuming the statin dose still fits.":"Sin interacci\u00f3n, y tiran en la misma direcci\u00f3n. La p\u00e9rdida de peso con esta clase mejora el colesterol no-HDL y los triglic\u00e9ridos por s\u00ed sola, as\u00ed que merece repetir el perfil lip\u00eddico en lugar de dar por hecho que la dosis de estatina sigue encajando.",
+"Opioids slow the gut and so do GLP-1 agonists. Together the constipation is worse than either alone and can become the thing that stops the protocol.":"Los opioides enlentecen el intestino y los agonistas GLP-1 tambi\u00e9n. Juntos el estre\u00f1imiento es peor que con cualquiera por separado y puede acabar siendo lo que detenga el protocolo.",
+"Reduced stimulant need is a real reported effect rather than a placebo. GLP-1 receptor agonists act on the same mesolimbic reward pathways that drive craving, which is why reduced alcohol and nicotine use keep showing up in this drug class and why trials in substance use are running. If your stimulant dose feels like too much, that is worth raising with whoever prescribes it rather than self-adjusting.":"Necesitar menos estimulante es un efecto reportado real, no un placebo. Los agonistas del receptor GLP-1 act\u00faan sobre las mismas v\u00edas de recompensa mesol\u00edmbicas que impulsan el deseo, y por eso la reducci\u00f3n del consumo de alcohol y nicotina aparece una y otra vez en esta clase de f\u00e1rmacos y hay ensayos en marcha en consumo de sustancias. Si tu dosis de estimulante te parece excesiva, merece comentarlo con quien te la receta en lugar de ajustarla por tu cuenta.",
+"Retatrutide's heart-rate rise is the largest of the class, around 6.7 bpm at 12 mg, because the glucagon arm pushes the same direction as the GLP-1 arm. Stacking a stimulant on that is the combination to be most deliberate about.":"La subida de frecuencia card\u00edaca de la retatrutida es la mayor de la clase, unos 6,7 lpm con 12 mg, porque el brazo del glucag\u00f3n empuja en la misma direcci\u00f3n que el del GLP-1. Sumar un estimulante a eso es la combinaci\u00f3n con la que hay que ser m\u00e1s deliberado.",
+"Selank and Semax are studied as anxiolytics and modulate the same broad systems. There is no interaction data with SSRIs at all, so this is unknown rather than safe.":"El Selank y el Semax se estudian como ansiol\u00edticos y modulan los mismos sistemas generales. No hay ning\u00fan dato de interacci\u00f3n con ISRS, as\u00ed que esto es desconocido, no seguro.",
+"Slowed gastric emptying can reduce absorption, and vomiting during dose escalation can lose a pill outright. Backup contraception during the weeks you are climbing is the standard advice, and it is worth confirming with a prescriber rather than guessing.":"El vaciado g\u00e1strico lento puede reducir la absorci\u00f3n, y vomitar durante la escalada de dosis puede hacer que se pierda una p\u00edldora entera. Usar un m\u00e9todo de respaldo durante las semanas de subida es el consejo est\u00e1ndar, y merece confirmarlo con quien receta en lugar de suponerlo.",
+"Statins can lower CoQ10, and SS-31 works on the same mitochondrial machinery CoQ10 serves. The interaction is theoretical rather than demonstrated, but it is the reason CoQ10 keeps coming up alongside both.":"Las estatinas pueden bajar la CoQ10, y el SS-31 act\u00faa sobre la misma maquinaria mitocondrial a la que sirve la CoQ10. La interacci\u00f3n es te\u00f3rica y no demostrada, pero es la raz\u00f3n por la que la CoQ10 sale una y otra vez junto a los dos.",
+"Steroids suppress the inflammatory phase that tissue repair actually needs. They work against what BPC-157 and TB-500 are being used for.":"Los corticoides suprimen la fase inflamatoria que la reparaci\u00f3n de tejidos realmente necesita. Van en contra de aquello para lo que se usan el BPC-157 y el TB-500.",
+"This is the combination that causes real hypoglycaemia. GLP-1 agonists lower glucose on their own, and stacking them on insulin or a sulfonylurea without reducing those doses is the single most likely way to end up in trouble. The dose review happens before you start, not after.":"Esta es la combinaci\u00f3n que causa hipoglucemia de verdad. Los agonistas GLP-1 bajan la glucosa por s\u00ed solos, y sumarlos a insulina o a una sulfonilurea sin reducir esas dosis es la forma m\u00e1s probable de acabar mal. La revisi\u00f3n de dosis se hace antes de empezar, no despu\u00e9s.",
+"This is the real dehydration risk. A GLP-1 cuts how much you drink and eat while a diuretic increases what you lose, and vomiting during escalation adds a third route out. Acute kidney injury on this class is usually a fluid story, and this is the combination that writes it.":"Este es el riesgo real de deshidrataci\u00f3n. Un GLP-1 recorta cu\u00e1nto bebes y comes mientras un diur\u00e9tico aumenta lo que pierdes, y vomitar durante la escalada a\u00f1ade una tercera v\u00eda de salida. El da\u00f1o renal agudo con esta clase suele ser una historia de l\u00edquidos, y esta es la combinaci\u00f3n que la escribe.",
+"Weight gain on these is one of the main reasons people stop taking them, and GLP-1 agonists are being trialled specifically to counter it. This is one of the better-supported reasons to combine a prescription and this drug class.":"El aumento de peso con estos es una de las principales razones por las que la gente los deja, y se est\u00e1n ensayando agonistas GLP-1 espec\u00edficamente para contrarrestarlo. Esta es una de las razones mejor respaldadas para combinar una receta con esta clase de f\u00e1rmacos.",
 "Light flow":"Flujo ligero","Medium flow":"Flujo medio","Heavy flow":"Flujo abundante",
 /* --- cycle and rhythm tracker --- */
 "Cycle":"Ciclo",
@@ -7774,7 +8007,7 @@ function cycLogSheet(k){
   const f=cycSex()==="f";
   const draw=()=>{
     const groups=cycGroups();
-    $("#sheet").innerHTML=`<h3>${WD[parseISO(k).getDay()]} · ${fmtShort(k)}</h3>
+    $("#sheet").innerHTML=`<h3>${parseISO(k).toLocaleDateString(curLocale(),{weekday:"short",month:"short",day:"numeric"})}</h3>
       <div class="msub">${f&&cycDay(parseISO(k))?`Cycle day ${cycDay(parseISO(k))}`:"Tap what applies"}</div>
       ${f?`<button class="ghost cycper" id="cycPer2">${cycBleedOn(k)?"Remove period from this day":"Mark as a period day"}</button>`:""}
       ${groups.map(g=>`<div class="cggrp"><div class="cgh">${g.n}</div>
