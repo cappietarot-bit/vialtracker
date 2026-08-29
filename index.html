@@ -554,7 +554,57 @@
   .selin{background:var(--panel2);border:1px solid var(--line2);border-radius:9px;
     color:var(--ink);font-family:var(--mono);font-size:12px;padding:7px 9px}
 
+
+  /* ---- coach ---- */
+  .coachbtn svg{width:17px;height:17px;fill:currentColor}
+  .coachbtn.on{color:var(--accent);border-color:var(--accent)}
+  .askbox{display:flex;gap:8px;align-items:center;background:var(--panel);
+    border:1px solid var(--line2);border-radius:13px;padding:5px 5px 5px 14px;margin:2px 0 10px}
+  .askbox:focus-within{border-color:var(--accent)}
+  .askin{flex:1;background:transparent;border:0;color:var(--ink);font-family:inherit;
+    font-size:15px;padding:10px 0;outline:none;min-width:0}
+  .askin::placeholder{color:var(--ink3)}
+  .askgo{width:38px;height:38px;flex:0 0 auto;border:0;border-radius:10px;
+    background:var(--accent);color:var(--bg);font-size:17px;font-weight:700;cursor:pointer}
+  .asknote{font-size:11.5px;line-height:1.55;color:var(--ink3);margin-bottom:18px}
+  .starthead{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink3);margin:6px 0 9px}
+  .startgrid{display:flex;flex-direction:column;gap:7px;margin-bottom:16px}
+  .startq{text-align:start;background:var(--panel);border:1px solid var(--line);
+    border-radius:11px;padding:12px 14px;font-family:inherit;font-size:13.5px;
+    color:var(--ink2);cursor:pointer;line-height:1.4}
+  .startq:hover{border-color:var(--accent);color:var(--ink)}
+  .ansbox{background:var(--panel);border:1px solid var(--line);border-radius:13px;
+    padding:15px 16px;margin-bottom:11px}
+  .anshead{font-size:16px;font-weight:800;letter-spacing:-.02em;margin-bottom:11px}
+  .ansb{font-size:13.5px;line-height:1.6;color:var(--ink2);padding:10px 0;
+    border-top:1px solid var(--line)}
+  .ansb:first-of-type{border-top:0;padding-top:0}
+  .ansb b{color:var(--ink);font-weight:700}
+  .ansb.warn{color:var(--ink2);border-left:3px solid var(--warn);padding-inline-start:11px;
+    margin:8px 0;border-top:0;background:var(--panel2);border-radius:0 9px 9px 0}
+  .ansb.warn b{color:var(--warn)}
+  .ansb.good{border-left:3px solid var(--good);padding-inline-start:11px;margin:8px 0;
+    border-top:0;background:var(--panel2);border-radius:0 9px 9px 0}
+  .ansb.good b{color:var(--good)}
+  .anssrc{margin-top:13px;padding-top:12px;border-top:1px solid var(--line);
+    display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+  .asl{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--ink3);width:100%}
+  .asrc{background:var(--panel2);border:1px solid var(--line2);border-radius:99px;
+    padding:6px 11px;font-family:inherit;font-size:12px;font-weight:600;
+    color:var(--accent);cursor:pointer}
+  .asrc:hover{border-color:var(--accent)}
+
   /* language picker */
+  .langbtn.soon{opacity:.45;cursor:default;pointer-events:none}
+  .lgs{margin-inline-start:auto;font-family:var(--mono);font-size:9.5px;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+  .langsoon{margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+  .lshead{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink3);margin-bottom:9px}
+  .lsnote{font-size:11.5px;line-height:1.55;color:var(--ink3);margin-top:10px}
+
   .langlist{display:flex;flex-direction:column;gap:7px;margin-bottom:6px}
   .langbtn{display:flex;align-items:center;gap:12px;width:100%;padding:13px 15px;
     background:var(--panel2);border:1px solid var(--line);border-radius:12px;color:var(--ink);
@@ -1474,7 +1524,7 @@
       <div><h1>Vialback</h1><div class="sub" id="topSub">Today</div></div>
       <div class="spacer"></div>
       <button class="iconbtn" id="themeBtn" title="Theme" aria-label="Toggle theme">◐</button>
-      <button class="iconbtn bloodbtn" id="bloodBtn" aria-label="Bloodwork" data-tip="Bloodwork"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c3.4 4.3 6.5 8 6.5 11.4A6.5 6.5 0 0 1 12 20.5a6.5 6.5 0 0 1-6.5-6.6C5.5 10.5 8.6 6.8 12 2.5Z"/></svg></button><button class="iconbtn avatar" id="profileBtn" title="Settings" aria-label="Settings">R</button>
+      <button class="iconbtn bloodbtn" id="bloodBtn" aria-label="Bloodwork" data-tip="Bloodwork"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c3.4 4.3 6.5 8 6.5 11.4A6.5 6.5 0 0 1 12 20.5a6.5 6.5 0 0 1-6.5-6.6C5.5 10.5 8.6 6.8 12 2.5Z"/></svg></button><button class="iconbtn coachbtn" id="coachBtn" aria-label="Coach" data-tip="Coach"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c4.5 0 8 2.9 8 6.5 0 3.6-3.5 6.5-8 6.5a9.8 9.8 0 0 1-2.4-.3L5 18l1.1-3A6.9 6.9 0 0 1 4 9.5C4 5.9 7.5 3 12 3Z"/></svg></button><button class="iconbtn avatar" id="profileBtn" title="Settings" aria-label="Settings">R</button>
     </div>
   </div>
 
@@ -1482,6 +1532,7 @@
     <section class="view on" id="v-track"></section>
     <section class="view" id="v-guide"></section>
     <section class="view" id="v-labs"></section>
+    <section class="view" id="v-coach"></section>
     <section class="view" id="v-gym"></section>
     <section class="view" id="v-food"></section>
     <section class="view" id="v-cal"></section>
@@ -4005,7 +4056,7 @@ function insightsPop(){
    GTR[lang][guideKey.field.index] = translated string. Anything missing falls
    back to the English, one string at a time, so a partially translated
    language is usable rather than broken. */
-const GTR={"es":{"tirz.what":"Agonista dual de incretinas, más eficaz que la semaglutida en comparación directa.","tirz.mech":"Añade el agonismo del receptor GIP al de GLP-1. El brazo GIP parece mejorar la tolerabilidad y aportar un beneficio metabólico más allá del que da el GLP-1 por sí solo.","tirz.dose":"Se escala desde 2,5 mg semanales hasta 15 mg.","tirz.anec":"Se describe ampliamente como más llevadero para el estómago que la semaglutida a efecto equivalente, lo que encaja con la teoría de que el brazo GIP mejora la tolerabilidad. La mejora del sueño es un reporte frecuente, probablemente secundario a la pérdida de peso.","tirz.t":"Semanal, subcutáneo.","tirz.cls":"Agonista dual — GIP / GLP-1","tirz.good.0":"Supera a la semaglutida en comparación directa","tirz.good.1":"Aprobado, con una base de ensayos amplia","tirz.good.2":"El brazo GIP puede mejorar la tolerancia digestiva","tirz.bad.0":"El mismo perfil de efectos digestivos que los fármacos GLP-1","tirz.bad.1":"Las mismas dudas sobre pérdida de músculo y reganancia","tirz.bad.2":"Caro","tirz.key.0":"Las mismas reglas que con cualquier GLP-1: proteína, pesas, agua y sal.","tirz.key.1":"Busca la dosis mínima eficaz en lugar de subir hasta el máximo.","tirz.key.2":"Avisa a tu médico antes de una cirugía o una sedación.","tirz.warn.0":"Busca la dosis más baja que te funcione en lugar de subir al siguiente escalón.","tirz.warn.1":"Levanta pesas y mantén la proteína alta, o perderás músculo junto con la grasa.","tirz.warn.2":"Vigila el agua y la sal — comer menos significa menos sodio, y eso es lo que causa la mayor parte del cansancio y de los dolores de cabeza.","tirz.warn.3":"Avisa a tu médico antes de una cirugía o una sedación, por el vaciado gástrico lento.","tirz.ev.0":"SURMOUNT-1: 2.539 adultos con obesidad, 72 semanas. Pérdida media de peso del 20,9% con 15 mg frente al 3,1% con placebo — el resultado que convirtió a un agonista dual en el estándar.","tirz.ev.1":"SURMOUNT-5, comparación directa frente a semaglutida en 751 adultos: 20,2% frente a 13,7% a las 72 semanas, con la tirzepatida superior en cinco variables secundarias clave y con el 31,6% de sus participantes perdiendo al menos una cuarta parte de su peso corporal.","tirz.ev.2":"Diabetes: el programa SURPASS mostró reducciones de HbA1c mayores que las de los comparadores, incluida la semaglutida de 1 mg, con una proporción importante de participantes alcanzando cifras de HbA1c no diabéticas.","tirz.ev.3":"Apnea del sueño: SURMOUNT-OSA produjo grandes reducciones del índice de apnea-hipopnea en personas con obesidad y apnea obstructiva del sueño de moderada a grave, y llevó a la aprobación de la FDA para esa indicación — un uso genuinamente aparte, no un beneficio colateral de la pérdida de peso.","tirz.ev.4":"Insuficiencia cardíaca: el ensayo SUMMIT, en insuficiencia cardíaca con fracción de eyección preservada asociada a la obesidad, redujo la muerte cardiovascular y los episodios de empeoramiento.","tirz.ev.5":"Aprobado para diabetes tipo 2, para obesidad y para apnea obstructiva del sueño, con varios años de uso poscomercialización a sus espaldas.","tirz.ev.6":"Hígado: el ensayo de fase 2 SYNERGY-NASH encontró que la tirzepatida resolvió la esteatohepatitis asociada a disfunción metabólica sin empeorar la fibrosis en una proporción de pacientes muy superior a la del placebo a las 52 semanas, la misma dirección que siguió la semaglutida antes de su aprobación para MASH.","tirz.ev.7":"En la práctica se reporta de forma constante una mejor tolerabilidad que con semaglutida a efecto comparable, que es la observación clínica que el mecanismo GIP descrito abajo se propuso para explicar.","tirz.ev.8":"El brazo GIP está genuinamente sin resolver, y conviene saberlo antes de creerse cualquier explicación limpia al respecto. Tanto los agonistas como los antagonistas del receptor GIP producen pérdida de peso en modelos animales. Eso no debería ser posible si el mecanismo fuera sencillo, y es uno de los problemas realmente abiertos de la farmacología metabólica.","tirz.ev.9":"La explicación agonista dominante: los receptores GIP del hipotálamo se suman a la supresión del apetito, y los del área postrema parecen suprimir las náuseas y el vómito en lugar de provocarlos. Si eso es correcto, el brazo GIP es en parte un antiemético acoplado a un fármaco GLP-1, y por eso la tirzepatida puede llevarse a dosis que producen más pérdida de peso sin más vómitos.","tirz.ev.10":"La explicación antagonista va en sentido contrario: la estimulación crónica del receptor GIP podría desensibilizarlo, de modo que un agonista de acción prolongada acabe funcionando como un antagonista funcional. Ambos bandos tienen datos. Nadie lo ha zanjado.","tirz.ev.11":"En el tejido graso el GIP hace algo que el GLP-1 no hace. Aumenta el flujo sanguíneo del tejido adiposo y la retirada de triglicéridos hacia los adipocitos, mejorando el amortiguamiento lipídico — la capacidad del tejido graso de absorber la grasa de una comida en lugar de dejarla circulando. Un amortiguamiento lipídico deficiente es uno de los mecanismos que ligan la obesidad a la resistencia a la insulina, así que esta es una vía plausible de mejora metabólica independiente del peso.","tirz.ev.12":"Hay un detalle a nivel de receptor que puede importar más que el marketing: la tirzepatida es un agonista sesgado del receptor GLP-1, que favorece la señalización por cAMP frente al reclutamiento de beta-arrestina. Menos beta-arrestina significa menos internalización del receptor y menos desensibilización, así que el brazo GLP-1 sigue funcionando en vez de desvanecerse. Esa es una diferencia estructural respecto a la semaglutida, no una diferencia de dosis.","tirz.ev.13":"El brazo GLP-1 se comporta como se describe para la semaglutida: acceso circunventricular al circuito del apetito, activación de POMC y supresión de AgRP, liberación de insulina dependiente de glucosa, vaciado gástrico enlentecido y señal de recompensa mesolímbica amortiguada.","tirz.ev.14":"La masa magra es el mismo problema sin resolver que con cualquier fármaco de esta clase. El mecanismo genera déficit energético; nada en él defiende el músculo. La ingesta de proteína y el entrenamiento de fuerza son las únicas palancas que tienes contra eso.","tirz.nutr.0":"No hay fuente dietética — es un agonista dual sintético.","tirz.nutr.1":"Proteína y fibra soluble. El brazo GIP suele ser más suave con el intestino que el GLP-1 solo, pero se aplican las mismas reglas de electrolitos y proteína.","tirz.nutr.2":"No. La comida eleva tus propias incretinas de forma modesta; esto es de otro orden de magnitud.","tirz.cyc.0":"Continuo","tirz.cyc.1":"Sin descanso previsto","tirz.cyc.2":"El mismo patrón que el resto de los GLP-1 — continuo, no cíclico. Los ensayos duraron 72 semanas."}};
+const GTR={"es":{"tirz.what":"Agonista dual de incretinas, más eficaz que la semaglutida en comparación directa.","tirz.mech":"Añade el agonismo del receptor GIP al de GLP-1. El brazo GIP parece mejorar la tolerabilidad y aportar un beneficio metabólico más allá del que da el GLP-1 por sí solo.","tirz.dose":"Se escala desde 2,5 mg semanales hasta 15 mg.","tirz.anec":"Se describe ampliamente como más llevadero para el estómago que la semaglutida a efecto equivalente, lo que encaja con la teoría de que el brazo GIP mejora la tolerabilidad. La mejora del sueño es un reporte frecuente, probablemente secundario a la pérdida de peso.","tirz.t":"Semanal, subcutáneo.","tirz.cls":"Agonista dual — GIP / GLP-1","tirz.good.0":"Supera a la semaglutida en comparación directa","tirz.good.1":"Aprobado, con una base de ensayos amplia","tirz.good.2":"El brazo GIP puede mejorar la tolerancia digestiva","tirz.bad.0":"El mismo perfil de efectos digestivos que los fármacos GLP-1","tirz.bad.1":"Las mismas dudas sobre pérdida de músculo y reganancia","tirz.bad.2":"Caro","tirz.key.0":"Las mismas reglas que con cualquier GLP-1: proteína, pesas, agua y sal.","tirz.key.1":"Busca la dosis mínima eficaz en lugar de subir hasta el máximo.","tirz.key.2":"Avisa a tu médico antes de una cirugía o una sedación.","tirz.warn.0":"Busca la dosis más baja que te funcione en lugar de subir al siguiente escalón.","tirz.warn.1":"Levanta pesas y mantén la proteína alta, o perderás músculo junto con la grasa.","tirz.warn.2":"Vigila el agua y la sal — comer menos significa menos sodio, y eso es lo que causa la mayor parte del cansancio y de los dolores de cabeza.","tirz.warn.3":"Avisa a tu médico antes de una cirugía o una sedación, por el vaciado gástrico lento.","tirz.ev.0":"SURMOUNT-1: 2.539 adultos con obesidad, 72 semanas. Pérdida media de peso del 20,9% con 15 mg frente al 3,1% con placebo — el resultado que convirtió a un agonista dual en el estándar.","tirz.ev.1":"SURMOUNT-5, comparación directa frente a semaglutida en 751 adultos: 20,2% frente a 13,7% a las 72 semanas, con la tirzepatida superior en cinco variables secundarias clave y con el 31,6% de sus participantes perdiendo al menos una cuarta parte de su peso corporal.","tirz.ev.2":"Diabetes: el programa SURPASS mostró reducciones de HbA1c mayores que las de los comparadores, incluida la semaglutida de 1 mg, con una proporción importante de participantes alcanzando cifras de HbA1c no diabéticas.","tirz.ev.3":"Apnea del sueño: SURMOUNT-OSA produjo grandes reducciones del índice de apnea-hipopnea en personas con obesidad y apnea obstructiva del sueño de moderada a grave, y llevó a la aprobación de la FDA para esa indicación — un uso genuinamente aparte, no un beneficio colateral de la pérdida de peso.","tirz.ev.4":"Insuficiencia cardíaca: el ensayo SUMMIT, en insuficiencia cardíaca con fracción de eyección preservada asociada a la obesidad, redujo la muerte cardiovascular y los episodios de empeoramiento.","tirz.ev.5":"Aprobado para diabetes tipo 2, para obesidad y para apnea obstructiva del sueño, con varios años de uso poscomercialización a sus espaldas.","tirz.ev.6":"Hígado: el ensayo de fase 2 SYNERGY-NASH encontró que la tirzepatida resolvió la esteatohepatitis asociada a disfunción metabólica sin empeorar la fibrosis en una proporción de pacientes muy superior a la del placebo a las 52 semanas, la misma dirección que siguió la semaglutida antes de su aprobación para MASH.","tirz.ev.7":"En la práctica se reporta de forma constante una mejor tolerabilidad que con semaglutida a efecto comparable, que es la observación clínica que el mecanismo GIP descrito abajo se propuso para explicar.","tirz.ev.8":"El brazo GIP está genuinamente sin resolver, y conviene saberlo antes de creerse cualquier explicación limpia al respecto. Tanto los agonistas como los antagonistas del receptor GIP producen pérdida de peso en modelos animales. Eso no debería ser posible si el mecanismo fuera sencillo, y es uno de los problemas realmente abiertos de la farmacología metabólica.","tirz.ev.9":"La explicación agonista dominante: los receptores GIP del hipotálamo se suman a la supresión del apetito, y los del área postrema parecen suprimir las náuseas y el vómito en lugar de provocarlos. Si eso es correcto, el brazo GIP es en parte un antiemético acoplado a un fármaco GLP-1, y por eso la tirzepatida puede llevarse a dosis que producen más pérdida de peso sin más vómitos.","tirz.ev.10":"La explicación antagonista va en sentido contrario: la estimulación crónica del receptor GIP podría desensibilizarlo, de modo que un agonista de acción prolongada acabe funcionando como un antagonista funcional. Ambos bandos tienen datos. Nadie lo ha zanjado.","tirz.ev.11":"En el tejido graso el GIP hace algo que el GLP-1 no hace. Aumenta el flujo sanguíneo del tejido adiposo y la retirada de triglicéridos hacia los adipocitos, mejorando el amortiguamiento lipídico — la capacidad del tejido graso de absorber la grasa de una comida en lugar de dejarla circulando. Un amortiguamiento lipídico deficiente es uno de los mecanismos que ligan la obesidad a la resistencia a la insulina, así que esta es una vía plausible de mejora metabólica independiente del peso.","tirz.ev.12":"Hay un detalle a nivel de receptor que puede importar más que el marketing: la tirzepatida es un agonista sesgado del receptor GLP-1, que favorece la señalización por cAMP frente al reclutamiento de beta-arrestina. Menos beta-arrestina significa menos internalización del receptor y menos desensibilización, así que el brazo GLP-1 sigue funcionando en vez de desvanecerse. Esa es una diferencia estructural respecto a la semaglutida, no una diferencia de dosis.","tirz.ev.13":"El brazo GLP-1 se comporta como se describe para la semaglutida: acceso circunventricular al circuito del apetito, activación de POMC y supresión de AgRP, liberación de insulina dependiente de glucosa, vaciado gástrico enlentecido y señal de recompensa mesolímbica amortiguada.","tirz.ev.14":"La masa magra es el mismo problema sin resolver que con cualquier fármaco de esta clase. El mecanismo genera déficit energético; nada en él defiende el músculo. La ingesta de proteína y el entrenamiento de fuerza son las únicas palancas que tienes contra eso.","tirz.nutr.0":"No hay fuente dietética — es un agonista dual sintético.","tirz.nutr.1":"Proteína y fibra soluble. El brazo GIP suele ser más suave con el intestino que el GLP-1 solo, pero se aplican las mismas reglas de electrolitos y proteína.","tirz.nutr.2":"No. La comida eleva tus propias incretinas de forma modesta; esto es de otro orden de magnitud.","tirz.cyc.0":"Continuo","tirz.cyc.1":"Sin descanso previsto","tirz.cyc.2":"El mismo patrón que el resto de los GLP-1 — continuo, no cíclico. Los ensayos duraron 72 semanas.","sema.what":"El fármaco que inició la ola actual. Base de ensayos enorme, aprobado para diabetes y obesidad.","sema.mech":"El agonismo del receptor GLP-1 enlentece el vaciado gástrico, aumenta la saciedad a nivel central y mejora la secreción de insulina dependiente de glucosa.","sema.dose":"Se escala desde 0,25 mg semanales hasta 2,4 mg para control de peso.","sema.anec":"El reporte más constante es que se calla el ruido de la comida, más que una simple sensación de llenura. La reducción de las ganas de alcohol y de nicotina aparece constantemente y ya está bajo investigación formal. La caída de pelo hacia el tercer mes se describe con frecuencia y suele atribuirse a la pérdida rápida de peso más que al fármaco en sí.","sema.t":"Semanal, subcutáneo.","sema.cls":"Agonista del receptor GLP-1","sema.good.0":"Base de ensayos enorme y de alta calidad","sema.good.1":"Beneficio cardiovascular demostrado, no solo pérdida de peso","sema.good.2":"Seguridad a largo plazo realmente caracterizada","sema.bad.0":"Náuseas, vómitos y estreñimiento son frecuentes","sema.bad.1":"Pérdida de músculo en déficit si no se entrena fuerza","sema.bad.2":"El peso vuelve tras dejarlo en la mayoría de las personas","sema.bad.3":"Se han reportado gastroparesia y problemas de vesícula","sema.key.0":"La proteína y el entrenamiento de fuerza no son opcionales. Sin ellos, buena parte de lo que pierdes es músculo.","sema.key.1":"Busca la dosis mínima que te funcione en lugar de subir al siguiente escalón — la mayoría de los efectos adversos vienen de subir demasiado rápido.","sema.key.2":"Agua y sal: comer menos significa menos sodio, y eso es lo que causa el cansancio y los dolores de cabeza.","sema.key.3":"Avisa a tu médico antes de una cirugía o una sedación. El vaciado gástrico lento es un riesgo anestésico.","sema.warn.0":"Busca la dosis mínima que funcione en lugar de subir al siguiente escalón. La mayoría de los efectos adversos vienen de subir demasiado rápido.","sema.warn.1":"Levanta pesas y come proteína de verdad, o buena parte de lo que pierdas será músculo.","sema.warn.2":"Bebe más agua de lo habitual y mantén la sal. Comer menos significa menos sodio, y eso causa la mayor parte del cansancio y de los dolores de cabeza.","sema.warn.3":"Avisa a tu médico antes de cualquier cirugía o sedación — el vaciado gástrico lento es un riesgo anestésico.","sema.warn.4":"La mayoría recupera peso al dejarlo. Ten un plan para lo que viene después.","sema.ev.0":"STEP-1: 1.961 adultos sin diabetes, 68 semanas, 2,4 mg semanales. Pérdida media de peso del 14,9% frente al 2,4% con placebo — el ensayo que empezó todo esto.","sema.ev.1":"SELECT es el que más importa y del que menos se habla. En 17.604 personas con enfermedad cardiovascular y sobrepeso u obesidad pero sin diabetes, la semaglutida redujo los eventos cardiovasculares adversos mayores en torno a un 20% a lo largo de unos tres años. Eso es un desenlace duro — infartos, ictus y muertes cardiovasculares — no un marcador indirecto.","sema.ev.2":"SUSTAIN-6 ya había mostrado una reducción de riesgo cardiovascular comparable en diabetes tipo 2, así que el resultado de SELECT fue una replicación en otra población y no un hallazgo aislado.","sema.ev.3":"Riñón: el ensayo FLOW, en diabetes tipo 2 con enfermedad renal crónica, se detuvo antes de tiempo por eficacia, tras reducir alrededor de una cuarta parte los eventos de progresión de la enfermedad renal.","sema.ev.4":"Hígado: en el ensayo ESSENCE la semaglutida resolvió la esteatohepatitis en una proporción de pacientes muy superior a la del placebo, y en agosto de 2025 la FDA la aprobó para MASH con fibrosis en estadio 2 o 3 — el primer fármaco de su clase autorizado para enfermedad hepática.","sema.ev.5":"Insuficiencia cardíaca: en STEP-HFpEF, las personas con insuficiencia cardíaca con fracción de eyección preservada asociada a la obesidad tuvieron una mejora relevante de síntomas y de capacidad física, un grupo con muy pocas opciones eficaces.","sema.ev.6":"En comparación directa pierde frente a la tirzepatida. En SURMOUNT-5, con 751 adultos, la semaglutida produjo un 13,7% de pérdida de peso frente al 20,2% de la tirzepatida a las 72 semanas.","sema.ev.7":"Aprobada, ampliamente utilizada y con años de datos poscomercialización detrás. Sea lo que sea lo demás, esta no es una molécula desconocida.","sema.ev.8":"Dónde actúa, y el enigma que eso plantea: la semaglutida es un péptido acilado de gran tamaño, fuertemente unido a la albúmina, lo que debería mantenerla completamente fuera del cerebro. Los estudios de trazado en roedores mostraron que en cambio llega a los órganos circunventriculares — el área postrema, el órgano subfornical y, en menor medida, el núcleo arcuato — regiones donde la barrera hematoencefálica es permeable a propósito para que el cerebro pueda muestrear la sangre. Un fármaco demasiado grande para atravesar la barrera cambia el apetito yendo allí donde no hay barrera.","sema.ev.9":"Desde ahí, el circuito del apetito: la activación del receptor GLP-1 excita las neuronas POMC/CART del núcleo arcuato y suprime las neuronas NPY/AgRP que impulsan el hambre, mientras que la señalización del tronco encefálico a través del núcleo del tracto solitario añade la terminación de la comida. Son dos sistemas distintos, el apetito tónico y la saciedad de cada comida, empujados en la misma dirección.","sema.ev.10":"En el páncreas actúa a través de cAMP, PKA y Epac2 dentro de la célula beta para amplificar la liberación de insulina — pero solo cuando la glucosa ya está elevada. Esa dependencia de la glucosa es una propiedad estructural de la vía, y es la razón por la que el agonismo GLP-1 por sí solo rara vez causa hipoglucemia.","sema.ev.11":"El sistema de recompensa es donde está el trabajo preclínico más interesante. Los receptores GLP-1 del área tegmental ventral y del núcleo accumbens amortiguan la respuesta dopaminérgica mesolímbica a las recompensas. En roedores, los agonistas GLP-1 reducen el consumo de alcohol y la búsqueda de cocaína y nicotina. Ese es el mecanismo que la gente describe cuando dice que se calló el ruido de la comida o que dejaron de apetecerle las copas, y ahora se está probando formalmente en humanos.","sema.ev.12":"El vaciado gástrico se enlentece mucho al principio, lo que contribuye a la saciedad temprana y a las náuseas. Con las semanas se desarrolla tolerancia al efecto gástrico pero no al efecto sobre el apetito — así que las náuseas se desvanecen mientras la pérdida de peso continúa, y esa disociación es un hallazgo mecanístico, no un accidente de la pauta.","sema.ev.13":"Las náuseas tienen una dirección conocida: los receptores GLP-1 del área postrema, la zona gatillo quimiorreceptora del cerebro, que es la misma estructura que el fármaco usa para alcanzar el circuito del apetito. El efecto adverso y el efecto buscado comparten la vía, y por eso cuesta tanto separarlos.","sema.ev.14":"Mecanismo cardiovascular más allá del peso: los receptores GLP-1 están en el endotelio vascular y en los macrófagos, y el trabajo preclínico muestra menos inflamación vascular y menos inflamación de la placa con independencia del cambio de peso. Esa es la explicación dominante de por qué el beneficio de SELECT apareció antes y fue mayor de lo que la pérdida de peso por sí sola predice.","sema.ev.15":"La composición corporal es la pega práctica. Una parte importante del peso perdido con agonistas GLP-1 es tejido magro y no grasa, y nada en el mecanismo protege el músculo. El entrenamiento de fuerza y una proteína adecuada no son aquí consejos genéricos de bienestar: son la contramedida a una propiedad conocida del fármaco.","sema.nutr.0":"No hay fuente dietética. Es un análogo sintético del GLP-1.","sema.nutr.1":"Proteína primero en cada comida, después fibra. La fibra soluble reduce las náuseas y el estreñimiento, que son las dos cosas que hacen que la gente lo abandone. Los electrolitos y un multivitamínico son razonables cuando la ingesta cae mucho.","sema.nutr.2":"No — pero la proteína, la fibra y los alimentos fermentados elevan tu propio GLP-1 de forma natural, y por eso una dieta con mucha proteína frena el apetito por sí sola.","sema.cyc.0":"Continuo","sema.cyc.1":"Sin descanso previsto","sema.cyc.2":"Un medicamento de largo plazo más que un ciclo. Los ensayos duraron 68 semanas y más. La mayoría recupera peso al dejarlo.","cagri.what":"Una versión de acción prolongada de la amilina, la hormona que tu páncreas libera junto con la insulina en cada comida. Actúa sobre la saciedad por una vía completamente distinta de la de los fármacos GLP-1, y por eso combinar ambos produce más pérdida de peso que cualquiera por separado.","cagri.mech":"La amilina se cosecreta con la insulina desde las mismas células beta y actúa en el tronco encefálico — el área postrema y el núcleo del tracto solitario — para señalar que ha llegado una comida. Enlentece el vaciado gástrico, suprime el glucagón después de comer y produce saciedad a través de los receptores de amilina y de calcitonina, no del receptor GLP-1. Esa separación importa: como las dos hormonas actúan sobre receptores distintos en regiones cerebrales distintas, sus efectos se suman en vez de solaparse. La cagrilintida está diseñada con una cadena lateral de ácido graso que se une a la albúmina, estirando una hormona con una vida media de minutos hasta convertirla en algo que se administra una vez por semana. Además parece restaurar la sensibilidad a la leptina, que es uno de los mecanismos que juegan en tu contra cuando haces dieta.","cagri.dose":"Los ensayos escalaron hasta 2,4 mg semanales, igualados con el brazo de semaglutida en los estudios de combinación. La monoterapia en fase 2 llegó hasta 4,5 mg semanales.","cagri.anec":"Se suele reportar junto con la semaglutida, así que atribuir el efecto es difícil. Cuando se describe por separado, la gente reporta una saciedad que llega antes dentro de la comida, más que menos apetito entre comidas — lo que encaja con el mecanismo de la amilina.","cagri.t":"Semanal, subcutáneo.","cagri.cls":"Análogo de amilina de acción prolongada","cagri.good.0":"11,8% de pérdida de peso en solitario en un ensayo de fase 3, más de lo que consiguen la mayoría de los fármacos antiobesidad aprobados","cagri.good.1":"Combinada con semaglutida alcanzó el 22,7% a las 68 semanas, muy por encima de cualquiera de los dos componentes por separado","cagri.good.2":"Actúa por el circuito de terminación de la comida en el área postrema, una vía distinta del efecto del GLP-1 sobre el hambre tónica","cagri.good.3":"Más de una de cada cinco personas con la combinación perdió al menos el 30% de su peso corporal","cagri.good.4":"El 88% de los participantes con prediabetes volvió a una regulación normal de la glucosa","cagri.good.5":"Mejoró la presión arterial, el perímetro de cintura, los lípidos y el control glucémico junto con el peso","cagri.good.6":"La amilina es una hormona que ya segregas en cada comida, no una molécula señalizadora ajena","cagri.good.7":"Restaura la sensibilidad a la leptina en modelos animales, lo que sería un mecanismo genuinamente distinto de la supresión del apetito","cagri.good.8":"Los análogos de amilina tienen un largo historial de seguridad en humanos a través de la pramlintida","cagri.good.9":"Una vez por semana, porque la cadena acilo se diseñó desde el principio","cagri.bad.0":"Todavía no está aprobada en ningún sitio — la fase 3 sigue en marcha","cagri.bad.1":"Apilarla con un GLP-1 multiplica las náuseas, y esa es la razón principal por la que la gente lo deja","cagri.bad.2":"Pocos datos a largo plazo en solitario, porque el desarrollo se ha centrado en la combinación","cagri.bad.3":"El mismo riesgo de pérdida muscular que cualquier supresor del apetito si se descuidan la proteína y el entrenamiento","cagri.bad.4":"Lo que se compre ahora es de formulación magistral o de mercado gris, sin control de fabricación","cagri.key.0":"Añádela sola primero, antes de apilarla con un GLP-1. Cambiar una cosa cada vez es como sabes qué causó qué.","cagri.key.1":"Sube despacio. Los efectos adversos de la amilina y del GLP-1 se suman, y las náuseas son lo que hace que la gente lo deje.","cagri.key.2":"Come proteína primero en cada comida — dispara tu propia liberación de amilina y protege el músculo mientras cae el apetito.","cagri.key.3":"Mantén el agua y la sal. Comer mucho menos significa mucho menos sodio, y eso causa la mayor parte del cansancio que la gente atribuye al fármaco.","cagri.key.4":"Entrena con pesas mientras la usas, o buena parte de lo que pierdas será músculo.","cagri.warn.0":"Apilar esto con un GLP-1 duplica las náuseas. Cambia una cosa cada vez para saber qué causó qué.","cagri.warn.1":"Las mismas reglas que con los GLP-1: pesas, proteína, y mantener el agua y la sal.","cagri.warn.2":"Todavía no está aprobada — los ensayos siguen en marcha.","cagri.ev.0":"REDEFINE-1, fase 3, 3.417 adultos con obesidad o sobrepeso más una comorbilidad, 68 semanas. La cagrilintida sola produjo un 11,8% de pérdida de peso. La semaglutida sola, un 16,1%. Las dos juntas, un 22,7%, frente al 2,3% con placebo.","cagri.ev.1":"Esos números son la razón por la que la cagrilintida importa. 11,8% más 16,1% no es 22,7%, pero la combinación superó ampliamente a cualquiera de los componentes — indicio de que la amilina y el GLP-1 tiran de palancas distintas en vez de tirar más fuerte de la misma.","cagri.ev.2":"Más de una de cada cinco personas con la combinación perdió al menos el 30% de su peso corporal, publicado en el New England Journal of Medicine.","cagri.ev.3":"Los cambios metabólicos vinieron con ello: la presión arterial sistólica, el perímetro de cintura, los lípidos y el control glucémico mejoraron todos de forma significativa, y el 88% de los participantes que partían de prediabetes volvió a una regulación normal de la glucosa.","cagri.ev.4":"REDEFINE-2, en 1.206 adultos con sobrepeso u obesidad y diabetes tipo 2, produjo un 13,7% de pérdida de peso a las 68 semanas frente al 3,4% con placebo, con un 73,5% alcanzando una HbA1c del 6,5% o menos frente al 15,9% con placebo.","cagri.ev.5":"La cagrilintida por sí sola no está aprobada en ningún sitio. Su vía de desarrollo es como mitad de una combinación, así que el uso en solitario queda fuera del mapa que dibujaron los ensayos.","cagri.ev.6":"La pramlintida, un análogo de amilina anterior y no agregante, lleva años siendo un fármaco aprobado — así que los análogos de amilina como clase tienen un largo historial de seguridad en humanos, aunque este en concreto sea nuevo.","cagri.ev.7":"Qué es realmente la amilina: una hormona de 37 aminoácidos cosecretada con la insulina desde las células beta pancreáticas, en una proporción de aproximadamente 1:100, en cada comida. No es una idea sintética — es la mitad de la señal de comida de la célula beta, y precisamente la mitad que se ignoró durante décadas mientras la insulina se llevaba toda la atención.","cagri.ev.8":"Por qué la amilina nativa nunca pudo ser un fármaco: la amilina humana es amiloidogénica. Se agrega formando depósitos de amiloide insular, que se encuentran en el páncreas de la mayoría de las personas con diabetes tipo 2 y que son en sí mismos tóxicos para las células beta. Todo fármaco de amilina es por tanto un análogo rediseñado para no agregarse, y la cagrilintida añade además una cadena acilo para la dosificación semanal.","cagri.ev.9":"El sistema de receptores es inusual. No existe un gen dedicado al receptor de amilina. Los receptores de amilina se construyen a partir del núcleo del receptor de calcitonina más una de tres proteínas accesorias RAMP, dando lugar a AMY1, AMY2 y AMY3. La cagrilintida es un agonista no selectivo sobre todos ellos y sobre el propio receptor de calcitonina, una huella más amplia que la de un fármaco típico de diana única.","cagri.ev.10":"Por dónde entra la señal de saciedad: el área postrema, y de ahí al núcleo parabraquial. Ese es el circuito de terminación de la comida — el sistema que decide que ya has terminado de comer — y es anatómicamente distinto del impulso de hambre tónica que el GLP-1 amortigua en el núcleo arcuato. Dos circuitos distintos es la razón mecanística de que la combinación supere a cualquiera de los dos.","cagri.ev.11":"El hallazgo preclínico más interesante es el de la leptina. La obesidad produce resistencia a la leptina: la hormona de la saciedad abunda y el cerebro deja de escucharla. La amilina parece restaurar la sensibilidad a la leptina, y en animales la amilina junto con leptina produjo una pérdida de peso sinérgica que ninguna lograba por separado. Un estudio humano temprano de pramlintida con metreleptina reprodujo esa sinergia antes de que el desarrollo se detuviera por motivos no relacionados. Si la amilina realmente reabre la señalización de la leptina, eso es una clase de intervención distinta de la supresión del apetito.","cagri.ev.12":"También enlentece el vaciado gástrico y suprime la liberación inapropiada de glucagón tras la comida — lo segundo es la razón por la que el déficit de amilina contribuye a los picos de glucosa de la diabetes, con independencia de la insulina.","cagri.ev.13":"Lo que eso predice que notarás: una saciedad que llega antes dentro de la comida, más que una ausencia general de hambre entre comidas. Eso coincide con cómo lo describe la gente, y se deduce del circuito y no de los reportes.","cagri.ev.14":"No hay datos de desenlaces de fase 3 en solitario — el desarrollo de la cagrilintida es como parte de una combinación, así que la seguridad y los resultados a largo plazo por sí sola no están establecidos.","cagri.ev.15":"No se ha demostrado directamente si el efecto de resensibilización a la leptina opera en humanos a estas dosis.","cagri.nutr.0":"No. La amilina es una hormona que tu páncreas cosecreta con la insulina; el análogo es sintético.","cagri.nutr.1":"La proteína dispara la liberación natural de amilina junto con la insulina, así que las comidas con la proteína por delante trabajan a favor del mecanismo y no en su contra.","cagri.nutr.2":"No, aunque comer la proteína primero sí eleva tu propia amilina y enlentece el vaciado gástrico.","cagri.cyc.0":"Continuo","cagri.cyc.1":"Sin descanso previsto","cagri.cyc.2":"Se ha ensayado de forma continua junto con la semaglutida, no en ciclos."}};
 function gtCount(lc){return Object.keys(GTR[lc]||{}).length;}
 /* a translated view of one guide — same shape, translated where available */
 function guideView(p){
@@ -4032,6 +4083,244 @@ function guideView(p){
     Object.keys(g[f]).forEach((k,i)=>{const v=S(f,i);if(v!=null)n[k]=v;});
     o[f]=n;});
   return o;
+}
+
+
+/* ---------- coach ----------
+   Answers assembled from the guides and your own numbers. No model, no key,
+   no network: it cannot make anything up, and every answer names its source. */
+const CSTOP=new Set(["the","a","an","and","or","but","if","is","are","was","were","be","been",
+ "to","of","in","on","at","for","with","from","by","as","it","its","this","that","these","those",
+ "i","my","me","you","your","do","does","did","can","could","should","would","will","shall","may",
+ "have","has","had","not","no","yes","what","when","why","how","which","who","about","any","some",
+ "get","got","take","taking","use","using","need","want","am","im","dont","doesnt"]);
+/* people search with the word they would say, not the one the guide used */
+const CSYN={
+ tired:["fatigue","tiredness","lethargy","energy"], exhausted:["fatigue","tiredness"],
+ sick:["nausea","vomiting"], nauseous:["nausea"], queasy:["nausea"],
+ poop:["constipation","diarrhoea","bowel"], pooping:["constipation","diarrhoea"],
+ gut:["stomach","intestinal","bowel"], belly:["abdominal","stomach","visceral"],
+ fat:["adipose","visceral","weight"], skinny:["lean","weight"],
+ muscle:["lean","hypertrophy","myopathy"], strength:["muscle","lean"],
+ sleep:["insomnia","sleeping","slow-wave"], sleepy:["sleep","sedation"],
+ hungry:["appetite","hunger","satiety"], appetite:["hunger","satiety"],
+ skin:["dermal","collagen","wrinkle"], hair:["follicle","scalp","shedding"],
+ joints:["tendon","ligament","cartilage"], joint:["tendon","ligament","cartilage"],
+ heart:["cardiac","cardiovascular","myocardial"], liver:["hepatic","steatosis"],
+ kidney:["renal"], brain:["cognitive","neuro","hippocamp"],
+ sex:["libido","arousal","erectile"], libido:["arousal","sexual"],
+ shot:["dose","injection"], jab:["dose","injection"],
+ bruise:["bleeding","haemorrhage"], lump:["injection site","scar"],
+ headache:["headaches","sodium"], dizzy:["light-headed","blood pressure","sodium"]
+};
+function cTok(q){
+  const base=String(q||"").toLowerCase().replace(/[^a-z0-9+\- ]/g," ").split(/\s+/)
+    .filter(w=>w.length>2&&!CSTOP.has(w));
+  const out=base.slice();
+  base.forEach(w=>{(CSYN[w]||[]).forEach(x=>{if(!out.includes(x))out.push(x);});});
+  return out;
+}
+/* every translatable passage, addressed so an answer can cite it */
+let _cidx=null;
+function coachIndex(){
+  if(_cidx)return _cidx;
+  const out=[];
+  const push=(key,sec,text,weight)=>{if(text&&text.length>25)out.push({key,sec,text,w:weight});};
+  Object.keys(GUIDES).forEach(key=>{
+    const g=GUIDES[key];
+    push(key,"What it is",g.what,3);
+    push(key,"How it works",g.mech,3);
+    push(key,"Dosing",g.dose,2);
+    push(key,"What people report",g.anec,1.5);
+    (g.key||[]).forEach(x=>push(key,"Get this right",x,3));
+    (g.warn||[]).forEach(x=>push(key,"Before you dose",x,2.5));
+    (g.good||[]).forEach(x=>push(key,"Worth it because",x,1.5));
+    (g.bad||[]).forEach(x=>push(key,"Against it",x,2));
+    (g.ev||[]).forEach(e=>push(key,e[0]==="human"?"What's established":e[0]==="pre"?"What's suggested":"What's unknown",e[1],1));
+    (g.prac||[]).forEach(p=>push(key,p[0],p[1],2.5));
+    if(g.nutr){push(key,"From diet",g.nutr.food,1.5);push(key,"What helps it work",g.nutr.boost,2);
+      push(key,"Can food alone do it",g.nutr.reach,1.5);}
+    if(g.cyc&&g.cyc.note)push(key,"Cycles",g.cyc.note,2);
+  });
+  _cidx=out;return out;
+}
+/* which tracked peptides a question is about */
+function coachPeps(q){
+  const toks=cTok(q).join(" ");
+  const hits=[];
+  Object.keys(GUIDES).forEach(k=>{
+    const names=[k].concat(ALIAS[k]||[]);
+    // the display name too, via any tracked peptide pointing at this guide
+    S.track.forEach(p=>{if(guideKeyFor(p.name)===k)names.push(p.name);});
+    Object.keys(LUCKY).forEach(n=>{if(guideKeyFor(n)===k)names.push(n);});
+    const m=names.some(n=>{const t=pepKey(n);return t.length>2&&toks.replace(/[^a-z0-9]/g,"").includes(t);});
+    if(m)hits.push(k);
+  });
+  return [...new Set(hits)];
+}
+function pepFor(key){
+  return S.track.find(p=>guideKeyFor(p.name)===key||p.guideKey===key)||null;
+}
+function guideName(key){
+  const p=pepFor(key);if(p)return p.name;
+  const n=Object.keys(LUCKY).find(x=>guideKeyFor(x)===key);
+  return n||key;
+}
+function coachSearch(q,limit){
+  const toks=cTok(q);
+  if(!toks.length)return [];
+  const mine=new Set(S.track.map(p=>guideKeyFor(p.name)));
+  const named=new Set(coachPeps(q));
+  return coachIndex().map(row=>{
+    const low=row.text.toLowerCase();
+    let sc=0;
+    toks.forEach(t=>{
+      if(low.includes(t))sc+=row.w*(low.split(t).length-1>2?1.4:1);
+    });
+    if(!sc)return null;
+    if(named.size&&named.has(row.key))sc*=3;        // asked about by name
+    else if(named.size)sc*=0.35;                    // asked about something else
+    if(mine.has(row.key))sc*=1.4;                   // you actually run it
+    return {...row,sc};
+  }).filter(Boolean).sort((a,b)=>b.sc-a.sc).slice(0,limit||6);
+}
+
+/* ---------- intent handlers ----------
+   Each returns {title, blocks:[{kind,text}], sources:[key]} or null. */
+function ciStack(q,keys){
+  // naming two peptides in one question is itself a stacking question,
+  // whether or not the word "together" appears anywhere in it
+  if(keys.length<2&&!/\b(stack|together|combine|same time|alongside|clash|interact)\b/i.test(q))return null;
+  if(keys.length<2){
+    if(keys.length===1&&/\b(anything|what|safe)\b/i.test(q)){
+      const p=pepFor(keys[0]);
+      if(!p)return null;
+      const hits=addClash(p);
+      return {title:`Running ${guideName(keys[0])} alongside what you already take`,
+        blocks:hits.length?hits.map(c=>({kind:"warn",text:c.text}))
+          :[{kind:"good",text:`Nothing you currently run shares a receptor or a component with ${p.name}.`}],
+        sources:keys};
+    }
+    return null;
+  }
+  const blocks=[];
+  for(let i=0;i<keys.length;i++)for(let j=i+1;j<keys.length;j++){
+    const a=keys[i],b=keys[j];
+    const ta=PTARGET[pepKey(guideName(a))]||[],tb=PTARGET[pepKey(guideName(b))]||[];
+    const shared=ta.filter(t=>tb.includes(t)&&TARGETS[t]);
+    const syn=ta.some(x=>tb.some(y=>isSynergy(x,y)));
+    const partsA=BLEND[pepKey(guideName(a))]||[],partsB=BLEND[pepKey(guideName(b))]||[];
+    if(partsA.some(c=>pepKey(c)===pepKey(guideName(b))))
+      blocks.push({kind:"warn",text:`${guideName(a)} already contains ${guideName(b)}. Running both is a double dose of the same peptide.`});
+    else if(partsB.some(c=>pepKey(c)===pepKey(guideName(a))))
+      blocks.push({kind:"warn",text:`${guideName(b)} already contains ${guideName(a)}. Running both is a double dose of the same peptide.`});
+    else if(shared.length){
+      const names=shared.map(t=>TARGETS[t].n);
+      const lead=shared.map(t=>TARGETS[t].stack).filter(Boolean)[0];
+      blocks.push({kind:"warn",text:`${guideName(a)} and ${guideName(b)} both act on ${
+        names.length===1?names[0]:names.slice(0,-1).join(", ")+" and "+names[names.length-1]}. ${lead||"That makes it one larger dose rather than two effects."}`});
+    }else if(syn)
+      blocks.push({kind:"good",text:`${guideName(a)} and ${guideName(b)} act on different points on purpose — one pushes, the other lifts the brake. This pairing is deliberate.`});
+    else
+      blocks.push({kind:"plain",text:`${guideName(a)} and ${guideName(b)} do not share a receptor or a component in this app's map. That is not the same as proven safe together — nobody has tested the combination.`});
+  }
+  return blocks.length?{title:"Do these overlap?",blocks,sources:keys}:null;
+}
+function ciLabs(q,keys){
+  if(!/\b(blood|bloodwork|test|marker|panel|check|lab|labs)\b/i.test(q))return null;
+  const list=keys.length?keys:S.track.map(p=>guideKeyFor(p.name)).filter(Boolean);
+  const blocks=[];
+  [...new Set(list)].forEach(k=>{
+    const w=WATCH[k];if(!w)return;
+    const stale=w.filter(mk=>{const a=labAge(mk);return a==null||a>=120;});
+    blocks.push({kind:stale.length?"warn":"plain",
+      text:`<b>${guideName(k)}</b>: ${w.map(labName).join(", ")}.${
+        stale.length?` ${stale.map(labName).join(", ")} ${stale.length>1?"have":"has"} no recent value.`:" All recorded recently."}`});
+  });
+  return blocks.length?{title:"What to measure",blocks,sources:[...new Set(list)]}:null;
+}
+function ciTiming(q,keys){
+  if(!/\b(when|timing|time of day|morning|night|before|after|empty stomach|fasted|workout)\b/i.test(q))return null;
+  if(!keys.length)return null;
+  const blocks=[];
+  keys.forEach(k=>{
+    const g=GUIDES[k];if(!g)return;
+    const bits=[];
+    if(g.t)bits.push(g.t);
+    (g.key||[]).forEach(x=>{if(/before|after|morning|night|empty|fasted|train|workout|bed/i.test(x))bits.push(x);});
+    if(bits.length)blocks.push({kind:"plain",text:`<b>${guideName(k)}</b>: ${bits.join(" ")}`});
+  });
+  return blocks.length?{title:"When to take it",blocks,sources:keys}:null;
+}
+function ciLevel(q,keys){
+  if(!/\b(working|kick in|steady|plateau|how long|yet|build up|half.?life|ramp)\b/i.test(q))return null;
+  if(!keys.length)return null;
+  const blocks=[];
+  keys.forEach(k=>{
+    const p=pepFor(k),g=GUIDES[k];if(!g||!g.hl)return;
+    const days=Math.round(g.hl*5/24);
+    if(g.hl<12){
+      blocks.push({kind:"plain",text:`<b>${guideName(k)}</b> has a half-life of about ${g.hl<1?Math.round(g.hl*60)+" minutes":g.hl+" hours"}. It clears before the next dose, so nothing accumulates — each shot is a pulse. Timing within the day is what matters, not how long you have been on it.`});
+      return;
+    }
+    const first=p?firstDoseDate(p):null;
+    const on=first?Math.floor((Date.now()-parseISO(first).getTime())/DAY):null;
+    blocks.push({kind:"plain",text:`<b>${guideName(k)}</b> has a half-life of about ${g.hl>=24?Math.round(g.hl/24)+" days":g.hl+" hours"}, so it takes roughly <b>${days} days</b> to reach a stable level.${
+      on==null?" Log a few doses and the chart on its page fills in from your own schedule."
+      :on<days?` You are <b>${on} days</b> in, so you are still climbing — judging the dose now is judging the ramp.`
+      :` You passed that <b>${on-days} days</b> ago, so what you feel now is this dose.`}`});
+  });
+  return blocks.length?{title:"Has it reached a steady level?",blocks,sources:keys}:null;
+}
+function ciAdherence(q,keys){
+  if(!/\b(adherence|consistent|missing|missed|often enough|skipping|compliance|streak)\b/i.test(q))return null;
+  const list=(keys.length?keys.map(pepFor).filter(Boolean):activeTrack().filter(p=>!p.label));
+  const blocks=list.map(p=>{const a=adherence(p,30);
+    if(!a.due)return null;
+    return {kind:a.pct<70?"warn":"plain",
+      text:`<b>${p.name}</b>: ${a.hit} of ${a.due} scheduled doses in the last 30 days — <b>${a.pct}%</b>.${
+        a.pct<70?" If you are judging whether it works, you have run part of a protocol.":""}`};
+  }).filter(Boolean);
+  return blocks.length?{title:"Are you actually taking it?",blocks,sources:keys}:null;
+}
+function ciNutrition(q,keys){
+  if(!/\b(eat|food|diet|nutrition|nutrient|deficien|supplement|vitamin|mineral|protein)\b/i.test(q))return null;
+  if(!keys.length)return null;
+  const blocks=[];
+  keys.forEach(k=>{
+    const g=GUIDES[k];if(!g||!g.nutr)return;
+    blocks.push({kind:"plain",text:`<b>${guideName(k)}</b> — ${g.nutr.boost}`});
+    const d=DEPENDS[k];
+    if(d)blocks.push({kind:"warn",text:`It depends on <b>${d.n}</b>. ${d.why}`});
+  });
+  return blocks.length?{title:"What it needs from your diet",blocks,sources:keys}:null;
+}
+function ciSideEffect(q,keys){
+  if(!/\b(tired|fatigue|nausea|nauseous|sick|headache|dizzy|bloated|constipat|diarrh|hungry|itch|bruise|lump|sore|pain|insomnia|sleep)\b/i.test(q))return null;
+  const hits=coachSearch(q,5);
+  if(!hits.length)return null;
+  return {title:"What the guides say about that",
+    blocks:hits.map(h=>({kind:"plain",text:`<b>${guideName(h.key)} · ${h.sec}</b><br>${h.text}`})),
+    sources:[...new Set(hits.map(h=>h.key))]};
+}
+
+/* the router */
+function coachAnswer(q){
+  const keys=coachPeps(q);
+  // most specific first: a question naming a peptide and a nutrient is a
+  // nutrition question, not a stacking question that happens to contain "with"
+  const handlers=[ciNutrition,ciLabs,ciAdherence,ciSideEffect,ciLevel,ciTiming,ciStack];
+  for(const h of handlers){
+    let r=null;try{r=h(q,keys);}catch(e){}
+    if(r&&r.blocks&&r.blocks.length)return r;
+  }
+  const hits=coachSearch(q,6);
+  if(!hits.length)return {title:"Nothing found",
+    blocks:[{kind:"plain",text:`No passage in the guides matches that. Try a peptide name, or a word like "stack", "bloodwork", "timing" or "nausea".`}],
+    sources:[]};
+  return {title:"From the guides",
+    blocks:hits.map(h=>({kind:"plain",text:`<b>${guideName(h.key)} · ${h.sec}</b><br>${h.text}`})),
+    sources:[...new Set(hits.map(h=>h.key))]};
 }
 
 /* ---------- deep dive ----------
@@ -6189,7 +6478,13 @@ const LANGPAT={
      [/^(.+) history$/,"История $1"],[/^(.+) range$/,"Диапазон $1"]]
 };
 
-function curLang(){return (S.settings&&S.settings.lang)||"en";}
+function curLang(){
+  const c=(S.settings&&S.settings.lang)||"en";
+  /* a language that has since been gated off falls back rather than
+     half-rendering a screen */
+  if(c!=="en"&&typeof langReady==="function"&&!langReady(c))return "en";
+  return c;
+}
 function tr(str,lc){
   const d=I18N[lc];if(!d)return null;
   const t=str.trim();
@@ -6270,13 +6565,38 @@ function watchLang(){
     if(el)langObs.observe(el,{childList:true,subtree:true});
   });
 }
+/* How much of the guide content exists in a language. English is the source,
+   so it is complete by definition. */
+const GTR_TOTAL=1623;
+function langCoverage(c){
+  if(c==="en")return 1;
+  return Math.min(1,gtCount(c)/GTR_TOTAL);
+}
+/* A language is offered once its long-form content is there. Below that the
+   app would be a translated menu around English research, which is worse than
+   staying in English. */
+function langReady(c){return langCoverage(c)>=0.98;}
+
 /* asked once, then lives in Settings */
 function langPop(first){
-  $("#sheet").innerHTML=`<h3>${first?"Choose your language":"Language"}</h3>
-    <div class="msub">${first?"Elige tu idioma · اختر لغتك · 选择语言 · Выберите язык":"You can change this any time in Settings"}</div>
-    <div class="langlist">${LANGS.map(l=>`<button class="langbtn ${curLang()===l.c?"on":""}" data-lang="${l.c}">
+  const ready=LANGS.filter(l=>langReady(l.c));
+  const soon=LANGS.filter(l=>!langReady(l.c));
+  const row=l=>`<button class="langbtn ${curLang()===l.c?"on":""}" data-lang="${l.c}">
       <span class="lgf">${l.f}</span><span class="lgn">${l.n}</span>
-      ${curLang()===l.c?`<span class="lgc">✓</span>`:""}</button>`).join("")}</div>
+      ${curLang()===l.c?`<span class="lgc">✓</span>`:""}</button>`;
+  const pending=l=>{const pct=Math.round(langCoverage(l.c)*100);
+    return `<div class="langbtn soon" aria-disabled="true">
+      <span class="lgf">${l.f}</span><span class="lgn">${l.n}</span>
+      <span class="lgs">${pct>0?pct+"%":"soon"}</span></div>`;};
+  $("#sheet").innerHTML=`<h3>${first?"Choose your language":"Language"}</h3>
+    <div class="msub">${first?"Elige tu idioma":"You can change this any time in Settings"}</div>
+    <div class="langlist">${ready.map(row).join("")}</div>
+    ${soon.length?`<div class="langsoon">
+      <div class="lshead">Being translated</div>
+      <div class="langlist">${soon.map(pending).join("")}</div>
+      <div class="lsnote">The interface already speaks these. The peptide research behind it does not yet,
+        and a translated menu around English research is worse than staying in English,
+        so they turn on when the writing is finished.</div></div>`:""}
     ${first?"":`<button class="ghost" id="lgClose">Close</button>`}`;
   $("#modal").classList.add("on");
   $$("[data-lang]").forEach(b=>b.onclick=()=>{
@@ -6286,20 +6606,72 @@ function langPop(first){
   if($("#lgClose"))$("#lgClose").onclick=()=>{S.settings.langAsked=true;save();closeModal();};
 }
 
+
+/* ---------- coach screen ---------- */
+let coachQ="",coachRes=null;
+function coachStarters(){
+  const t=activeTrack().filter(p=>!p.label);
+  const out=[];
+  if(t.length>=2)out.push(`Can I take ${t[0].name} and ${t[1].name} together?`);
+  if(t.length)out.push(`What bloodwork should I be doing on ${t[0].name}?`);
+  if(t.length)out.push(`Is ${t[0].name} working yet?`);
+  if(t.length>1)out.push(`When should I take ${t[1].name}?`);
+  out.push("Am I missing doses?");
+  if(t.length)out.push(`What do I need to eat with ${t[t.length-1].name}?`);
+  out.push("Why am I tired?");
+  return out.slice(0,6);
+}
+function renderCoach(){
+  const el=$("#v-coach");
+  el.innerHTML=`<div class="vsub">Ask the guides</div>
+    <div class="vhead"><h2>Coach</h2><div class="spacer"></div></div>
+    <div class="askbox">
+      <input id="askIn" class="askin" placeholder="Ask about your protocol…" autocomplete="off" value="${coachQ.replace(/"/g,"&quot;")}">
+      <button class="askgo" id="askGo" aria-label="Ask">→</button>
+    </div>
+    <div class="asknote">Answers come from the ${Object.keys(GUIDES).length} guides in this app and your own logged data.
+      Nothing is generated and nothing leaves your phone, so it cannot invent a study or a dose — every answer shows where it came from.</div>
+    ${coachRes?coachCard(coachRes):`
+      <div class="starthead">Try one of these</div>
+      <div class="startgrid">${coachStarters().map(q=>`<button class="startq" data-q="${q.replace(/"/g,"&quot;")}">${q}</button>`).join("")}</div>`}
+    <button class="disclaimer" id="cDisc">⚠ Not medical advice — tap to read</button>`;
+  const go=()=>{coachQ=$("#askIn",el).value.trim();
+    coachRes=coachQ?coachAnswer(coachQ):null;renderCoach();};
+  $("#askGo",el).onclick=go;
+  $("#askIn",el).onkeydown=e=>{if(e.key==="Enter")go();};
+  $$("[data-q]",el).forEach(b=>b.onclick=()=>{coachQ=b.dataset.q;coachRes=coachAnswer(coachQ);renderCoach();});
+  $$("[data-cgo]",el).forEach(b=>b.onclick=()=>{
+    const p=pepFor(b.dataset.cgo);
+    if(p)deepDive(p.id);else toast("Add it to your list to open the full guide");});
+  $("#cDisc",el).onclick=showDisclaimer;
+  if($("#askAgain",el))$("#askAgain",el).onclick=()=>{coachQ="";coachRes=null;renderCoach();};
+}
+function coachCard(r){
+  return `<div class="ansbox">
+    <div class="anshead">${r.title}</div>
+    ${r.blocks.map(b=>`<div class="ansb ${b.kind}">${b.text}</div>`).join("")}
+    ${r.sources.length?`<div class="anssrc"><span class="asl">Read the full guide</span>
+      ${r.sources.map(k=>`<button class="asrc" data-cgo="${k}">${guideName(k)} ›</button>`).join("")}</div>`:""}
+  </div>
+  <button class="ghost" id="askAgain">Ask something else</button>`;
+}
+
 /* ============ nav / shell ============ */
-const SUBS={track:"Today",guide:"Peps",labs:"Bloodwork",gym:"Recovery",food:"Food",settings:"Settings"};
+const SUBS={track:"Today",guide:"Peps",labs:"Bloodwork",gym:"Recovery",food:"Food",coach:"Coach",settings:"Settings"};
 let tab="track";
 function setTab(t){tab=t;$$(".view").forEach(v=>v.classList.remove("on"));$("#v-"+t).classList.add("on");
   $$("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   $("#bloodBtn").classList.toggle("on",t==="labs");
+  $("#coachBtn").classList.toggle("on",t==="coach");
   // "add peptide" belongs on Peps, where the list actually lives
   $("#topSub").textContent=SUBS[t]||"";
   $("#fab").style.display=t==="guide"?"grid":"none";
-  ({track:renderTrack,guide:renderGuide,labs:renderLabs,gym:renderGym,food:renderFood,settings:renderSettings}[t]||(()=>{}))();
+  ({track:renderTrack,guide:renderGuide,labs:renderLabs,gym:renderGym,food:renderFood,coach:renderCoach,settings:renderSettings}[t]||(()=>{}))();
   applyLang();
   window.scrollTo({top:0,behavior:"smooth"});}
 $$("#nav button").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 $("#profileBtn").onclick=()=>setTab("settings");
+$("#coachBtn").onclick=()=>setTab("coach");
 $("#bloodBtn").onclick=()=>setTab("labs");
 function closeModal(){$("#modal").classList.remove("on");}
 $("#modal").onclick=e=>{if(e.target.id==="modal")closeModal();};
