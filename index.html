@@ -4404,12 +4404,29 @@ function cycAvgBleed(){
   return Math.round(d.reduce((a,b)=>a+b,0)/d.length);
 }
 function cycLastStart(){const st=cycStarts();return st.length?st[st.length-1]:null;}
-/* 1-based day within the current cycle, or null with nothing logged yet */
+/* The cycle containing a date: its start, its length, and where the date sits
+   in it. Counting forward from only the most recent start left every earlier
+   date with no phase at all. */
+function cycAt(dt){
+  const k=iso(dt),st=cycStarts();
+  if(!st.length)return null;
+  let idx=-1;
+  for(let n=0;n<st.length;n++){if(st[n]<=k)idx=n;else break;}
+  if(idx<0)return null;                       // before anything was logged
+  const start=st[idx];
+  const len=st[idx+1]
+    ? Math.round((parseISO(st[idx+1]).getTime()-parseISO(start).getTime())/DAY)
+    : cycAvg();
+  const day=Math.round((parseISO(k).getTime()-parseISO(start).getTime())/DAY)+1;
+  // a gap far longer than a cycle means a missed log, not a 60 day cycle
+  if(day>Math.max(len,45)+10)return null;
+  return {start:start,len:len,day:day,
+          next:st[idx+1]||iso(new Date(parseISO(start).getTime()+len*DAY))};
+}
+/* 1-based day within the cycle containing this date */
 function cycDay(dt){
-  const ls=cycLastStart();
-  if(!ls)return null;
-  const d=Math.round((parseISO(iso(dt)).getTime()-parseISO(ls).getTime())/DAY);
-  return d<0?null:d+1;
+  const c=cycAt(dt);
+  return c?c.day:null;
 }
 /* The luteal phase is the stable part of the cycle at roughly 14 days, so
    ovulation is estimated back from the next expected period, not forward from
@@ -4431,12 +4448,15 @@ function cycPredict(){
   };
 }
 function cycPhase(dt){
-  const p=cycPredict(),day=cycDay(dt);
-  if(!p||day==null)return null;
-  const k=iso(dt);
-  if(day<=p.bleed)return "menstrual";
-  if(k>=p.fertileFrom&&k<=p.fertileTo)return "ovulation";
-  if(k>p.fertileTo)return "luteal";
+  const c=cycAt(dt);
+  if(!c)return null;
+  const bleed=cycAvgBleed();
+  if(c.day<=bleed)return "menstrual";
+  // ovulation sits 14 days before the NEXT start, so it moves with each
+  // cycle's real length rather than being pinned to a global average
+  const ov=Math.round((parseISO(c.next).getTime()-parseISO(c.start).getTime())/DAY)-14+1;
+  if(c.day>=ov-5&&c.day<=ov+1)return "ovulation";
+  if(c.day>ov+1)return "luteal";
   return "follicular";
 }
 /* Is this date inside a logged bleed, rather than a predicted one? */
@@ -4498,6 +4518,49 @@ function cycToggleBleed(k){
   save();
 }
 
+/* ---------- mood, taken at face value ----------
+   Opposing moods on one day are a swing, not a conflict to be resolved. The
+   pattern is the point: how often it happens, and where in the cycle. */
+const MOODPOL={
+ "Calm":1,"Happy":1,"Energetic":1,"Frisky":1,"Motivated":1,"Confident":1,
+ "Sad":-1,"Anxious":-1,"Low":-1,"Feeling guilty":-1,"Obsessive thoughts":-1,
+ "Low energy":-1,"Apathetic":-1,"Confused":-1,"Very self-critical":-1,
+ "Irritated":-1,"Angry":-1,"Flat":-1,"Foggy":-1,"Restless":-1
+};
+/* a day counts as a swing if it holds moods from both poles, or if the person
+   said so outright */
+function cycSwing(k){
+  const m=(cycDayLog(k).mood)||[];
+  if(m.indexOf("Mood swings")>=0)return true;
+  let up=0,down=0;
+  m.forEach(o=>{const p=MOODPOL[o];if(p>0)up++;else if(p<0)down++;});
+  return up>0&&down>0;
+}
+/* logged days in a window, with the swing count */
+function cycMoodStats(win){
+  const c=cycS(),out={days:0,swings:0,tally:{},sym:{},byPhase:{}};
+  Object.keys(c.days).forEach(k=>{
+    if(win){
+      const age=Math.round((Date.now()-parseISO(k).getTime())/DAY);
+      if(age<0||age>win)return;
+    }
+    const d=c.days[k];
+    if(!(d.mood||d.sym))return;
+    out.days++;
+    if(cycSwing(k))out.swings++;
+    (d.mood||[]).forEach(o=>out.tally[o]=(out.tally[o]||0)+1);
+    (d.sym||[]).forEach(o=>{if(o!=="Everything is fine")out.sym[o]=(out.sym[o]||0)+1;});
+    const ph=cycSex()==="f"?cycPhase(parseISO(k)):null;
+    if(ph){
+      const b=out.byPhase[ph]=out.byPhase[ph]||{days:0,swings:0};
+      b.days++; if(cycSwing(k))b.swings++;
+    }
+  });
+  return out;
+}
+function topN(obj,n){
+  return Object.keys(obj).sort((a,b)=>obj[b]-obj[a]).slice(0,n);
+}
 /* ---------- what can be logged ----------
    The female list follows the taxonomy people already know from the mainstream
    trackers, so nothing has to be relearned. The male list keeps the same
@@ -4923,11 +4986,36 @@ function ciMeds(q,keys){
   return {title:C.tRx,blocks:blocks.slice(0,6),
     sources:mks.map(mk=>(MEDS[mk].hits||[]).map(h=>h.key).filter(Boolean)[0]).filter(Boolean)};
 }
+/* what the mood log actually says. The coach had no access to any of this. */
+function ciMood(q,keys){
+  if(!/\b(mood|moods|feel|feeling|felt|emotion|up and down|ups and downs|swing|swings|irritab|angry|anger|sad|anxious|anxiety|energy|libido|sex drive|how have i been|how am i|\u00e1nimo|animo|humor|emocion|altibajos|irritab|enfad|triste|ansied|energ\u00eda|energia|deseo)/i.test(q))return null;
+  if(!cycOn())return null;
+  const ms=cycMoodStats(60),C=CT(),M=CY();
+  if(!ms.days)return null;
+  const blocks=[];
+  const top=topN(ms.tally,4).map(o=>L(o)+" ("+ms.tally[o]+")");
+  if(top.length)blocks.push({kind:"plain",text:M.cmTop(ms.days,top.join(", "))});
+  if(ms.swings)blocks.push({kind:"plain",text:M.cmSwing(ms.swings,ms.days)});
+  // where the swings cluster, if there is a cycle to cluster against
+  const phs=Object.keys(ms.byPhase).filter(p=>ms.byPhase[p].days>=3);
+  if(phs.length>1){
+    const worst=phs.sort((a,b)=>
+      (ms.byPhase[b].swings/ms.byPhase[b].days)-(ms.byPhase[a].swings/ms.byPhase[a].days))[0];
+    const w=ms.byPhase[worst];
+    if(w.swings)blocks.push({kind:"plain",text:M.cmPhase(phName(worst).toLowerCase(),w.swings,w.days)});
+  }
+  const sym=topN(ms.sym,3);
+  if(sym.length)blocks.push({kind:"plain",text:M.cmSym(sym.map(o=>L(o)+" ("+ms.sym[o]+")").join(", "))});
+  // and what was running while all that was logged
+  const run=activeTrack().filter(p=>!p.label).slice(0,4).map(p=>p.name);
+  if(run.length)blocks.push({kind:"plain",text:M.cmRun(run.join(", "))});
+  return blocks.length?{title:M.cmT,blocks:blocks,sources:[]}:null;
+}
 function coachAnswer(q){
   const keys=coachPeps(q);
   // most specific first: a question naming a peptide and a nutrient is a
   // nutrition question, not a stacking question that happens to contain "with"
-  const handlers=[ciMeds,ciNutrition,ciLabs,ciAdherence,ciSideEffect,ciLevel,ciTiming,ciStack];
+  const handlers=[ciMeds,ciMood,ciNutrition,ciLabs,ciAdherence,ciSideEffect,ciLevel,ciTiming,ciStack];
   for(const h of handlers){
     let r=null;try{r=h(q,keys);}catch(e){}
     if(r&&r.blocks&&r.blocks.length)return r;
@@ -7897,6 +7985,14 @@ const CYCT={
   mTiredB:n=>`Logged on ${n} of the last 14 days. Worth lining up against what you started or changed in that window.`,
   mAngH:"Irritability is showing up",
   mAngB:n=>`Logged on ${n} of the last 14 days. Same question: what changed in the protocol, the sleep or the deficit.`,
+  swingH:"Your mood moved both ways",
+  swingB:(n,d,ph)=>`On ${n} of ${d} logged days you recorded moods from both directions. That is a swing, not a contradiction, and it is the pattern worth seeing.${ph?` It happens most in your ${ph} phase.`:""}`,
+  cmT:"What your mood log says",
+  cmTop:(d,list)=>`Across ${d} logged days, most often: ${list}.`,
+  cmSwing:(n,d)=>`${n} of those ${d} days held moods from both directions. Logging Happy and Sad on the same day is not a mistake, it is a day that went both ways, and how often that happens is worth more than either mood on its own.`,
+  cmPhase:(ph,n,d)=>`Those swings cluster in your ${ph} phase: ${n} of ${d} logged days there.`,
+  cmSym:list=>`Alongside them, most logged: ${list}.`,
+  cmRun:list=>`You were running ${list} across that window. Nothing here proves one caused the other, but it is the comparison worth making.`,
   mWhyH:"Why track this at all",
   mWhyB:"Nothing here predicts a cycle, because there is not one. It is a baseline: the point is to see mood, drive and sleep move against what you are running, rather than to guess afterwards."},
  es:{
@@ -7929,6 +8025,14 @@ const CYCT={
   mTiredB:n=>`Registrada en ${n} de los últimos 14 días. Merece cruzarlo con lo que empezaste o cambiaste en esa ventana.`,
   mAngH:"Está apareciendo irritabilidad",
   mAngB:n=>`Registrada en ${n} de los últimos 14 días. Misma pregunta: qué cambió en el protocolo, en el sueño o en el déficit.`,
+  swingH:"Tu ánimo se movió en los dos sentidos",
+  swingB:(n,d,ph)=>`En ${n} de ${d} días registrados anotaste estados de ánimo de los dos lados. Eso es un vaivén, no una contradicción, y es el patrón que merece verse.${ph?` Ocurre sobre todo en tu fase ${ph}.`:""}`,
+  cmT:"Lo que dice tu registro de ánimo",
+  cmTop:(d,list)=>`En ${d} días registrados, lo más frecuente: ${list}.`,
+  cmSwing:(n,d)=>`${n} de esos ${d} días tenían estados de ánimo de los dos lados. Anotar Contenta y Triste el mismo día no es un error, es un día que fue en las dos direcciones, y cada cuánto pasa vale más que cualquiera de los dos por separado.`,
+  cmPhase:(ph,n,d)=>`Esos vaivenes se concentran en tu fase ${ph}: ${n} de ${d} días registrados ahí.`,
+  cmSym:list=>`Junto a ellos, lo más anotado: ${list}.`,
+  cmRun:list=>`En esa ventana estabas usando ${list}. Nada de esto prueba que una cosa causara la otra, pero es la comparación que merece hacerse.`,
   mWhyH:"Para qué sirve registrar esto",
   mWhyB:"Aquí nada predice un ciclo, porque no lo hay. Es una línea base: la idea es ver cómo se mueven el ánimo, el deseo y el sueño frente a lo que estás usando, en lugar de adivinarlo después."}
 };
@@ -7977,6 +8081,13 @@ function cycInsights(){
         :T.confWide(conf.sp)});
     if(ph!=="menstrual"&&ph!=="ovulation")
       out.push({lvl:"plain",ic:"🥚",t:T.fertH(fmtShort(p.fertileFrom),fmtShort(p.fertileTo)),b:T.fertB});
+    const ms=cycMoodStats(60);
+    if(ms.swings>0){
+      const worst=Object.keys(ms.byPhase).sort((a,b)=>
+        (ms.byPhase[b].swings/ms.byPhase[b].days)-(ms.byPhase[a].swings/ms.byPhase[a].days))[0];
+      out.push({lvl:"own",ic:"🌊",t:T.swingH,
+        b:T.swingB(ms.swings,ms.days,worst?phName(worst).toLowerCase():null)});
+    }
     const own=cycOwnPattern(ph);
     out.push(own?{lvl:"own",ic:"📊",t:T.ownH,
                   b:T.ownB(own.days,phName(ph).toLowerCase(),own.top.map(x=>L(x)).join(", "))}
@@ -7990,6 +8101,8 @@ function cycInsights(){
     out.push({lvl:"phase",ic:"📊",t:T.m14,b:logged?T.mWood(wood,logged):T.mNone});
     const tired=cycTrend("sym","Fatigue",14),
           ang=cycTrend("mood","Irritated",14)+cycTrend("mood","Angry",14);
+    const ms=cycMoodStats(60);
+    if(ms.swings>0)out.push({lvl:"own",ic:"🌊",t:T.swingH,b:T.swingB(ms.swings,ms.days,null)});
     if(tired>=4)out.push({lvl:"own",ic:"🔋",t:T.mTiredH,b:T.mTiredB(tired)});
     if(ang>=4)out.push({lvl:"own",ic:"😠",t:T.mAngH,b:T.mAngB(ang)});
     out.push({lvl:"plain",ic:"🧭",t:T.mWhyH,b:T.mWhyB});
