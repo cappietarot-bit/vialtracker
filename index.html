@@ -727,6 +727,19 @@
   .qsb{border:0;background:none;color:var(--ink3);font:inherit;font-size:12.5px;font-weight:600;
     padding:6px 13px;border-radius:7px;cursor:pointer}
   .qsb.on{background:var(--accent);color:#04201d}
+  .mixhead{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin:14px 0 8px}
+  .mixgrid{display:flex;flex-wrap:wrap;gap:7px}
+  .mixchip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line2);background:var(--panel2);
+    color:var(--ink2);border-radius:99px;padding:7px 13px 7px 9px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer}
+  .mixchip.on{border-color:var(--accent);color:var(--ink);background:var(--accent-soft)}
+  .mstripe{width:8px;height:8px;border-radius:99px;flex:0 0 auto}
+  .mixnotes{display:flex;flex-direction:column;gap:7px;margin:12px 0 2px}
+  .mixnote{border-left:3px solid var(--line2);background:var(--panel2);border-radius:0 9px 9px 0;
+    padding:9px 11px;font-size:12.5px;line-height:1.5;color:var(--ink2)}
+  .mixnote b{color:var(--ink)}
+  .mixnote.bad{border-left-color:var(--crit);background:var(--crit-soft)}
+  .mixnote.warn{border-left-color:var(--warn);background:var(--warn-soft)}
+  .mixnote.good{border-left-color:var(--good);background:var(--good-soft)}
   .ddchev{font-style:normal;color:var(--ink3);font-size:17px;transition:transform .25s ease}
   .ddtoggle[aria-expanded="true"] .ddchev{transform:rotate(90deg);color:var(--accent)}
   .ddsup{display:none;margin-bottom:14px}
@@ -1404,6 +1417,7 @@
   .toggle::after{content:"";position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:left .2s}
   .toggle.on::after{left:22px}
   /* nav */
+  .nav button{min-width:0}
   .nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;padding:5px 4px calc(5px + env(safe-area-inset-bottom));overflow-x:auto;scrollbar-width:none}
   .nav::-webkit-scrollbar{display:none}
   .nav button{flex:1 0 auto;min-width:58px;background:transparent;border:0;color:var(--ink3);display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 2px;border-radius:10px;font-family:var(--mono);font-size:9px;letter-spacing:.03em;text-transform:uppercase}
@@ -1527,7 +1541,7 @@
       </svg>
       <div><h1>Vialback</h1><div class="sub" id="topSub">Today</div></div>
       <div class="spacer"></div>
-      <button class="iconbtn bloodbtn" id="bloodBtn" aria-label="Bloodwork" data-tip="Bloodwork"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c3.4 4.3 6.5 8 6.5 11.4A6.5 6.5 0 0 1 12 20.5a6.5 6.5 0 0 1-6.5-6.6C5.5 10.5 8.6 6.8 12 2.5Z"/></svg></button><button class="iconbtn coachbtn" id="coachBtn" aria-label="Coach" data-tip="Coach"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c4.5 0 8 2.9 8 6.5 0 3.6-3.5 6.5-8 6.5a9.8 9.8 0 0 1-2.4-.3L5 18l1.1-3A6.9 6.9 0 0 1 4 9.5C4 5.9 7.5 3 12 3Z"/></svg></button><button class="iconbtn avatar" id="profileBtn" title="Settings" aria-label="Settings">R</button>
+      <button class="iconbtn bloodbtn" id="bloodBtn" aria-label="Bloodwork" data-tip="Bloodwork"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c3.4 4.3 6.5 8 6.5 11.4A6.5 6.5 0 0 1 12 20.5a6.5 6.5 0 0 1-6.5-6.6C5.5 10.5 8.6 6.8 12 2.5Z"/></svg></button><button class="iconbtn avatar" id="profileBtn" title="Settings" aria-label="Settings">R</button>
     </div>
   </div>
 
@@ -1554,7 +1568,8 @@
 
   <nav class="nav" id="nav">
     <button data-tab="track" class="on"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4" stroke-linecap="round"/></svg></span>Today</button>
-    <button data-tab="guide"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 012-2h12v18H6a2 2 0 01-2-2V5Z"/><path d="M8 3v18M12 8h4M12 12h4" stroke-linecap="round"/></svg></span>Peps</button>
+    <button data-tab="guide"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 012-2h12v18H6a2 2 0 01-2-2V5Z"/><path d="M8 3v18M12 8h4M12 12h4" stroke-linecap="round"/></svg></span>Lab</button>
+    <button data-tab="coach"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12c0 3.6-3.6 6.5-8 6.5a10 10 0 01-2.6-.34L5 20l1.2-3.2A6.8 6.8 0 014 12c0-3.6 3.6-6.5 8-6.5s8 2.9 8 6.5Z" stroke-linejoin="round"/><path d="M9 11.5h6M9 14h3.5" stroke-linecap="round"/></svg></span>Coach</button>
     <button data-tab="gym"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 8v8M3.5 10v4M17.5 8v8M20.5 10v4M6.5 12h11" stroke-linecap="round"/></svg></span>Gym</button>
     <button data-tab="food"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v8a2 2 0 002 2 2 2 0 002-2V3M8 3v8M14 3c-1 3-1 6 1 7v11M18.5 3v18" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 13v8" stroke-linecap="round"/></svg></span>Food</button>
   </nav>
@@ -2096,6 +2111,7 @@ const PFAM={
   muscle:   {n:"Muscle",         c:"#a3d63a"},
   blood:    {n:"Blood / oxygen", c:"#b3123c"},
   supply:   {n:"Supply",         c:"#9c6644"},
+  gear:     {n:"Gear",           c:"#e01e5a"},
   /* nothing should ever land here — checkfams.py fails the build if it does.
      Loud on purpose so a gap shows up rather than blending in. */
   other:    {n:"Unsorted",       c:"#ff0055"}
@@ -2123,6 +2139,9 @@ const PMAP={
   pt141:["melano"],mt2:["melano"],
   thymalin:["immune"],
   ace031:["muscle"],adipotide:["metabolic"],epo:["blood"],
+  /* anabolics and the ancillaries that run alongside them */
+  testc:["gear"],teste:["gear"],testp:["gear"],test:["gear"],primo:["gear"],winny:["gear"],mast:["gear"],var:["gear"],adrol:["gear"],halo:["gear"],tbol:["gear"],sdrol:["gear"],sus:["gear"],sust:["gear"],arim:["gear"],nolva:["gear"],enclo:["gear"],trena:["gear"],dece:["gear"],
+  testosterone:["gear"],testosteronecypionate:["gear"],testcyp:["gear"],testosteroneenanthate:["gear"],testenanthate:["gear"],testosteronepropionate:["gear"],testprop:["gear"],testosteroneundecanoate:["gear"],sustanon:["gear"],testosteronesuspension:["gear"],testblend:["gear"],trt:["gear"],nandrolone:["gear"],nandrolonedecanoate:["gear"],deca:["gear"],decadurabolin:["gear"],npp:["gear"],nandrolonephenylpropionate:["gear"],trenbolone:["gear"],tren:["gear"],trenbolonaacetate:["gear"],trenboloneacetate:["gear"],trenboloneenanthate:["gear"],masteron:["gear"],drostanolone:["gear"],primobolan:["gear"],methenolone:["gear"],boldenone:["gear"],equipoise:["gear"],eq:["gear"],anavar:["gear"],oxandrolone:["gear"],winstrol:["gear"],stanozolol:["gear"],dianabol:["gear"],methandrostenolone:["gear"],dbol:["gear"],anadrol:["gear"],oxymetholone:["gear"],turinabol:["gear"],superdrol:["gear"],methasterone:["gear"],halotestin:["gear"],fluoxymesterone:["gear"],anastrozole:["gear"],arimidex:["gear"],exemestane:["gear"],aromasin:["gear"],letrozole:["gear"],femara:["gear"],tamoxifen:["gear"],nolvadex:["gear"],clomiphene:["gear"],clomid:["gear"],enclomiphene:["gear"],hcg:["gear"],hmg:["gear"],cabergoline:["gear"],caber:["gear"],raloxifene:["gear"],
   bacwater:["supply"],aceticacid:["supply"]
 };
 /* the proper name and the names people actually use — a forum post says
@@ -2142,14 +2161,25 @@ const CATFAM={"glp-1":"glp","gh axis":"gh",mitochondria:"mito",metabolic:"metabo
   nerve:"regen",detox:"antiox",immune:"immune",longevity:"pineal",sleep:"sleep",hormone:"gh","fat-ox":"metabolic",
   "fat loss":"metabolic",nootropic:"neuro",cognitive:"neuro",tanning:"melano","anti-inflam":"immune",
   "recovery/skin":"regen",skin:"copper",gut:"gut",muscle:"muscle",blood:"blood",supply:"supply",
-  peptide:"regen",other:"regen"};
+  peptide:"regen",other:"regen",gear:"gear",anabolic:"gear",steroid:"gear",aas:"gear",
+  ancillary:"gear","pct":"gear"};
+/* PMAP keys sorted longest first, so the most specific prefix wins */
+const PMAPK=Object.keys(typeof PMAP!=="undefined"?PMAP:{}).sort((a,b)=>b.length-a.length);
 function pepKey(name){return String(name||"").toLowerCase().replace(/[^a-z0-9]/g,"");}
 function pepFams(p){
   if(p&&Array.isArray(p.fams)&&p.fams.length)return p.fams;
   const k=pepKey(p&&p.name);
   if(PMAP[k])return PMAP[k];
+  // "Tren Ace" and "Test C" should land where "tren" and "testcyp" land, so
+  // fall back to the longest mapped key the typed name begins with
+  if(k.length>=2){
+    const hit=PMAPK.find(x=>x.length>=2&&k.startsWith(x));
+    if(hit)return PMAP[hit];
+  }
   return [CATFAM[String(p&&p.cat||"").toLowerCase()]||"other"];
 }
+/* oil-based compounds are not reconstituted, they come at a concentration */
+function isGear(p){return pepFams(p).indexOf("gear")>=0;}
 function pepColors(p){
   const k=pepKey(p&&p.name),fams=pepFams(p);
   if(fams.length===1&&PSHADE[k])return[PSHADE[k]];
@@ -4665,15 +4695,114 @@ function infoPop(id){
   $("#ipClose").onclick=closeModal;
 }
 
+/* ---------- mixing in one syringe ----------
+   Sharing a receptor is a question about your body; sharing a barrel is a
+   question about pH, diluent and metal chemistry. Different question, so this
+   is deliberately separate from the receptor clash map above. */
+const MIXCHEM={
+  ghkcu:{cu:1}, klow:{cu:1}, glow:{cu:1},   // copper(II) complexes
+  gluta:{thiol:1},                          // free thiol on the cysteine
+  reta:{buf:1}, sema:{buf:1}, tirz:{buf:1}, cagri:{buf:1},
+  nad:{acidic:1}                            // unstable above neutral pH
+};
+const DILUENTS={bac:"Bacteriostatic water",ster:"Sterile water",
+  acet:"Acetic acid",bench:"Benzyl alcohol / other"};
+function pepDil(p){return (p&&p.diluent)||"bac";}
+function mixKey(p){return guideKeyFor(p&&p.name)||"";}
+function mixFlags(p){return MIXCHEM[mixKey(p)]||{};}
+/* peptides that a blend already contains, by display name */
+function blendParts(p){return BLEND[mixKey(p)]||[];}
+function sameBlend(a,b){
+  return Object.keys(BLEND).some(k=>{
+    const parts=BLEND[k].map(pepKey);
+    return parts.includes(pepKey(a.name))&&parts.includes(pepKey(b.name));});
+}
+/* [{lvl:"bad"|"warn"|"good"|"plain", text}] for a set of peptides sharing a barrel */
+function mixCheck(list){
+  const out=[],M=MIXTPL[curLang()]||MIXTPL.en;
+  if(list.length<2)return out;
+  for(let i=0;i<list.length;i++)for(let j=i+1;j<list.length;j++){
+    const a=list[i],b=list[j],fa=mixFlags(a),fb=mixFlags(b);
+    // a blend that already contains the other is a double dose, not a mix
+    if(blendParts(a).some(c=>pepKey(c)===pepKey(b.name)))
+      {out.push({lvl:"bad",text:M.contains(a.name,b.name)});continue;}
+    if(blendParts(b).some(c=>pepKey(c)===pepKey(a.name)))
+      {out.push({lvl:"bad",text:M.contains(b.name,a.name)});continue;}
+    if((fa.cu&&fb.thiol)||(fb.cu&&fa.thiol))
+      {out.push({lvl:"bad",text:M.cuThiol(fa.cu?a.name:b.name,fa.cu?b.name:a.name)});continue;}
+    if(sameBlend(a,b))
+      {out.push({lvl:"good",text:M.coform(a.name,b.name)});continue;}
+    const da=pepDil(a),db=pepDil(b);
+    if(da!==db)
+      {out.push({lvl:"warn",text:M.diluent(a.name,DILUENTS[da]||da,b.name,DILUENTS[db]||db)});continue;}
+    if(fa.buf||fb.buf)
+      {out.push({lvl:"warn",text:M.buffered(fa.buf?a.name:b.name)});continue;}
+    if(fa.acidic||fb.acidic)
+      {out.push({lvl:"warn",text:M.acidic(fa.acidic?a.name:b.name)});continue;}
+    const sa=a.sched&&a.sched.t,sb=b.sched&&b.sched.t;
+    if(sa&&sb&&sa!==sb)
+      {out.push({lvl:"warn",text:M.sched(a.name,sa==="daily"?M.daily:M.weekly,b.name,sb==="daily"?M.daily:M.weekly)});continue;}
+    out.push({lvl:"plain",text:M.nodata(a.name,b.name)});
+  }
+  // a note about one peptide's own chemistry fires once per pair it is in,
+  // so collapse it back to one line
+  const seen={},uniq=[];
+  out.forEach(w=>{if(!seen[w.text]){seen[w.text]=1;uniq.push(w);}});
+  out.length=0;uniq.forEach(w=>out.push(w));
+  // volume is the other thing that decides whether this fits in one barrel
+  const u=list.map(reconUnits).filter(x=>x!=null);
+  if(u.length===list.length){
+    const tot=Math.round(u.reduce((x,y)=>x+y,0)*10)/10;
+    out.push({lvl:tot>100?"warn":"plain",text:tot>100?M.volOver(tot):M.vol(tot)});
+  }
+  return out;
+}
+const MIXTPL={
+ en:{
+  contains:(a,b)=>`<b>${a}</b> already contains ${b}. Drawing both is a double dose of the same peptide, not a mix.`,
+  cuThiol:(cu,th)=>`<b>${cu}</b> carries a copper complex and <b>${th}</b> has a free thiol. They react on contact: the copper is reduced and the solution changes colour. Draw these into separate syringes.`,
+  coform:(a,b)=>`<b>${a}</b> and <b>${b}</b> are sold pre-mixed in the same blend, so they are known to sit together in one solution.`,
+  diluent:(a,da,b,db)=>`<b>${a}</b> is reconstituted with ${da} and <b>${b}</b> with ${db}. Different diluents means mixing shifts the pH of both, which is what usually makes a peptide fall out of solution.`,
+  buffered:a=>`<b>${a}</b> is sold as a buffered formulation, so its powder is not pH-neutral in plain bacteriostatic water. If you mix it, draw and inject straight away rather than storing the mix.`,
+  acidic:a=>`<b>${a}</b> goes into solution acidic, because it degrades above neutral pH. Mixing pulls whatever it meets toward that pH.`,
+  sched:(a,fa,b,fb)=>`<b>${a}</b> is ${fa} and <b>${b}</b> is ${fb}. Mixing them in one barrel ties them to the same schedule.`,
+  nodata:(a,b)=>`<b>${a}</b> and <b>${b}</b>: no known chemical conflict, and nobody has tested this pair in one syringe either.`,
+  vol:t=>`Total in the barrel: <b>${t} units</b>.`,
+  volOver:t=>`Total in the barrel: <b>${t} units</b>, more than a standard U-100 insulin syringe holds. This needs splitting.`,
+  daily:"daily", weekly:"weekly"},
+ es:{
+  contains:(a,b)=>`<b>${a}</b> ya contiene ${b}. Cargar los dos es una dosis doble del mismo péptido, no una mezcla.`,
+  cuThiol:(cu,th)=>`<b>${cu}</b> lleva un complejo de cobre y <b>${th}</b> tiene un tiol libre. Reaccionan al contacto: el cobre se reduce y la solución cambia de color. Carga estos en jeringas separadas.`,
+  coform:(a,b)=>`<b>${a}</b> y <b>${b}</b> se venden premezclados en la misma fórmula, así que se sabe que conviven en una sola solución.`,
+  diluent:(a,da,b,db)=>`<b>${a}</b> está reconstituido con ${da} y <b>${b}</b> con ${db}. Diluyentes distintos significa que mezclar cambia el pH de ambos, que es lo que suele hacer que un péptido precipite.`,
+  buffered:a=>`<b>${a}</b> se vende como fórmula tamponada, así que su polvo no queda con pH neutro en agua bacteriostática sola. Si lo mezclas, carga e inyecta en el momento en lugar de guardar la mezcla.`,
+  acidic:a=>`<b>${a}</b> queda ácido en solución, porque se degrada por encima de pH neutro. Mezclarlo arrastra hacia ese pH a lo que se encuentre.`,
+  sched:(a,fa,b,fb)=>`<b>${a}</b> es ${fa} y <b>${b}</b> es ${fb}. Mezclarlos en un mismo cuerpo los ata al mismo calendario.`,
+  nodata:(a,b)=>`<b>${a}</b> y <b>${b}</b>: sin conflicto químico conocido, y tampoco nadie ha probado esta pareja en una sola jeringa.`,
+  vol:t=>`Total en la jeringa: <b>${t} unidades</b>.`,
+  volOver:t=>`Total en la jeringa: <b>${t} unidades</b>, más de lo que admite una jeringa de insulina U-100 estándar. Esto hay que repartirlo.`,
+  daily:"diario", weekly:"semanal"}
+};
 /* one tap to confirm where it went. The longest-rested site is preselected,
    and skipping records nothing rather than inventing a location. */
 function sitePop(id,key){
   const p=pById(id);if(!p)return;
+  const isToday=key===iso(new Date());
   let sel=suggestSite();
+  // one injection can carry several peptides, so the shot is the unit here,
+  // not the peptide. The tapped one is already logged and stays in.
+  const inShot=new Set([id]);
+  const others=()=>S.track.filter(x=>x.status==="active"&&!x.label&&x.id!==id
+    &&dueOn(x,parseISO(key))&&(inShot.has(x.id)||!(S.log[key]||{})[x.id]));
+  const picked=()=>[p].concat([...inShot].filter(x=>x!==id).map(pById).filter(Boolean));
   const draw=()=>{
-    const log=siteLog();
+    const log=siteLog(),oth=others(),warn=mixCheck(picked());
     $("#sheet").innerHTML=`<h3>Where did it go?</h3>
       <div class="msub">${p.name} · logged. Tap a spot, or skip.</div>
+      ${oth.length?`<div class="mixhead">Anything else in the same shot?</div>
+        <div class="mixgrid">${oth.map(x=>`<button class="mixchip${inShot.has(x.id)?" on":""}" data-mix="${x.id}">
+          <span class="mstripe" style="background:${pepPaint(x)}"></span>${x.name}</button>`).join("")}</div>`:""}
+      ${warn.length?`<div class="mixnotes">${warn.map(w=>`<div class="mixnote ${w.lvl}">${w.text}</div>`).join("")}</div>`:""}
       <div class="sitewrap">
         <div class="sfigwrap">${siteFigure(sel)}</div>
         <div class="sitecol">${SITES.map(st=>{const a=siteAge(st.id,log);
@@ -4682,16 +4811,35 @@ function sitePop(id,key){
             <span class="sname">${st.n}</span>
             <span class="sage">${siteAgeLabel(a)}</span></button>`;}).join("")}</div>
       </div>
-      <button class="primary" id="spSave">Log to ${SITEBY[sel]?SITEBY[sel].n:"site"}</button>
+      <button class="primary" id="spSave">Log ${inShot.size>1?inShot.size+" to":"to"} ${SITEBY[sel]?SITEBY[sel].n:"site"}</button>
       <button class="ghost" id="spSkip">Skip, don't record a site</button>`;
-    $$("[data-pick]").forEach(b=>b.onclick=()=>{sel=b.dataset.pick;draw();});
-    $$(".szone").forEach(c=>c.onclick=()=>{sel=c.dataset.site;draw();});
-    $("#spSave").onclick=()=>{
-      if(S.log[key]&&S.log[key][id])S.log[key][id].site=sel;
-      save();closeModal();toast(`${p.name} · ${SITEBY[sel].n}`);
+    $$("[data-mix]",$("#sheet")).forEach(b=>b.onclick=()=>{
+      const x=b.dataset.mix;
+      if(inShot.has(x))inShot.delete(x);else inShot.add(x);
+      draw();});
+    $$("[data-pick]",$("#sheet")).forEach(b=>b.onclick=()=>{sel=b.dataset.pick;draw();});
+    $$(".szone",$("#sheet")).forEach(c=>c.onclick=()=>{sel=c.dataset.site;draw();});
+    const commit=site=>{
+      S.log[key]=S.log[key]||{};
+      inShot.forEach(pid=>{
+        const q=pById(pid);if(!q)return;
+        if(!S.log[key][pid]){                    // added here, so log it now
+          S.log[key][pid]={dose:q.dose,unit:q.unit,at:Date.now()};
+          if(isToday)q.remaining=Math.max(0,round(q.remaining-doseMg(q),3));
+          if(q.remaining<=0)pepEvent(q,"empty",key);
+        }
+        if(site)S.log[key][pid].site=site;
+      });
+      save();closeModal();
+      const n=inShot.size;
+      toast(n>1?`${n} logged${site?" · "+SITEBY[site].n:""}`
+                :`${p.name}${site?" · "+SITEBY[site].n:""}`);
+      renderTrack();
       if($("#v-guide").classList.contains("on"))renderGuide();
     };
-    $("#spSkip").onclick=()=>{closeModal();toast(p.name+" logged");};
+    $("#spSave").onclick=()=>commit(sel);
+    $("#spSkip").onclick=()=>commit(null);
+    if(curLang()!=="en")applyLang();
   };
   draw();$("#modal").classList.add("on");
 }
@@ -4877,7 +5025,9 @@ function editVial(id,isNew){
       <div class="fld"><label>Unit</label><select id="eUnit"><option ${p.unit==='mg'?'selected':''}>mg</option><option ${p.unit==='mcg'?'selected':''}>mcg</option><option ${p.unit==='iu'?'selected':''}>iu</option><option ${p.unit==='ml'?'selected':''}>ml</option></select></div>
       <div class="fld"><label>Vial size (max)</label><input class="mono" id="eVial" type="number" inputmode="decimal" value="${p.vialMg}"></div>
       <div class="fld"><label>Remaining now</label><input class="mono" id="eRem" type="number" inputmode="decimal" value="${p.remaining}"></div>
-      <div class="fld"><label>Bac water (mL)</label><input class="mono" id="eBac" type="number" inputmode="decimal" value="${p.bacMl||2}"></div>
+      <div class="fld"><label>${isGear(p)?"Oil volume (mL)":"Bac water (mL)"}</label><input class="mono" id="eBac" type="number" inputmode="decimal" value="${p.bacMl||2}"></div>
+      ${isGear(p)?"":`<div class="fld"><label>Reconstituted with</label><select id="eDil">${Object.keys(DILUENTS).map(k=>
+        `<option value="${k}"${pepDil(p)===k?" selected":""}>${DILUENTS[k]}</option>`).join("")}</select></div>`}
       <div class="fld"><label>Timing note</label><input id="eTime" type="text" value="${p.timing||""}"></div>
       <div class="fld" style="grid-column:1/3"><label>Frequency</label>
         <select id="eFreq"><option value="daily" ${s.t==='daily'?'selected':''}>Every day</option><option value="week" ${s.t==='week'?'selected':''}>Specific weekdays</option></select></div>
@@ -4900,6 +5050,7 @@ function editVial(id,isNew){
     p.dose=parseFloat($("#eDose").value)||p.dose;p.unit=$("#eUnit").value;
     p.vialMg=parseFloat($("#eVial").value)||p.vialMg;p.remaining=parseFloat($("#eRem").value);if(isNaN(p.remaining))p.remaining=p.vialMg;
     p.bacMl=parseFloat($("#eBac").value)||2;p.timing=$("#eTime").value;
+    if($("#eDil"))p.diluent=$("#eDil").value;
     p.time=$("#eWhen").value;p.clock=$("#eClock").value||"";
     p.sched=$("#eFreq").value==='week'?{t:'week',days:sel.length?sel.sort():[1]}:{t:'daily'};
     if(p.label&&p.dose)p.label=null;
@@ -5816,7 +5967,7 @@ function renderGuide(){
   list=[...list].sort((a,b)=>(rank(a)-rank(b))||within(a,b));
   const toTake=list.filter(p=>rank(p)===0).length;
   let html=`<div class="vsub">Protocol &amp; stock</div>
-    <div class="vhead"><h2>My peptides</h2><div class="spacer"></div>
+    <div class="vhead"><h2>My lab</h2><div class="spacer"></div>
       ${(()=>{const l=activeTrack().filter(p=>!p.label).map(p=>adherence(p,30)).filter(a=>a.due);
         if(!l.length)return "";
         const pct=Math.round(l.reduce((t,a)=>t+a.pct,0)/l.length);
@@ -6049,7 +6200,7 @@ function renderSettings(){
       <div class="rmnote" id="remState">checking…</div>
       ${S.settings.remind?`<button class="ghost" id="remTest">Send a test reminder now</button>`:""}
     </div>
-    <div class="panel"><div class="lbl" style="margin-bottom:6px">My peptides</div><div class="lbl" style="text-transform:none;letter-spacing:0;color:var(--ink3);font-family:var(--sans);margin-bottom:8px">Uncheck to hide, × to remove. Deactivate from a card to redden it and drop it to the bottom; archive from Edit to park it with its settings.</div>
+    <div class="panel"><div class="lbl" style="margin-bottom:6px">My lab</div><div class="lbl" style="text-transform:none;letter-spacing:0;color:var(--ink3);font-family:var(--sans);margin-bottom:8px">Uncheck to hide, × to remove. Deactivate from a card to redden it and drop it to the bottom; archive from Edit to park it with its settings.</div>
       <div class="settbl">${rows}</div></div>
     <div class="panel"><div class="setrow" style="border:0"><div style="flex:1"><div style="font-weight:600;font-size:13.5px">Language</div><div class="rm" id="langNow"></div></div><button class="mini" id="langBtn">Change</button></div></div>
     <div class="panel"><div class="lbl" style="margin-bottom:10px">Data</div>
@@ -6161,6 +6312,26 @@ const NOTR=new Set(["mg","mcg","ml","iu","lb","kcal","g","mg/dL","min","ApoB","N
 
 const I18N={
 es:{
+"today":"hoy",
+/* --- injection sites --- */
+"Left abdomen":"Abdomen izquierdo",
+"Right abdomen":"Abdomen derecho",
+"Left flank":"Flanco izquierdo",
+"Right flank":"Flanco derecho",
+"Left thigh":"Muslo izquierdo",
+"Right thigh":"Muslo derecho",
+"Left delt":"Deltoides izquierdo",
+"Right delt":"Deltoides derecho",
+"Left glute":"Gl\u00fateo izquierdo",
+"Right glute":"Gl\u00fateo derecho",
+/* --- multi-peptide shot logging --- */
+"Anything else in the same shot?":"\u00bfAlgo m\u00e1s en el mismo pinchazo?",
+"Reconstituted with":"Reconstituido con",
+"Bacteriostatic water":"Agua bacteriost\u00e1tica",
+"Sterile water":"Agua est\u00e9ril",
+"Benzyl alcohol / other":"Alcohol benc\u00edlico / otro",
+"Where did it go?":"\u00bfD\u00f3nde fue?",
+"Skip, don't record a site":"Omitir, no registrar el sitio",
 "dose":"dosis",
 /* --- single-dose chart + per-guide extras --- */
 "What one dose does":"Qu\u00e9 hace una sola dosis",
@@ -6426,7 +6597,7 @@ es:{
 "Everything is stored in this browser and nowhere else.\n          Export regularly — it is the only copy that survives a cleared browser or a lost phone.":"Todo se guarda en este navegador y en ningun otro sitio.\n          Exporta con regularidad — es la unica copia que sobrevive a un navegador borrado o a un telefono perdido.",
 "still to take today":"aún por tomar hoy","All of today's shots logged":"Todas las inyecciones de hoy registradas",
 /* nav + shell */
-"Today":"Hoy","Peps":"Peps","Gym":"Gimnasio","Food":"Comida","Bloodwork":"Análisis",
+"Today":"Hoy","Peps":"Lab","Lab":"Lab","My lab":"Mi laboratorio","Gear":"Gear","Gym":"Gimnasio","Food":"Comida","Bloodwork":"Análisis",
 "Settings":"Ajustes","Recovery":"Recuperación","Peptides":"Péptidos","Workout":"Entrenamiento",
 "Nutrition":"Nutrición","Muscle recovery":"Recuperación muscular","Protocol & stock":"Protocolo y stock",
 "Function Health panel":"Panel de Function Health","My peptides":"Mis péptidos",
@@ -6558,7 +6729,7 @@ es:{
 ,
 ar:{
 "still to take today":"متبقية اليوم","All of today's shots logged":"تم تسجيل كل حقن اليوم",
-"Today":"اليوم","Peps":"الببتيدات","Gym":"النادي","Food":"الطعام","Bloodwork":"التحاليل",
+"Today":"اليوم","Peps":"المختبر","Lab":"المختبر","Gym":"النادي","Food":"الطعام","Bloodwork":"التحاليل",
 "Settings":"الإعدادات","Recovery":"التعافي","Peptides":"الببتيدات","Workout":"التمرين",
 "Nutrition":"التغذية","Muscle recovery":"تعافي العضلات","Protocol & stock":"البروتوكول والمخزون",
 "Function Health panel":"لوحة Function Health","My peptides":"ببتيداتي",
@@ -6655,7 +6826,7 @@ ar:{
 },
 zh:{
 "still to take today":"个今天还没打","All of today's shots logged":"今天的注射都已记录",
-"Today":"今天","Peps":"肽","Gym":"健身","Food":"饮食","Bloodwork":"血检",
+"Today":"今天","Peps":"实验室","Lab":"实验室","Gym":"健身","Food":"饮食","Bloodwork":"血检",
 "Settings":"设置","Recovery":"恢复","Peptides":"肽","Workout":"训练",
 "Nutrition":"营养","Muscle recovery":"肌肉恢复","Protocol & stock":"方案与库存",
 "Function Health panel":"Function Health 检测项","My peptides":"我的肽",
@@ -6751,7 +6922,7 @@ zh:{
 },
 ru:{
 "still to take today":"осталось сегодня","All of today's shots logged":"Все инъекции на сегодня записаны",
-"Today":"Сегодня","Peps":"Пептиды","Gym":"Зал","Food":"Питание","Bloodwork":"Анализы",
+"Today":"Сегодня","Peps":"Лаб","Lab":"Лаб","Gym":"Зал","Food":"Питание","Bloodwork":"Анализы",
 "Settings":"Настройки","Recovery":"Восстановление","Peptides":"Пептиды","Workout":"Тренировка",
 "Nutrition":"Питание","Muscle recovery":"Восстановление мышц","Protocol & stock":"Протокол и запас",
 "Function Health panel":"Панель Function Health","My peptides":"Мои пептиды",
@@ -6853,7 +7024,21 @@ ru:{
 const MONRE="January|February|March|April|May|June|July|August|September|October|November|December|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sept|Sep|Oct|Nov|Dec";
 const DOWRE="Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday|Mon|Tue|Wed|Thu|Fri|Sat|Sun";
 const LANGPAT={
- es:[[/^Edit (.+)$/,"Editar $1"],[/^Log (.+?)( anyway)?$/,"Registrar $1"],
+ es:[/* specific before general: the bare ^Log rule below would otherwise
+        swallow "3 to Left abdomen" whole */
+     [/^Log (\d+) to (.+)$/,"Registrar $1 en $2",[2]],
+     [/^Log to (.+)$/,"Registrar en $1",[1]],
+     [/^Total in the barrel:$/,"Total en la jeringa:"],
+     /* the site figure's tooltip: "Left abdomen \u2014 never" */
+     [/^(.+) \u2014 (never|today|\d+d)$/,"$1 \u2014 $2",[1,2]],
+     /* the reconstitution preview in the vial editor */
+     [/^Recon: at (.+?) in (.+?), your (.+?) dose =$/,
+      "Recon: con $1 en $2, tu dosis de $3 ="],
+     [/^on a U-100 insulin syringe\.$/,"en una jeringa de insulina U-100."],
+     [/^Enter vial size and bac water for the syringe maths\.$/,
+      "Introduce el tama\u00f1o del vial y el agua bacteriost\u00e1tica para el c\u00e1lculo de la jeringa."],
+     [/^(\d+(?:\.\d+)?) units$/,"$1 unidades"],
+     [/^Edit (.+)$/,"Editar $1"],[/^Log (.+?)( anyway)?$/,"Registrar $1"],
      [/^(.+) history$/,"Historial de $1"],[/^(.+) range$/,"Rango de $1"],
      /* dates: Spanish puts the day first and lowercases the month */
      [new RegExp("^("+DOWRE+"), ("+MONRE+") (\\d{1,2})$"),"$1, $3 de $2",[1,2]],
@@ -6875,6 +7060,7 @@ const LANGPAT={
      [/^(\d+)w ago$/,"hace $1 sem"],
      [/^(.+) trials$/,"Ensayos de $1"],
      [/^([\d.,]+) \/ ([\d.,]+) (mg|mcg|ml|g|IU|UI) left$/,"quedan $1 / $2 $3"],
+     [/^(.+) . logged\. Tap a spot, or skip\.$/,"$1 \u00b7 registrado. Toca un sitio, u omite."],
      [/^optimal (.+)$/,"\u00f3ptimo $1"],
      [/^([\d.,]+) (mg|mcg|ml|g|IU|UI) . (.+)$/,"$1 $2 · $3",[3]],
      [/^\u00b7 ([\d.,]+) (mg|mcg|ml|g|IU|UI) . (.+)$/,"\u00b7 $1 $2 · $3",[3]],
@@ -7068,12 +7254,11 @@ function coachCard(r){
 }
 
 /* ============ nav / shell ============ */
-const SUBS={track:"Today",guide:"Peps",labs:"Bloodwork",gym:"Recovery",food:"Food",coach:"Coach",settings:"Settings"};
+const SUBS={track:"Today",guide:"Lab",labs:"Bloodwork",gym:"Recovery",food:"Food",coach:"Coach",settings:"Settings"};
 let tab="track";
 function setTab(t){tab=t;$$(".view").forEach(v=>v.classList.remove("on"));$("#v-"+t).classList.add("on");
   $$("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   $("#bloodBtn").classList.toggle("on",t==="labs");
-  $("#coachBtn").classList.toggle("on",t==="coach");
   // "add peptide" belongs on Peps, where the list actually lives
   $("#topSub").textContent=SUBS[t]||"";
   $("#fab").style.display=t==="guide"?"grid":"none";
@@ -7082,7 +7267,6 @@ function setTab(t){tab=t;$$(".view").forEach(v=>v.classList.remove("on"));$("#v-
   window.scrollTo({top:0,behavior:"smooth"});}
 $$("#nav button").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 $("#profileBtn").onclick=()=>quickSet();
-$("#coachBtn").onclick=()=>setTab("coach");
 $("#bloodBtn").onclick=()=>setTab("labs");
 /* Everything you might want to flip lives here rather than being spread
    between the top bar and the bottom of the settings screen. */
