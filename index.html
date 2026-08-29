@@ -6670,7 +6670,7 @@ const MCTPL={
   a1:"Sedentary",a2:"Light",a3:"Moderate",a4:"High",a5:"Athlete",
   cut:"Cut",maint:"Maintain",bulk:"Bulk",
   pro:"protein g",carb:"carbs g",fatl:"fat g",
-  rule:(p,f,c)=>`A gram of protein per pound of goal weight gives ${p} g. Fat is 35% of that number, ${f} g. Carbs come to ${c} g.`,
+  rule:(p,f,c,per)=>`${per===1?"A gram":per+" g"} of protein per pound of goal weight gives ${p} g. Fat is 35% of that number, ${f} g. Carbs come to ${c} g.`,
   carbFloor:f=>`Cutting sits on the floor: ${f} g of carbs, 70% of the protein number. You can go lower, but this is the level below which training and sleep usually start to suffer.`,
   carbSolved:"Carbs are solved for the calories this aim needs rather than set to a fixed multiple, because protein and fat are already fixed and a fixed multiple lands under maintenance for most people.",
   vs:(t,d,dir)=>dir==="level"?`Your estimated maintenance is about ${t} kcal, so this sits roughly level with it.`
@@ -6686,7 +6686,7 @@ const MCTPL={
   a1:"Sedentario",a2:"Ligera",a3:"Moderada",a4:"Alta",a5:"Atleta",
   cut:"Definir",maint:"Mantener",bulk:"Volumen",
   pro:"proteína g",carb:"carbohidratos g",fatl:"grasa g",
-  rule:(p,f,c)=>`Un gramo de proteína por libra de peso objetivo da ${p} g. La grasa es el 35% de esa cifra, ${f} g. Los carbohidratos salen a ${c} g.`,
+  rule:(p,f,c,per)=>`${per===1?"Un gramo":per+" g"} de proteína por libra de peso objetivo da ${p} g. La grasa es el 35% de esa cifra, ${f} g. Los carbohidratos salen a ${c} g.`,
   carbFloor:f=>`Definiendo se usa el mínimo: ${f} g de carbohidratos, el 70% de la cifra de proteína. Puedes bajar más, pero por debajo de ahí el entrenamiento y el sueño suelen empezar a resentirse.`,
   carbSolved:"Los carbohidratos se calculan según las calorías que pide el objetivo y no como un múltiplo fijo, porque la proteína y la grasa ya están fijadas y un múltiplo fijo se queda por debajo del mantenimiento para la mayoría.",
   vs:(t,d,dir)=>dir==="level"?`Tu mantenimiento estimado ronda las ${t} kcal, así que esto queda más o menos a la par.`
@@ -6733,7 +6733,10 @@ const AIMPCT={cut:-0.20,maintain:0,bulk:0.10};
 function mcCalc(b){
   const goalLb=lbOf(+b.goal||+b.weight||0,b.unit);
   if(!goalLb)return null;
-  const protein=Math.round(goalLb);
+  // a gram per pound for men, 0.7 for women. Fat and the carb floor are both
+  // computed off this, so the whole set scales with it rather than only protein
+  const perLb=(b.sex==="f")?0.7:1;
+  const protein=Math.round(goalLb*perLb);
   const fat=Math.round(protein*0.35);
   const floor=Math.round(protein*CARBFLOOR);
   const aim=b.aim||"maintain";
@@ -6749,7 +6752,7 @@ function mcCalc(b){
   }
   const kcal=protein*4+carbs*4+fat*9;
   return {protein:protein,fat:fat,carbs:carbs,kcal:kcal,tdee:tdee,
-    floor:floor,solved:solved,aim:aim,
+    floor:floor,solved:solved,aim:aim,perLb:perLb,
     atFloor:carbs<=floor,
     delta:tdee?kcal-tdee:null};
 }
@@ -6791,7 +6794,7 @@ function macroModal(){
           <div><b>${r.fat}</b><span>${M.fatl}</span></div>
           <div><b>${r.kcal}</b><span>kcal</span></div>
         </div>
-        <p class="mcnote">${M.rule(r.protein,r.fat,r.carbs)} ${
+        <p class="mcnote">${M.rule(r.protein,r.fat,r.carbs,r.perLb)} ${
           r.atFloor?M.carbFloor(r.floor):r.solved?M.carbSolved:""}</p>
         ${r.tdee&&r.delta<-r.tdee*0.28?`<p class="mcwarn">${M.steep(Math.abs(r.delta))}</p>`:""}
         ${r.tdee?`<p class="mcnote">${M.vs(r.tdee,Math.abs(r.delta),
