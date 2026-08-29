@@ -16,7 +16,7 @@
 <script>window.VIALBACK_PUBLIC=true;</script>
 </head>
 <body>
-<title>Vialback — Peptide Protocol Tracker</title>
+<title>The Lab — Protocol Tracker</title>
 <style>
   :root{
     --bg:#f2f5f3;--panel:#fff;--panel2:#eef2f0;--ink:#0e1a18;--ink2:#4a5a56;--ink3:#7a8a86;
@@ -799,6 +799,19 @@
     padding:9px 18px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
   .csskip{border:1px solid var(--line2);background:none;color:var(--ink3);
     border-radius:9px;padding:9px 16px;font:inherit;font-size:13px;cursor:pointer}
+  .mcrow{display:flex;align-items:center;gap:10px;padding:11px 2px;border-bottom:1px solid var(--line)}
+  .mcrow .qsl{flex:1}
+  .mcout{margin-top:14px;border:1px solid var(--line);background:var(--panel2);
+    border-radius:13px;padding:14px}
+  .mcgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+  .mcgrid div{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 4px}
+  .mcgrid b{display:block;font-family:var(--mono);font-size:19px;font-weight:600;
+    color:var(--accent);font-variant-numeric:tabular-nums}
+  .mcgrid span{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3)}
+  .mcnote{font-size:12.5px;line-height:1.55;color:var(--ink2);margin:11px 0 0}
+  .mcwarn{font-size:12.5px;line-height:1.55;color:var(--warn);margin:10px 0 0;
+    background:var(--warn-soft);border-radius:9px;padding:10px 12px}
+  .mchr{height:1px;background:var(--line);margin:18px 0 14px}
   .ddchev{font-style:normal;color:var(--ink3);font-size:17px;transition:transform .25s ease}
   .ddtoggle[aria-expanded="true"] .ddchev{transform:rotate(90deg);color:var(--accent)}
   .ddsup{display:none;margin-bottom:14px}
@@ -1598,7 +1611,7 @@
         <path d="M15 24h10" stroke="var(--accent)" stroke-width="2.4"/>
         <rect x="17.5" y="27" width="5" height="6" rx="1.6" fill="var(--accent)" opacity=".55"/>
       </svg>
-      <div><h1>Vialback</h1><div class="sub" id="topSub">Today</div></div>
+      <div><h1>The Lab</h1><div class="sub" id="topSub">Today</div></div>
       <div class="spacer"></div>
       <button class="iconbtn bloodbtn" id="bloodBtn" aria-label="Bloodwork" data-tip="Bloodwork"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c3.4 4.3 6.5 8 6.5 11.4A6.5 6.5 0 0 1 12 20.5a6.5 6.5 0 0 1-6.5-6.6C5.5 10.5 8.6 6.8 12 2.5Z"/></svg></button><button class="iconbtn cycbtn" id="cycBtn" aria-label="Cycle" data-tip="Cycle" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="9" r="5"/><path d="M12 14v7M9 18h6" stroke-linecap="round"/></svg></button><button class="iconbtn avatar" id="profileBtn" title="Settings" aria-label="Settings">R</button>
     </div>
@@ -1628,7 +1641,7 @@
 
   <nav class="nav" id="nav">
     <button data-tab="track" class="on"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4" stroke-linecap="round"/></svg></span>Today</button>
-    <button data-tab="guide"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 012-2h12v18H6a2 2 0 01-2-2V5Z"/><path d="M8 3v18M12 8h4M12 12h4" stroke-linecap="round"/></svg></span>Lab</button>
+    <button data-tab="guide"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 012-2h12v18H6a2 2 0 01-2-2V5Z"/><path d="M8 3v18M12 8h4M12 12h4" stroke-linecap="round"/></svg></span>Stack</button>
     <button data-tab="coach"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12c0 3.6-3.6 6.5-8 6.5a10 10 0 01-2.6-.34L5 20l1.2-3.2A6.8 6.8 0 014 12c0-3.6 3.6-6.5 8-6.5s8 2.9 8 6.5Z" stroke-linejoin="round"/><path d="M9 11.5h6M9 14h3.5" stroke-linecap="round"/></svg></span>Coach</button>
     <button data-tab="gym"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 8v8M3.5 10v4M17.5 8v8M20.5 10v4M6.5 12h11" stroke-linecap="round"/></svg></span>Gym</button>
     <button data-tab="food"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3v8a2 2 0 002 2 2 2 0 002-2V3M8 3v8M14 3c-1 3-1 6 1 7v11M18.5 3v18" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 13v8" stroke-linecap="round"/></svg></span>Food</button>
@@ -6650,18 +6663,169 @@ function mealModal(forDate,after,editId){
     saveFoodItem(m,photo);
     save();closeModal();if(after)after();else renderFood();toast("Food logged");};
 }
+const MCTPL={
+ en:{h:"Daily targets",sub:"Work them out, or set them yourself",
+  units:"Units",height:"Height",weight:"Weight now",goalw:"Goal weight",age:"Age",
+  sex:"Sex",act:"Activity",aim:"Aim",
+  a1:"Sedentary",a2:"Light",a3:"Moderate",a4:"High",a5:"Athlete",
+  cut:"Cut",maint:"Maintain",bulk:"Bulk",
+  pro:"protein g",carb:"carbs g",fatl:"fat g",
+  rule:(p,f,c)=>`A gram of protein per pound of goal weight gives ${p} g. Fat is 35% of that number, ${f} g. Carbs come to ${c} g.`,
+  carbFloor:f=>`Cutting sits on the floor: ${f} g of carbs, 70% of the protein number. You can go lower, but this is the level below which training and sleep usually start to suffer.`,
+  carbSolved:"Carbs are solved for the calories this aim needs rather than set to a fixed multiple, because protein and fat are already fixed and a fixed multiple lands under maintenance for most people.",
+  vs:(t,d,dir)=>dir==="level"?`Your estimated maintenance is about ${t} kcal, so this sits roughly level with it.`
+    :`Your estimated maintenance is about ${t} kcal, so this is a ${d} kcal ${dir}. That is an estimate from height, weight, age and activity, not a measurement.`,
+  use:"Use these targets",need:"Enter a goal weight and the rest fills in.",
+  manual:"Or set them by hand",save:"Save targets",
+  low:f=>`Carbs are below ${f} g, which is the floor this rule sets. You can run lower, and people do, but training quality, sleep and thyroid output all tend to suffer first. It is not recommended.`,
+  steep:d=>`That is a ${d} kcal deficit, which is steep. Losing faster than about a percent of bodyweight a week costs more muscle for the same fat, and it gets harder to hold. Raising carbs toward maintenance is the usual fix.`,
+  applied:"Targets calculated",saved:"Targets saved"},
+ es:{h:"Objetivos diarios",sub:"Calcúlalos o defínelos tú",
+  units:"Unidades",height:"Altura",weight:"Peso actual",goalw:"Peso objetivo",age:"Edad",
+  sex:"Sexo",act:"Actividad",aim:"Objetivo",
+  a1:"Sedentario",a2:"Ligera",a3:"Moderada",a4:"Alta",a5:"Atleta",
+  cut:"Definir",maint:"Mantener",bulk:"Volumen",
+  pro:"proteína g",carb:"carbohidratos g",fatl:"grasa g",
+  rule:(p,f,c)=>`Un gramo de proteína por libra de peso objetivo da ${p} g. La grasa es el 35% de esa cifra, ${f} g. Los carbohidratos salen a ${c} g.`,
+  carbFloor:f=>`Definiendo se usa el mínimo: ${f} g de carbohidratos, el 70% de la cifra de proteína. Puedes bajar más, pero por debajo de ahí el entrenamiento y el sueño suelen empezar a resentirse.`,
+  carbSolved:"Los carbohidratos se calculan según las calorías que pide el objetivo y no como un múltiplo fijo, porque la proteína y la grasa ya están fijadas y un múltiplo fijo se queda por debajo del mantenimiento para la mayoría.",
+  vs:(t,d,dir)=>dir==="level"?`Tu mantenimiento estimado ronda las ${t} kcal, así que esto queda más o menos a la par.`
+    :`Tu mantenimiento estimado ronda las ${t} kcal, así que esto es un ${dir==="deficit"?"déficit":"superávit"} de ${d} kcal. Es una estimación a partir de altura, peso, edad y actividad, no una medición.`,
+  use:"Usar estos objetivos",need:"Introduce un peso objetivo y el resto se rellena.",
+  manual:"O defínelos a mano",save:"Guardar objetivos",
+  low:f=>`Los carbohidratos están por debajo de ${f} g, que es el mínimo que marca esta regla. Puedes bajar más, y hay quien lo hace, pero la calidad del entrenamiento, el sueño y la función tiroidea suelen resentirse primero. No es recomendable.`,
+  steep:d=>`Eso es un déficit de ${d} kcal, que es agresivo. Perder más rápido de un uno por ciento del peso corporal por semana cuesta más músculo para la misma grasa, y cuesta más sostenerlo. Subir los carbohidratos hacia el mantenimiento es el arreglo habitual.`,
+  applied:"Objetivos calculados",saved:"Objetivos guardados"}
+};
+function MCT(){return MCTPL[curLang()]||MCTPL.en;}
+/* ---------- macro calculator ----------
+   Protein a gram per pound of GOAL weight, fat 35% of that number, carbs 70%
+   of it as the floor. Bulking raises carbs; cutting sits on the floor. */
+function mcS(){
+  const b=S.body=S.body||{};
+  if(b.unit===undefined)b.unit="imp";
+  return b;
+}
+const MCGOAL={cut:0.7,maintain:1.0,bulk:1.5};
+const CARBFLOOR=0.7;
+function lbOf(w,unit){return unit==="met"?w*2.2046226:w;}
+function kgOf(w,unit){return unit==="met"?w:w/2.2046226;}
+function cmOf(h,unit){return unit==="met"?h:h*2.54;}
+/* Mifflin-St Jeor, the estimate with the best track record in validation work */
+function mcBmr(b){
+  const kg=kgOf(+b.weight||0,b.unit),cm=cmOf(+b.height||0,b.unit),age=+b.age||30;
+  if(!kg||!cm)return 0;
+  const base=10*kg+6.25*cm-5*age;
+  return Math.round(b.sex==="f"?base-161:base+5);
+}
+const ACT={sed:1.2,light:1.375,mod:1.55,high:1.725,ath:1.9};
+function mcTdee(b){
+  const bmr=mcBmr(b);
+  return bmr?Math.round(bmr*(ACT[b.act||"mod"]||1.55)):0;
+}
+/* Protein and fat are fixed by the rule, so carbs are the only lever, and a
+   fixed multiple of protein cannot hit a surplus for most people: at a 180 lb
+   goal even 1.5x protein lands several hundred calories under maintenance. So
+   cutting sits exactly on the 0.7x floor as specified, and the open-ended
+   modes solve for the calories the aim actually needs, never going below that
+   floor. */
+const AIMPCT={cut:-0.20,maintain:0,bulk:0.10};
+function mcCalc(b){
+  const goalLb=lbOf(+b.goal||+b.weight||0,b.unit);
+  if(!goalLb)return null;
+  const protein=Math.round(goalLb);
+  const fat=Math.round(protein*0.35);
+  const floor=Math.round(protein*CARBFLOOR);
+  const aim=b.aim||"maintain";
+  const tdee=mcTdee(b);
+  let carbs=floor,solved=false;
+  if(aim!=="cut"&&tdee){
+    const target=tdee*(1+(AIMPCT[aim]||0));
+    const fromCarbs=target-(protein*4+fat*9);
+    carbs=Math.max(floor,Math.round(fromCarbs/4));
+    solved=true;
+  }else if(aim!=="cut"){
+    carbs=Math.round(protein*(MCGOAL[aim]||1));
+  }
+  const kcal=protein*4+carbs*4+fat*9;
+  return {protein:protein,fat:fat,carbs:carbs,kcal:kcal,tdee:tdee,
+    floor:floor,solved:solved,aim:aim,
+    atFloor:carbs<=floor,
+    delta:tdee?kcal-tdee:null};
+}
 function macroModal(){
-  const g=S.macros;
-  $("#sheet").innerHTML=`<h3>Daily targets</h3><div class="msub">Your goals</div>
-    <div class="grid2">
-      <div class="fld"><label>Calories</label><input class="mono" id="gK" type="number" value="${g.kcal}"></div>
-      <div class="fld"><label>Protein (g)</label><input class="mono" id="gP" type="number" value="${g.protein}"></div>
-      <div class="fld"><label>Carbs (g)</label><input class="mono" id="gC" type="number" value="${g.carbs}"></div>
-      <div class="fld"><label>Fat (g)</label><input class="mono" id="gF" type="number" value="${g.fat}"></div></div>
-    <button class="primary" id="gSave">Save targets</button>`;
+  const g=S.macros,b=mcS();
+  const draw=()=>{
+    const r=mcCalc(b);
+    const U=b.unit==="met"?{w:"kg",h:"cm"}:{w:"lb",h:"in"};
+    const M=MCT();
+    const seg=(name,val,opts)=>`<div class="qsseg notr">${opts.map(o=>
+      `<button class="qsb ${val===o[0]?"on":""}" data-${name}="${o[0]}">${o[1]}</button>`).join("")}</div>`;
+    $("#sheet").innerHTML=`<h3>${M.h}</h3><div class="msub">${M.sub}</div>
+
+      <div class="mcrow"><span class="qsl">${M.units}</span>
+        ${seg("mcunit",b.unit,[["imp","lb / in"],["met","kg / cm"]])}</div>
+
+      <div class="grid2">
+        <div class="fld"><label>${M.height} (${U.h})</label>
+          <input class="mono" id="mcH" type="number" inputmode="decimal" value="${b.height||""}"></div>
+        <div class="fld"><label>${M.weight} (${U.w})</label>
+          <input class="mono" id="mcW" type="number" inputmode="decimal" value="${b.weight||""}"></div>
+        <div class="fld"><label>${M.goalw} (${U.w})</label>
+          <input class="mono" id="mcG" type="number" inputmode="decimal" value="${b.goal||""}"></div>
+        <div class="fld"><label>${M.age}</label>
+          <input class="mono" id="mcA" type="number" inputmode="numeric" value="${b.age||""}"></div>
+      </div>
+
+      <div class="mcrow"><span class="qsl">${M.sex}</span>
+        ${seg("mcsex",b.sex||"m",[["m",CYCL().m],["f",CYCL().f]])}</div>
+      <div class="mcrow"><span class="qsl">${M.act}</span>
+        ${seg("mcact",b.act||"mod",[["sed",M.a1],["light",M.a2],["mod",M.a3],["high",M.a4],["ath",M.a5]])}</div>
+      <div class="mcrow"><span class="qsl">${M.aim}</span>
+        ${seg("mcaim",b.aim||"maintain",[["cut",M.cut],["maintain",M.maint],["bulk",M.bulk]])}</div>
+
+      ${r?`<div class="mcout">
+        <div class="mcgrid">
+          <div><b>${r.protein}</b><span>${M.pro}</span></div>
+          <div><b>${r.carbs}</b><span>${M.carb}</span></div>
+          <div><b>${r.fat}</b><span>${M.fatl}</span></div>
+          <div><b>${r.kcal}</b><span>kcal</span></div>
+        </div>
+        <p class="mcnote">${M.rule(r.protein,r.fat,r.carbs)} ${
+          r.atFloor?M.carbFloor(r.floor):r.solved?M.carbSolved:""}</p>
+        ${r.tdee&&r.delta<-r.tdee*0.28?`<p class="mcwarn">${M.steep(Math.abs(r.delta))}</p>`:""}
+        ${r.tdee?`<p class="mcnote">${M.vs(r.tdee,Math.abs(r.delta),
+            r.delta<-50?"deficit":r.delta>50?"surplus":"level")}</p>`:""}
+        <button class="primary" id="mcUse">${M.use}</button>
+      </div>`:`<p class="mcnote">${M.need}</p>`}
+
+      <div class="mchr"></div>
+      <div class="msub">${M.manual}</div>
+      <div class="grid2">
+        <div class="fld"><label>Calories</label><input class="mono" id="gK" type="number" value="${g.kcal}"></div>
+        <div class="fld"><label>Protein (g)</label><input class="mono" id="gP" type="number" value="${g.protein}"></div>
+        <div class="fld"><label>Carbs (g)</label><input class="mono" id="gC" type="number" value="${g.carbs}"></div>
+        <div class="fld"><label>Fat (g)</label><input class="mono" id="gF" type="number" value="${g.fat}"></div></div>
+      ${r&&g.carbs&&g.carbs<r.floor?`<p class="mcwarn">${M.low(r.floor)}</p>`:""}
+      <button class="primary" id="gSave">${M.save}</button>`;
+
+    const bind=(attr,key)=>$$("["+"data-"+attr+"]",$("#sheet")).forEach(x=>x.onclick=()=>{
+      b[key]=x.dataset[attr];save();draw();});
+    bind("mcunit","unit");bind("mcsex","sex");bind("mcact","act");bind("mcaim","aim");
+    [["mcH","height"],["mcW","weight"],["mcG","goal"],["mcA","age"]].forEach(([id,k])=>{
+      const el=$("#"+id);if(!el)return;
+      el.onchange=()=>{b[k]=el.value===""?"":+el.value;save();draw();};});
+    if($("#mcUse"))$("#mcUse").onclick=()=>{
+      const c=mcCalc(b);if(!c)return;
+      S.macros={kcal:c.kcal,protein:c.protein,carbs:c.carbs,fat:c.fat};
+      save();closeModal();renderFood();toast(MCT().applied);};
+    $("#gSave").onclick=()=>{S.macros={kcal:+$("#gK").value||2200,protein:+$("#gP").value||180,
+      carbs:+$("#gC").value||200,fat:+$("#gF").value||70};
+      save();closeModal();renderFood();toast(MCT().saved);};
+    if(curLang()!=="en")applyLang();
+  };
+  draw();
   $("#modal").classList.add("on");
-  $("#gSave").onclick=()=>{S.macros={kcal:+$("#gK").value||2200,protein:+$("#gP").value||180,carbs:+$("#gC").value||200,fat:+$("#gF").value||70};
-    save();closeModal();renderFood();toast("Targets saved");};
 }
 
 /* ============ GUIDE ============ */
@@ -6696,7 +6860,7 @@ function renderGuide(){
   list=[...list].sort((a,b)=>(rank(a)-rank(b))||within(a,b));
   const toTake=list.filter(p=>rank(p)===0).length;
   let html=`<div class="vsub">Protocol &amp; stock</div>
-    <div class="vhead"><h2>My lab</h2><div class="spacer"></div>
+    <div class="vhead"><h2>My stack</h2><div class="spacer"></div>
       ${(()=>{const l=activeTrack().filter(p=>!p.label).map(p=>adherence(p,30)).filter(a=>a.due);
         if(!l.length)return "";
         const pct=Math.round(l.reduce((t,a)=>t+a.pct,0)/l.length);
@@ -6762,7 +6926,7 @@ function renderGuide(){
 function showDisclaimer(){
   $("#sheet").innerHTML=`<h3>This is not medical advice</h3><div class="msub">Please read</div>
     <div style="font-size:13.5px;line-height:1.65;color:var(--ink2)">
-      <p style="margin:0 0 11px">Vialback is a personal logging tool. It is <b>not</b> medical advice, diagnosis, or treatment, and it is not a substitute for a licensed healthcare professional.</p>
+      <p style="margin:0 0 11px">The Lab is a personal logging tool. It is <b>not</b> medical advice, diagnosis, or treatment, and it is not a substitute for a licensed healthcare professional.</p>
       <p style="margin:0 0 11px"><b>Talk to your doctor</b> before starting, stopping, or changing anything you track here — especially if you take prescription medication or have an existing condition.</p>
       <p style="margin:0 0 11px"><b>Get bloodwork.</b> The only accurate way to know what your body needs is to test it. Nutrient and dosing decisions made without labs are guesswork, and some things (iron, for example) are genuinely harmful in excess.</p>
       <p style="margin:0 0 11px">This app deliberately shows <b>no supplement amounts</b> — only food sources and general context — because the right amount is individual and belongs to you and your doctor.</p>
@@ -6929,7 +7093,7 @@ function renderSettings(){
       <div class="rmnote" id="remState">checking…</div>
       ${S.settings.remind?`<button class="ghost" id="remTest">Send a test reminder now</button>`:""}
     </div>
-    <div class="panel"><div class="lbl" style="margin-bottom:6px">My lab</div><div class="lbl" style="text-transform:none;letter-spacing:0;color:var(--ink3);font-family:var(--sans);margin-bottom:8px">Uncheck to hide, × to remove. Deactivate from a card to redden it and drop it to the bottom; archive from Edit to park it with its settings.</div>
+    <div class="panel"><div class="lbl" style="margin-bottom:6px">My stack</div><div class="lbl" style="text-transform:none;letter-spacing:0;color:var(--ink3);font-family:var(--sans);margin-bottom:8px">Uncheck to hide, × to remove. Deactivate from a card to redden it and drop it to the bottom; archive from Edit to park it with its settings.</div>
       <div class="settbl">${rows}</div></div>
     <div class="panel"><div class="setrow" style="border:0"><div style="flex:1"><div style="font-weight:600;font-size:13.5px">Language</div><div class="rm" id="langNow"></div></div><button class="mini" id="langBtn">Change</button></div></div>
     <div class="panel"><div class="lbl" style="margin-bottom:10px">Data</div>
@@ -6982,7 +7146,7 @@ function renderSettings(){
     if(perm==="granted")bits.push(`Notifications are allowed.`);
     else if(perm==="denied")bits.push(`<b class="bad">Notifications are blocked</b> for this site in your browser settings.`);
     else bits.push(`Notifications not yet allowed.`);
-    bits.push(`There is no server behind Vialback, so nothing can wake your phone at a set time.
+    bits.push(`There is no server behind The Lab, so nothing can wake your phone at a set time.
       The reminder is raised when you open the app after your chosen hour${sw?"":" (and this browser has no service worker, so only while it is open)"}.
       Add it to your home screen for the badge to appear.`);
     el.innerHTML=bits.join(" ");
@@ -6996,7 +7160,7 @@ function renderSettings(){
     P.innerHTML=r.persisted===true
       ?`<b class="ok">Protected</b> — this browser has been asked not to clear it`
       :r.persisted===false
-        ?`<b class="bad">Not protected</b> — Safari clears storage after 7 days without a visit. Add Vialback to your home screen to fix this.`
+        ?`<b class="bad">Not protected</b> — Safari clears storage after 7 days without a visit. Add The Lab to your home screen to fix this.`
         :`<b>Unknown</b> — this browser does not report storage status`;
     if($("#stoUsed"))$("#stoUsed").textContent=r.usedMB?`Using ${r.usedMB} MB${r.quotaMB?` of about ${r.quotaMB} MB available`:""}`:"";
     const age=backupAge();
@@ -7023,7 +7187,7 @@ $("#importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new
     // macros, events, labs, labRanges and foods, so restoring a backup lost the
     // gym, the food log and every blood result
     ["track","archive","workouts","meals","macros","log","sales","resale",
-     "weights","events","labs","labRanges","foods","settings","cycle","meds"].forEach(k=>{
+     "weights","events","labs","labRanges","foods","settings","cycle","meds","body"].forEach(k=>{
       if(d[k]!==undefined)S[k]=d[k];});
     save();applyTheme();renderAll();setTab("track");
     toast("Imported "+Object.keys(d).length+" sections");
@@ -7044,7 +7208,7 @@ const LANGS=[
 ];
 /* words that must survive translation untouched */
 const NOTR=new Set(["mg","mcg","ml","iu","lb","kcal","g","mg/dL","min","ApoB","NAD+","DSIP",
-  "KLOW","GLOW","KPV","GHK-Cu","MOTS-c","HCG","VIP","AICAR","AHK-Cu","Vialback"]);
+  "KLOW","GLOW","KPV","GHK-Cu","MOTS-c","HCG","VIP","AICAR","AHK-Cu","The Lab"]);
 
 const I18N={
 es:{
@@ -7438,7 +7602,7 @@ es:{
 "backup":"copia de seguridad",
 "checking…":"comprobando…",
 "energy, sleep, sides...":"energía, sueño, efectos...",
-"Vialback — Peptide Protocol Tracker":"Vialback — Registro de protocolos de péptidos",
+"The Lab — Protocol Tracker":"The Lab — Registro de protocolos",
 "What connects":"Qué conecta",
 "same receptor":"mismo receptor",
 "working together":"actúan juntos",
@@ -7500,16 +7664,16 @@ es:{
 "Sunday":"domingo",
 "Everything in here is stored in this browser and nowhere else. You have":"Todo lo que hay aquí se guarda en este navegador y en ningún otro sitio.",
 "a copy. If the browser clears its storage, or the phone goes, it all goes with it.":"una copia. Si el navegador borra su almacenamiento, o pierdes el teléfono, se va todo con él.",
-"— Safari clears storage after 7 days without a visit. Add Vialback to your home screen to fix this.":"— Safari borra el almacenamiento tras 7 días sin una visita. Añade Vialback a tu pantalla de inicio para solucionarlo.",
+"— Safari clears storage after 7 days without a visit. Add The Lab to your home screen to fix this.":"— Safari borra el almacenamiento tras 7 días sin una visita. Añade The Lab a tu pantalla de inicio para solucionarlo.",
 "— there is no copy of this outside the browser":"— no hay ninguna copia de esto fuera del navegador",
 "of what is still due, and clears itself when you log the last one. This works while the app is closed.":"de lo que queda pendiente, y se borra solo cuando registras la última. Esto funciona con la app cerrada.",
 "Uncheck to hide, × to remove. Deactivate from a card to redden it and drop it to the bottom; archive from Edit to park it with its settings.":"Desmarca para ocultar, × para quitar. Desactiva desde una tarjeta para ponerla en rojo y bajarla al final; archiva desde Editar para guardarla con sus ajustes.",
 "Ranges are standard adult clinical values with\n      commonly used optimal targets, not Function's exact bands. Replace them with your own\n      report when you have one — every range is editable.":"Los rangos son valores clinicos estandar de adulto con\n      objetivos optimos de uso comun, no las bandas exactas de Function. Sustituyelos por los de tu\n      propio informe cuando lo tengas — todos los rangos son editables.",
-"for this site in your browser settings. There is no server behind Vialback, so nothing can wake your phone at a set time.\n      The reminder is raised when you open the app after your chosen hour.\n      Add it to your home screen for the badge to appear.":"para este sitio en los ajustes de tu navegador. Detras de Vialback no hay ningun servidor, asi que nada puede despertar tu telefono a una hora fija.\n      El recordatorio salta cuando abres la app despues de la hora que elijas.\n      Anadela a tu pantalla de inicio para que aparezca el contador.",
+"for this site in your browser settings. There is no server behind The Lab, so nothing can wake your phone at a set time.\n      The reminder is raised when you open the app after your chosen hour.\n      Add it to your home screen for the badge to appear.":"para este sitio en los ajustes de tu navegador. Detrás de The Lab no hay ningún servidor, así que nada puede despertar tu teléfono a una hora fija.\n      El recordatorio salta cuando abres la app después de la hora que elijas.\n      Anadela a tu pantalla de inicio para que aparezca el contador.",
 "Everything is stored in this browser and nowhere else.\n          Export regularly — it is the only copy that survives a cleared browser or a lost phone.":"Todo se guarda en este navegador y en ningun otro sitio.\n          Exporta con regularidad — es la unica copia que sobrevive a un navegador borrado o a un telefono perdido.",
 "still to take today":"aún por tomar hoy","All of today's shots logged":"Todas las inyecciones de hoy registradas",
 /* nav + shell */
-"Today":"Hoy","Peps":"Lab","Lab":"Lab","My lab":"Mi laboratorio","Gear":"Gear","Gym":"Gimnasio","Food":"Comida","Bloodwork":"Análisis",
+"Today":"Hoy","Peps":"Stack","Lab":"Stack","Stack":"Stack","My stack":"Mi stack","Gear":"Gear","Gym":"Gimnasio","Food":"Comida","Bloodwork":"Análisis",
 "Settings":"Ajustes","Recovery":"Recuperación","Peptides":"Péptidos","Workout":"Entrenamiento",
 "Nutrition":"Nutrición","Muscle recovery":"Recuperación muscular","Protocol & stock":"Protocolo y stock",
 "Function Health panel":"Panel de Function Health","My peptides":"Mis péptidos",
@@ -7617,7 +7781,7 @@ es:{
 /* disclaimer */
 "Please read":"Léelo, por favor","I understand":"Entendido","Talk to your doctor":"Habla con tu médico",
 "Get bloodwork.":"Hazte análisis.","This is not medical advice":"Esto no es consejo médico",
-"Vialback is a personal logging tool. It is":"Vialback es una herramienta personal de registro. No es",
+"The Lab is a personal logging tool. It is":"The Lab es una herramienta personal de registro. No es",
 "This app deliberately shows":"Esta app muestra a propósito","no supplement amounts":"cantidades de suplementos",
 "Anything you enter is your own record. You are responsible for your own health decisions.":
  "Lo que introduzcas es tu propio registro. Tú eres responsable de tus decisiones de salud.",
@@ -7641,7 +7805,7 @@ es:{
 ,
 ar:{
 "still to take today":"متبقية اليوم","All of today's shots logged":"تم تسجيل كل حقن اليوم",
-"Today":"اليوم","Peps":"المختبر","Lab":"المختبر","Gym":"النادي","Food":"الطعام","Bloodwork":"التحاليل",
+"Today":"اليوم","Peps":"المجموعة","Stack":"المجموعة","Gym":"النادي","Food":"الطعام","Bloodwork":"التحاليل",
 "Settings":"الإعدادات","Recovery":"التعافي","Peptides":"الببتيدات","Workout":"التمرين",
 "Nutrition":"التغذية","Muscle recovery":"تعافي العضلات","Protocol & stock":"البروتوكول والمخزون",
 "Function Health panel":"لوحة Function Health","My peptides":"ببتيداتي",
@@ -7738,7 +7902,7 @@ ar:{
 },
 zh:{
 "still to take today":"个今天还没打","All of today's shots logged":"今天的注射都已记录",
-"Today":"今天","Peps":"实验室","Lab":"实验室","Gym":"健身","Food":"饮食","Bloodwork":"血检",
+"Today":"今天","Peps":"配方","Stack":"配方","Gym":"健身","Food":"饮食","Bloodwork":"血检",
 "Settings":"设置","Recovery":"恢复","Peptides":"肽","Workout":"训练",
 "Nutrition":"营养","Muscle recovery":"肌肉恢复","Protocol & stock":"方案与库存",
 "Function Health panel":"Function Health 检测项","My peptides":"我的肽",
@@ -7834,7 +7998,7 @@ zh:{
 },
 ru:{
 "still to take today":"осталось сегодня","All of today's shots logged":"Все инъекции на сегодня записаны",
-"Today":"Сегодня","Peps":"Лаб","Lab":"Лаб","Gym":"Зал","Food":"Питание","Bloodwork":"Анализы",
+"Today":"Сегодня","Peps":"Стек","Stack":"Стек","Gym":"Зал","Food":"Питание","Bloodwork":"Анализы",
 "Settings":"Настройки","Recovery":"Восстановление","Peptides":"Пептиды","Workout":"Тренировка",
 "Nutrition":"Питание","Muscle recovery":"Восстановление мышц","Protocol & stock":"Протокол и запас",
 "Function Health panel":"Панель Function Health","My peptides":"Мои пептиды",
@@ -8425,7 +8589,7 @@ function coachCard(r){
 }
 
 /* ============ nav / shell ============ */
-const SUBS={track:"Today",guide:"Lab",cycle:"Cycle",labs:"Bloodwork",gym:"Recovery",food:"Food",coach:"Coach",settings:"Settings"};
+const SUBS={track:"Today",guide:"Stack",cycle:"Cycle",labs:"Bloodwork",gym:"Recovery",food:"Food",coach:"Coach",settings:"Settings"};
 let tab="track";
 function setTab(t){tab=t;$$(".view").forEach(v=>v.classList.remove("on"));$("#v-"+t).classList.add("on");
   $$("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
@@ -8565,7 +8729,7 @@ initSW();startReminderLoop();
   const p=await askPersist();
   if(p===false&&!S.settings.persistAsked){
     S.settings.persistAsked=true;save();
-    setTimeout(()=>toast("Add Vialback to your home screen so the browser stops clearing your data"),1600);
+    setTimeout(()=>toast("Add The Lab to your home screen so the browser stops clearing your data"),1600);
   }
 })();
 if(!S.settings.langAsked)setTimeout(()=>langPop(true),450);
