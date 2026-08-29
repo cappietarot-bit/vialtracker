@@ -546,6 +546,14 @@
   .stonote{font-size:11.5px;line-height:1.5;color:var(--ink3);margin-top:9px;
     padding-top:9px;border-top:1px solid var(--line)}
 
+
+  .rmnote{font-size:11.5px;line-height:1.55;color:var(--ink3);padding:11px 2px 4px}
+  .rmnote b{font-weight:700;color:var(--ink2)}
+  .rmnote b.ok{color:var(--good)}
+  .rmnote b.bad{color:var(--crit)}
+  .selin{background:var(--panel2);border:1px solid var(--line2);border-radius:9px;
+    color:var(--ink);font-family:var(--mono);font-size:12px;padding:7px 9px}
+
   /* language picker */
   .langlist{display:flex;flex-direction:column;gap:7px;margin-bottom:6px}
   .langbtn{display:flex;align-items:center;gap:12px;width:100%;padding:13px 15px;
@@ -2234,6 +2242,7 @@ function save(){try{
   localStorage.setItem(KEY,json);
   mirror(json);
   syncNative();
+  updateBadge();
 }catch(e){
   // out of quota is the usual cause, and silently doing nothing is how data
   // goes missing without anyone noticing
@@ -2241,6 +2250,79 @@ function save(){try{
 }}
 function pById(id){return S.track.find(p=>p.id===id);}
 function activeTrack(){return S.track.filter(p=>p.status==="active");}
+
+
+/* ---------- reminders ----------
+   No server means nothing can wake the phone on a schedule. What does work
+   without one is the badge: a number on the home-screen icon that survives the
+   app being closed. That carries the reminder, and notifications are a single
+   grouped message rather than one per peptide. */
+let _sw=null;
+function initSW(){
+  if(!("serviceWorker" in navigator)||location.protocol==="file:")return;
+  navigator.serviceWorker.register("./sw.js").then(r=>{_sw=r;}).catch(()=>{});
+}
+/* what is still outstanding today */
+function dueToday(){
+  const d=new Date(),k=iso(d),logd=S.log[k]||{};
+  const due=S.track.filter(p=>p.status==="active"&&!p.label&&dueOn(p,d));
+  return {due,pending:due.filter(p=>!logd[p.id])};
+}
+/* the count on the icon, cleared when the last dose is logged */
+function updateBadge(){
+  try{
+    if(!navigator.setAppBadge)return;
+    const n=S.settings.remind===false?0:dueToday().pending.length;
+    if(n>0)navigator.setAppBadge(n);else navigator.clearAppBadge();
+  }catch(e){}
+}
+async function askNotify(){
+  try{
+    if(!("Notification" in window))return "unsupported";
+    if(Notification.permission==="granted")return "granted";
+    if(Notification.permission==="denied")return "denied";
+    return await Notification.requestPermission();
+  }catch(e){return "unsupported";}
+}
+/* one message listing everything outstanding, not one per peptide */
+function reminderText(){
+  const {pending}=dueToday();
+  if(!pending.length)return null;
+  const am=pending.filter(p=>(p.time||"am")==="am").map(p=>p.name);
+  const pm=pending.filter(p=>(p.time||"am")==="pm").map(p=>p.name);
+  const parts=[];
+  if(am.length)parts.push("Morning: "+am.join(", "));
+  if(pm.length)parts.push("Night: "+pm.join(", "));
+  return {title:`${pending.length} ${pending.length===1?"dose":"doses"} still to take`,
+          body:parts.join(" · ")};
+}
+async function fireReminder(force){
+  if(!S.settings.remind&&!force)return false;
+  const t=reminderText();
+  if(!t)return false;
+  if(!("Notification" in window)||Notification.permission!=="granted")return false;
+  const key=iso(new Date());
+  if(!force&&S.settings.lastNotified===key)return false;   // once a day, not once a render
+  S.settings.lastNotified=key;save();
+  try{
+    const reg=_sw||(navigator.serviceWorker&&await navigator.serviceWorker.ready);
+    if(reg&&reg.active){reg.active.postMessage({type:"notify",title:t.title,body:t.body,tag:"vialback-due"});return true;}
+    new Notification(t.title,{body:t.body,icon:"./icon-192.png",tag:"vialback-due"});
+    return true;
+  }catch(e){return false;}
+}
+/* while the app is open, check on the hour and when it comes back to the front */
+function startReminderLoop(){
+  const tick=()=>{
+    updateBadge();
+    const now=new Date();
+    const hour=(S.settings.remindAt!=null?S.settings.remindAt:9);
+    if(now.getHours()>=hour)fireReminder(false);
+  };
+  tick();
+  setInterval(tick,15*60*1000);
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)tick();});
+}
 
 /* push today's doses + low stock to the Android shell so it can build the
    notification that mirrors the day popup (no-op in a plain browser) */
@@ -5547,6 +5629,17 @@ function renderSettings(){
       ${calMode==="month"?`<div style="margin-top:10px">${monthGrid(iso(selDay),iso(new Date()))}</div>`:""}
       <div style="margin-top:10px">${hist}</div></div>
     <div class="panel"><div class="setrow" style="border:0"><div style="flex:1"><div style="font-weight:600;font-size:13.5px">Restock notifications</div><div class="rm">Warn me when under a week of doses is left</div></div><div class="toggle ${S.settings.notify?'on':''}" id="notifTog"></div></div></div>
+    <div class="panel">
+      <div class="setrow"><div style="flex:1"><div style="font-weight:600;font-size:13.5px">Daily dose reminder</div>
+        <div class="rm">One message listing everything still to take, not one per peptide</div></div>
+        <div class="toggle ${S.settings.remind?'on':''}" id="remTog"></div></div>
+      ${S.settings.remind?`<div class="setrow"><div style="flex:1"><div style="font-weight:600;font-size:13.5px">Remind me from</div>
+        <div class="rm">Checked whenever the app is open after this hour</div></div>
+        <select class="selin" id="remHour">${Array.from({length:24},(_,h)=>
+          `<option value="${h}" ${(S.settings.remindAt!=null?S.settings.remindAt:9)===h?"selected":""}>${String(h).padStart(2,"0")}:00</option>`).join("")}</select></div>`:""}
+      <div class="rmnote" id="remState">checking…</div>
+      ${S.settings.remind?`<button class="ghost" id="remTest">Send a test reminder now</button>`:""}
+    </div>
     <div class="panel"><div class="lbl" style="margin-bottom:6px">My peptides</div><div class="lbl" style="text-transform:none;letter-spacing:0;color:var(--ink3);font-family:var(--sans);margin-bottom:8px">Uncheck to hide, × to remove. Deactivate from a card to redden it and drop it to the bottom; archive from Edit to park it with its settings.</div>
       <div class="settbl">${rows}</div></div>
     <div class="panel"><div class="setrow" style="border:0"><div style="flex:1"><div style="font-weight:600;font-size:13.5px">Language</div><div class="rm" id="langNow"></div></div><button class="mini" id="langBtn">Change</button></div></div>
@@ -5571,6 +5664,33 @@ function renderSettings(){
   $$("[data-restore]",el).forEach(b=>b.onclick=()=>restoreArch(b.dataset.restore));
   $$("[data-adel]",el).forEach(b=>b.onclick=()=>{S.archive=S.archive.filter(a=>a.name!==b.dataset.adel);save();renderSettings();});
   $("#notifTog").onclick=()=>{S.settings.notify=!S.settings.notify;save();renderSettings();};
+  $("#remTog").onclick=async()=>{
+    if(!S.settings.remind){
+      const r=await askNotify();
+      if(r!=="granted"){toast(r==="denied"?"Notifications are blocked for this site in your browser settings":"This browser cannot show notifications");return;}
+    }
+    S.settings.remind=!S.settings.remind;save();updateBadge();renderSettings();};
+  if($("#remHour"))$("#remHour").onchange=e=>{S.settings.remindAt=+e.target.value;save();};
+  if($("#remTest"))$("#remTest").onclick=async()=>{
+    const ok=await fireReminder(true);
+    toast(ok?"Sent":"Nothing due right now");};
+  (async()=>{
+    const el=$("#remState");if(!el)return;
+    const perm=("Notification" in window)?Notification.permission:"unsupported";
+    const badge=!!navigator.setAppBadge;
+    const sw=("serviceWorker" in navigator);
+    const bits=[];
+    bits.push(badge
+      ? `<b class="ok">The app icon shows a count</b> of what is still due, and clears itself when you log the last one. This works while the app is closed.`
+      : `<b>No icon badge</b> in this browser.`);
+    if(perm==="granted")bits.push(`Notifications are allowed.`);
+    else if(perm==="denied")bits.push(`<b class="bad">Notifications are blocked</b> for this site in your browser settings.`);
+    else bits.push(`Notifications not yet allowed.`);
+    bits.push(`There is no server behind Vialback, so nothing can wake your phone at a set time.
+      The reminder is raised when you open the app after your chosen hour${sw?"":" (and this browser has no service worker, so only while it is open)"}.
+      Add it to your home screen for the badge to appear.`);
+    el.innerHTML=bits.join(" ");
+  })();
   $$("[data-keep]",el).forEach(b=>b.onclick=()=>{const p=pById(b.dataset.keep);p.status=p.status==='removed'?'active':'removed';save();renderSettings();});
   $$("[data-remove]",el).forEach(b=>b.onclick=()=>{S.track=S.track.filter(x=>x.id!==b.dataset.remove);save();renderSettings();toast("Removed");});
   $$("[data-hist]",el).forEach(b=>b.onclick=()=>editDay(b.dataset.hist));
@@ -6218,6 +6338,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#deepView").clas
 if(!S.foods.length&&S.meals.length){const seen={};
   S.meals.forEach(m=>{const k=foodKey(m.name);if(!seen[k]){seen[k]=1;saveFoodItem(m);}});save();}
 applyLabRanges();initTips();renderTrack();syncNative();applyLang();watchLang();
+initSW();startReminderLoop();
 /* If localStorage came back empty, something cleared it — pull the data back
    from the mirror before the user starts typing over a blank app. Then ask the
    browser not to do it again. */
