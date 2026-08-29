@@ -597,13 +597,6 @@
   .asrc:hover{border-color:var(--accent)}
 
   /* language picker */
-  .langbtn.soon{opacity:.45;cursor:default;pointer-events:none}
-  .lgs{margin-inline-start:auto;font-family:var(--mono);font-size:9.5px;
-    letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
-  .langsoon{margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
-  .lshead{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;
-    text-transform:uppercase;color:var(--ink3);margin-bottom:9px}
-  .lsnote{font-size:11.5px;line-height:1.55;color:var(--ink3);margin-top:10px}
 
   .langlist{display:flex;flex-direction:column;gap:7px;margin-bottom:6px}
   .langbtn{display:flex;align-items:center;gap:12px;width:100%;padding:13px 15px;
@@ -6565,38 +6558,24 @@ function watchLang(){
     if(el)langObs.observe(el,{childList:true,subtree:true});
   });
 }
-/* How much of the guide content exists in a language. English is the source,
-   so it is complete by definition. */
-const GTR_TOTAL=1623;
-function langCoverage(c){
-  if(c==="en")return 1;
-  return Math.min(1,gtCount(c)/GTR_TOTAL);
-}
-/* A language is offered once its long-form content is there. Below that the
-   app would be a translated menu around English research, which is worse than
-   staying in English. */
-function langReady(c){return langCoverage(c)>=0.98;}
+/* Languages offered in the picker. Arabic, Chinese and Russian are held back
+   until their guide content is written — a translated interface wrapped around
+   English research is worse than staying in English. Add the code here when a
+   language is done. */
+const LANGON=new Set(["en","es"]);
+function langReady(c){return LANGON.has(c);}
 
 /* asked once, then lives in Settings */
 function langPop(first){
+  // a language appears once its guide content exists; the rest are simply
+  // not in the list, with no note about why
   const ready=LANGS.filter(l=>langReady(l.c));
-  const soon=LANGS.filter(l=>!langReady(l.c));
   const row=l=>`<button class="langbtn ${curLang()===l.c?"on":""}" data-lang="${l.c}">
       <span class="lgf">${l.f}</span><span class="lgn">${l.n}</span>
       ${curLang()===l.c?`<span class="lgc">✓</span>`:""}</button>`;
-  const pending=l=>{const pct=Math.round(langCoverage(l.c)*100);
-    return `<div class="langbtn soon" aria-disabled="true">
-      <span class="lgf">${l.f}</span><span class="lgn">${l.n}</span>
-      <span class="lgs">${pct>0?pct+"%":"soon"}</span></div>`;};
   $("#sheet").innerHTML=`<h3>${first?"Choose your language":"Language"}</h3>
     <div class="msub">${first?"Elige tu idioma":"You can change this any time in Settings"}</div>
     <div class="langlist">${ready.map(row).join("")}</div>
-    ${soon.length?`<div class="langsoon">
-      <div class="lshead">Being translated</div>
-      <div class="langlist">${soon.map(pending).join("")}</div>
-      <div class="lsnote">The interface already speaks these. The peptide research behind it does not yet,
-        and a translated menu around English research is worse than staying in English,
-        so they turn on when the writing is finished.</div></div>`:""}
     ${first?"":`<button class="ghost" id="lgClose">Close</button>`}`;
   $("#modal").classList.add("on");
   $$("[data-lang]").forEach(b=>b.onclick=()=>{
