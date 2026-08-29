@@ -771,19 +771,34 @@
   .cycins.phase{border-left-color:#e0245e}
   .cycins.own{border-left-color:var(--accent)}
   .cycins.nutr{border-left-color:var(--good)}
-  .cinh{font-weight:700;font-size:13.5px;margin-bottom:4px}
+  .cinh{font-weight:700;font-size:13.5px;margin-bottom:4px;display:flex;align-items:center;gap:7px}
+  .cini{font-size:15px;line-height:1}
   .cinb{font-size:12.5px;line-height:1.55;color:var(--ink2)}
   .cggrp{margin:14px 0 4px}
   .cgh{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);margin-bottom:7px}
   .cgl{display:flex;flex-wrap:wrap;gap:6px}
-  .cgchip{border:1px solid var(--line2);background:var(--panel2);color:var(--ink2);border-radius:99px;
-    padding:7px 12px;font:inherit;font-size:12.5px;cursor:pointer}
-  .cgchip.on{border-color:var(--accent);background:var(--accent-soft);color:var(--ink);font-weight:600}
+  .cgchip{position:relative;display:inline-flex;align-items:center;gap:7px;
+    border:1px solid var(--line2);background:var(--panel2);color:var(--ink2);border-radius:99px;
+    padding:7px 13px 7px 10px;font:inherit;font-size:12.5px;cursor:pointer;transition:background .12s,border-color .12s}
+  .cge{font-size:15px;line-height:1;filter:saturate(1.1)}
+  .cgchip.on{border-color:var(--cc);color:var(--ink);font-weight:600;
+    background:color-mix(in srgb,var(--cc) 20%,transparent);
+    box-shadow:0 0 0 1.5px var(--cc)}
+  .cgchip.on::after{content:"\2713";margin-left:2px;font-size:11px;font-weight:700;color:var(--cc)}
   .cycper{margin-top:4px}
   .medgrid{display:flex;flex-wrap:wrap;gap:6px}
   .medchip{border:1px solid var(--line2);background:var(--panel2);color:var(--ink2);
     border-radius:99px;padding:7px 12px;font:inherit;font-size:12.5px;cursor:pointer}
   .medchip.on{border-color:var(--accent);background:var(--accent-soft);color:var(--ink);font-weight:600}
+  .cycsetup{margin-top:16px;border:1px solid var(--line);background:var(--panel);
+    border-radius:14px;padding:15px 16px}
+  .csh{font-weight:700;font-size:14.5px;margin-bottom:5px}
+  .csb{font-size:12.5px;line-height:1.55;color:var(--ink2);margin-bottom:12px}
+  .csbtns{display:flex;flex-wrap:wrap;gap:7px}
+  .csb1{border:0;background:var(--accent);color:#04201d;border-radius:9px;
+    padding:9px 18px;font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+  .csskip{border:1px solid var(--line2);background:none;color:var(--ink3);
+    border-radius:9px;padding:9px 16px;font:inherit;font-size:13px;cursor:pointer}
   .ddchev{font-style:normal;color:var(--ink3);font-size:17px;transition:transform .25s ease}
   .ddtoggle[aria-expanded="true"] .ddchev{transform:rotate(90deg);color:var(--accent)}
   .ddsup{display:none;margin-bottom:14px}
@@ -2613,9 +2628,15 @@ function renderTrack(){
           <div class="bcsub dim">${meals.length} item${meals.length===1?"":"s"} logged</div>
           <div class="bcbtns"><button class="bcgo" data-go="food">LOG FOOD</button></div>
         </div></div>
+      ${cycSetupCard()}
       ${(()=>{const c=insightCards(3);return c?`<div class="inshead"><span class="ih">What connects</span><i class="il"></i></div>${c}`:"";})()}
     </div>`;
 
+  $$("[data-cysetup]",el).forEach(b=>b.onclick=()=>{
+    const v=b.dataset.cysetup;
+    if(v==="skip")cycS().skip=1;else cycS().sex=v;
+    save();syncCycBtn();renderTrack();
+    if(v!=="skip")setTab("cycle");});
   if($("#insMore"))$("#insMore").onclick=insightsPop;
   $("#wPrev").onclick=()=>{selDay=new Date(+selDay-7*DAY);renderTrack();};
   $("#wNext").onclick=()=>{selDay=new Date(+selDay+7*DAY);renderTrack();};
@@ -4483,25 +4504,58 @@ function cycToggleBleed(k){
    shape and drops anything cycle-specific. */
 const CYCG={
  f:[
-  {k:"mood",n:"Mood",o:["Calm","Happy","Energetic","Frisky","Mood swings","Irritated","Sad","Anxious","Low","Feeling guilty","Obsessive thoughts","Low energy","Apathetic","Confused","Very self-critical"]},
-  {k:"sym",n:"Symptoms",o:["Everything is fine","Cramps","Tender breasts","Headache","Acne","Backache","Fatigue","Hot flashes","Night sweats","Brain fog","Joint pain","Cravings","Insomnia","Abdominal pain","Dry skin","Dry eyes"]},
-  {k:"flow",n:"Menstrual flow",one:1,o:["Light flow","Medium flow","Heavy flow","Blood clots"]},
-  {k:"drive",n:"Sex and sex drive",o:["Didn't have sex","Protected sex","Unprotected sex","Oral sex","Masturbation","Sensual touch","Orgasm","No orgasm","High sex drive","Neutral sex drive","Low sex drive"]},
-  {k:"disch",n:"Discharge",one:1,o:["No discharge","Creamy","Watery","Sticky","Egg white","Spotting","Unusual","Clumpy white","Grey"]},
-  {k:"gut",n:"Digestion",o:["Nausea","Bloating","Constipation","Diarrhoea"]},
-  {k:"test",n:"Tests",o:["Didn't take tests","Pregnancy positive","Pregnancy negative","Pregnancy faint line","Ovulation positive","Ovulation negative"]},
-  {k:"other",n:"Other",o:["Travel","Stress","Meditation","Journaling","Breathing exercises","Illness or injury","Alcohol","Hormonal therapy"]},
-  {k:"act",n:"Physical activity",o:["Didn't exercise","Yoga","Gym","Dancing","Swimming","Team sports","Running","Cycling","Walking"]}
+  {k:"mood",n:"Mood",c:"#f59f4a",o:["Calm","Happy","Energetic","Frisky","Mood swings","Irritated","Sad","Anxious","Low","Feeling guilty","Obsessive thoughts","Low energy","Apathetic","Confused","Very self-critical"]},
+  {k:"sym",n:"Symptoms",c:"#b47fd4",o:["Everything is fine","Cramps","Tender breasts","Headache","Acne","Backache","Fatigue","Hot flashes","Night sweats","Brain fog","Joint pain","Cravings","Insomnia","Abdominal pain","Dry skin","Dry eyes"]},
+  {k:"flow",n:"Menstrual flow",c:"#e8567a",o:["Light flow","Medium flow","Heavy flow","Blood clots"]},
+  {k:"drive",n:"Sex and sex drive",c:"#e35d6a",o:["Didn't have sex","Protected sex","Unprotected sex","Oral sex","Masturbation","Sensual touch","Orgasm","No orgasm","High sex drive","Neutral sex drive","Low sex drive"]},
+  {k:"disch",n:"Discharge",c:"#9b6fd4",o:["No discharge","Creamy","Watery","Sticky","Egg white","Spotting","Unusual","Clumpy white","Grey"]},
+  {k:"gut",n:"Digestion",c:"#d356a8",o:["Nausea","Bloating","Constipation","Diarrhoea"]},
+  {k:"test",n:"Tests",c:"#4aa8c8",o:["Didn't take tests","Pregnancy positive","Pregnancy negative","Pregnancy faint line","Ovulation positive","Ovulation negative"]},
+  {k:"other",n:"Other",c:"#f0913c",o:["Travel","Stress","Meditation","Journaling","Breathing exercises","Illness or injury","Alcohol","Hormonal therapy"]},
+  {k:"act",n:"Physical activity",c:"#4cb87a",o:["Didn't exercise","Yoga","Gym","Dancing","Swimming","Team sports","Running","Cycling","Walking"]}
  ],
  m:[
-  {k:"mood",n:"Mood",o:["Calm","Happy","Energetic","Motivated","Confident","Irritated","Angry","Anxious","Low","Flat","Foggy","Restless"]},
-  {k:"sym",n:"Body",o:["Everything is fine","Morning erection","No morning erection","Headache","Fatigue","Joint pain","Muscle soreness","Poor sleep","Night sweats","Bloating","Acne","Appetite up","Appetite down"]},
-  {k:"drive",n:"Sex and sex drive",o:["High sex drive","Neutral sex drive","Low sex drive","Sex","Masturbation","Orgasm","No orgasm","Strong erections","Weak erections"]},
-  {k:"gut",n:"Digestion",o:["Nausea","Bloating","Constipation","Diarrhoea"]},
-  {k:"other",n:"Other",o:["Travel","Stress","Meditation","Breathing exercises","Illness or injury","Alcohol"]},
-  {k:"act",n:"Physical activity",o:["Didn't exercise","Yoga","Gym","Dancing","Swimming","Team sports","Running","Cycling","Walking"]}
+  {k:"mood",n:"Mood",c:"#f59f4a",o:["Calm","Happy","Energetic","Motivated","Confident","Irritated","Angry","Anxious","Low","Flat","Foggy","Restless"]},
+  {k:"sym",n:"Body",c:"#b47fd4",o:["Everything is fine","Morning erection","No morning erection","Headache","Fatigue","Joint pain","Muscle soreness","Poor sleep","Night sweats","Bloating","Acne","Appetite up","Appetite down"]},
+  {k:"drive",n:"Sex and sex drive",c:"#e35d6a",o:["High sex drive","Neutral sex drive","Low sex drive","Sex","Masturbation","Orgasm","No orgasm","Strong erections","Weak erections"]},
+  {k:"gut",n:"Digestion",c:"#d356a8",o:["Nausea","Bloating","Constipation","Diarrhoea"]},
+  {k:"other",n:"Other",c:"#f0913c",o:["Travel","Stress","Meditation","Breathing exercises","Illness or injury","Alcohol"]},
+  {k:"act",n:"Physical activity",c:"#4cb87a",o:["Didn't exercise","Yoga","Gym","Dancing","Swimming","Team sports","Running","Cycling","Walking"]}
  ]
 };
+/* One per option. Kept outside the label so the text node stays clean for
+   translation. */
+const CYCE={
+ "Calm":"\ud83d\ude0c","Happy":"\ud83d\ude42","Energetic":"\ud83e\udd29","Frisky":"\ud83d\ude1c",
+ "Mood swings":"\ud83d\ude43","Irritated":"\ud83d\ude20","Sad":"\ud83d\ude1e","Anxious":"\ud83d\ude30",
+ "Low":"\ud83d\ude14","Feeling guilty":"\ud83d\ude23","Obsessive thoughts":"\ud83c\udf00",
+ "Low energy":"\ud83e\udd71","Apathetic":"\ud83d\ude11","Confused":"\ud83d\ude15",
+ "Very self-critical":"\ud83d\ude16","Motivated":"\ud83d\udd25","Confident":"\ud83d\ude0e",
+ "Angry":"\ud83d\ude21","Flat":"\ud83d\ude10","Foggy":"\ud83c\udf2b\ufe0f","Restless":"\ud83d\ude2c",
+ "Everything is fine":"\ud83d\udc4d","Cramps":"\u26a1","Tender breasts":"\ud83d\udc97",
+ "Headache":"\ud83e\udd15","Acne":"\ud83d\udd34","Backache":"\ud83e\uddb4","Fatigue":"\ud83d\udd0b",
+ "Hot flashes":"\ud83d\udd25","Night sweats":"\ud83d\udca6","Brain fog":"\ud83c\udf2b\ufe0f",
+ "Joint pain":"\ud83e\uddb5","Cravings":"\ud83c\udf70","Insomnia":"\ud83c\udf19",
+ "Abdominal pain":"\ud83d\ude16","Dry skin":"\ud83c\udfdc\ufe0f","Dry eyes":"\ud83d\udc41\ufe0f",
+ "Morning erection":"\ud83c\udf05","No morning erection":"\ud83d\udeab","Muscle soreness":"\ud83d\udcaa",
+ "Poor sleep":"\ud83d\ude34","Appetite up":"\ud83c\udf7d\ufe0f","Appetite down":"\ud83e\udd44",
+ "Light flow":"\ud83d\udca7","Medium flow":"\ud83e\ude78","Heavy flow":"\ud83d\udd34","Blood clots":"\ud83d\udfe5",
+ "Didn't have sex":"\ud83d\udeab","Protected sex":"\ud83d\udee1\ufe0f","Unprotected sex":"\u26a0\ufe0f",
+ "Oral sex":"\ud83d\udc44","Masturbation":"\u270b","Sensual touch":"\ud83e\udd0d","Orgasm":"\u2728",
+ "No orgasm":"\ud83d\udca4","High sex drive":"\ud83d\udd25","Neutral sex drive":"\u2796",
+ "Low sex drive":"\ud83e\uddca","Sex":"\u2764\ufe0f","Strong erections":"\u2b06\ufe0f","Weak erections":"\u2b07\ufe0f",
+ "No discharge":"\u26aa","Creamy":"\ud83e\udd5b","Watery":"\ud83d\udca7","Sticky":"\ud83c\udf6f",
+ "Egg white":"\ud83e\udd5a","Spotting":"\ud83d\udd34","Unusual":"\u2753","Clumpy white":"\u2601\ufe0f","Grey":"\ud83e\udea8",
+ "Nausea":"\ud83e\udd22","Bloating":"\ud83c\udf88","Constipation":"\ud83e\uddf1","Diarrhoea":"\ud83d\udca8",
+ "Didn't take tests":"\ud83d\udeab","Pregnancy positive":"\ud83e\udd30","Pregnancy negative":"\u274c",
+ "Pregnancy faint line":"\u3030\ufe0f","Ovulation positive":"\ud83e\udd5a","Ovulation negative":"\u2b55",
+ "Travel":"\u2708\ufe0f","Stress":"\u26a1","Meditation":"\ud83e\uddd8","Journaling":"\ud83d\udcd3",
+ "Breathing exercises":"\ud83c\udf2c\ufe0f","Illness or injury":"\ud83e\udd12","Alcohol":"\ud83c\udf77",
+ "Hormonal therapy":"\ud83d\udc8a",
+ "Didn't exercise":"\ud83d\udecb\ufe0f","Yoga":"\ud83e\uddd8","Gym":"\ud83c\udfcb\ufe0f","Dancing":"\ud83d\udc83",
+ "Swimming":"\ud83c\udfca","Team sports":"\ud83c\udfc0","Running":"\ud83c\udfc3","Cycling":"\ud83d\udeb4","Walking":"\ud83d\udeb6"
+};
+function cycEmoji(o){return CYCE[o]||"\u2022";}
 function cycGroups(){return CYCG[cycSex()]||CYCG.m;}
 function cycDayLog(k){return cycS().days[k]||{};}
 function cycHas(k,grp,opt){const d=cycDayLog(k)[grp];return Array.isArray(d)&&d.indexOf(opt)>=0;}
@@ -7910,34 +7964,35 @@ function cycInsights(){
   const today=new Date(),k=iso(today);
   if(cycSex()==="f"){
     const p=cycPredict(),day=cycDay(today),ph=cycPhase(today);
-    if(!p){out.push({lvl:"plain",t:T.setup});return out;}
+    if(!p){out.push({lvl:"plain",ic:"📅",t:T.setup});return out;}
     const conf=cycConfidence();
-    out.push({lvl:"phase",t:T.day(day,phName(ph)),b:T.phaseW[ph]||""});
+    const PHI={menstrual:"🌙",follicular:"🌱",ovulation:"✨",luteal:"🌗"};
+    out.push({lvl:"phase",ic:PHI[ph]||"📅",t:T.day(day,phName(ph)),b:T.phaseW[ph]||""});
     const dl=Math.round((parseISO(p.nextStart).getTime()-parseISO(k).getTime())/DAY);
-    out.push({lvl:"plain",
+    out.push({lvl:"plain",ic:"📅",
       t:dl>0?T.nextIn(dl,fmtShort(p.nextStart)):T.nextWas(fmtShort(p.nextStart)),
       b:conf.lvl==="none"?T.confNone
         :conf.lvl==="good"?T.confGood(conf.n+1,p.avg,conf.sp)
         :conf.lvl==="rough"?T.confRough(conf.sp)
         :T.confWide(conf.sp)});
     if(ph!=="menstrual"&&ph!=="ovulation")
-      out.push({lvl:"plain",t:T.fertH(fmtShort(p.fertileFrom),fmtShort(p.fertileTo)),b:T.fertB});
+      out.push({lvl:"plain",ic:"🥚",t:T.fertH(fmtShort(p.fertileFrom),fmtShort(p.fertileTo)),b:T.fertB});
     const own=cycOwnPattern(ph);
-    out.push(own?{lvl:"own",t:T.ownH,
+    out.push(own?{lvl:"own",ic:"📊",t:T.ownH,
                   b:T.ownB(own.days,phName(ph).toLowerCase(),own.top.map(x=>L(x)).join(", "))}
-                :{lvl:"plain",t:T.trainH,b:T.trainB});
-    if(ph==="menstrual")out.push({lvl:"nutr",t:T.eatH,b:T.eatMen});
-    if(ph==="luteal")out.push({lvl:"nutr",t:T.eatH,b:T.eatLut});
+                :{lvl:"plain",ic:"🏋️",t:T.trainH,b:T.trainB});
+    if(ph==="menstrual")out.push({lvl:"nutr",ic:"🥗",t:T.eatH,b:T.eatMen});
+    if(ph==="luteal")out.push({lvl:"nutr",ic:"🥗",t:T.eatH,b:T.eatLut});
   }else{
     const wood=cycTrend("sym","Morning erection",14),
           nowood=cycTrend("sym","No morning erection",14),
           logged=wood+nowood;
-    out.push({lvl:"phase",t:T.m14,b:logged?T.mWood(wood,logged):T.mNone});
+    out.push({lvl:"phase",ic:"📊",t:T.m14,b:logged?T.mWood(wood,logged):T.mNone});
     const tired=cycTrend("sym","Fatigue",14),
           ang=cycTrend("mood","Irritated",14)+cycTrend("mood","Angry",14);
-    if(tired>=4)out.push({lvl:"own",t:T.mTiredH,b:T.mTiredB(tired)});
-    if(ang>=4)out.push({lvl:"own",t:T.mAngH,b:T.mAngB(ang)});
-    out.push({lvl:"plain",t:T.mWhyH,b:T.mWhyB});
+    if(tired>=4)out.push({lvl:"own",ic:"🔋",t:T.mTiredH,b:T.mTiredB(tired)});
+    if(ang>=4)out.push({lvl:"own",ic:"😠",t:T.mAngH,b:T.mAngB(ang)});
+    out.push({lvl:"plain",ic:"🧭",t:T.mWhyH,b:T.mWhyB});
   }
   return out;
 }
@@ -7992,7 +8047,7 @@ function renderCycle(){
     <button class="primary" id="cycLogBtn">Log today</button>
     ${f?`<button class="ghost" id="cycPerBtn">${cycBleedOn(td)?"Remove period from today":"Period started today"}</button>`:""}
     <div class="inshead"><span class="ih">${f?"Where you are":"How it is going"}</span><i class="il"></i></div>
-    ${ins.map(x=>`<div class="cycins ${x.lvl}"><div class="cinh">${x.t}</div>${
+    ${ins.map(x=>`<div class="cycins ${x.lvl}"><div class="cinh"><span class="cini">${x.ic||""}</span>${x.t}</div>${
       x.b?`<div class="cinb">${x.b}</div>`:""}</div>`).join("")}
     <button class="disclaimer" id="cycDisc">⚠ Not medical advice — tap to read</button>`;
   $("#cycPrev").onclick=()=>{cycDate=new Date(y,m-1,1);renderCycle();};
@@ -8010,12 +8065,14 @@ function cycLogSheet(k){
     $("#sheet").innerHTML=`<h3>${parseISO(k).toLocaleDateString(curLocale(),{weekday:"short",month:"short",day:"numeric"})}</h3>
       <div class="msub">${f&&cycDay(parseISO(k))?`Cycle day ${cycDay(parseISO(k))}`:"Tap what applies"}</div>
       ${f?`<button class="ghost cycper" id="cycPer2">${cycBleedOn(k)?"Remove period from this day":"Mark as a period day"}</button>`:""}
-      ${groups.map(g=>`<div class="cggrp"><div class="cgh">${g.n}</div>
-        <div class="cgl">${g.o.map(o=>`<button class="cgchip${cycHas(k,g.k,o)?" on":""}"
-          data-cg="${g.k}" data-co="${o.replace(/"/g,"&quot;")}" data-one="${g.one?1:0}">${o}</button>`).join("")}</div></div>`).join("")}
+      ${groups.map(g=>`<div class="cggrp"><div class="cgh" style="color:${g.c}">${g.n}</div>
+        <div class="cgl">${g.o.map(o=>`<button class="cgchip${cycHas(k,g.k,o)?" on":""}" style="--cc:${g.c}"
+          data-cg="${g.k}" data-co="${o.replace(/"/g,"&quot;")}"><span class="cge">${cycEmoji(o)}</span><span class="cgt">${o}</span></button>`).join("")}</div></div>`).join("")}
       <button class="primary" id="cgDone">Done</button>`;
+    // toggled in place: a full redraw flickers and can swallow a fast second tap
     $$("[data-cg]",$("#sheet")).forEach(b=>b.onclick=()=>{
-      cycToggle(k,b.dataset.cg,b.dataset.co,b.dataset.one==="1");draw();});
+      cycToggle(k,b.dataset.cg,b.dataset.co,false);
+      b.classList.toggle("on",cycHas(k,b.dataset.cg,b.dataset.co));});
     if($("#cycPer2"))$("#cycPer2").onclick=()=>{cycToggleBleed(k);draw();};
     $("#cgDone").onclick=()=>{closeModal();renderCycle();};
     if(curLang()!=="en")applyLang();
@@ -8093,6 +8150,29 @@ $("#bloodBtn").onclick=()=>setTab("labs");
 $("#cycBtn").onclick=()=>setTab("cycle");
 /* the icon only exists for someone who has chosen a profile */
 function syncCycBtn(){const b=$("#cycBtn");if(b)b.style.display=cycOn()?"grid":"none";}
+/* Shown on Today until a profile is picked or the card is dismissed. Without
+   this the tracker is only reachable by opening a menu and reading a list. */
+function cycSetupCard(){
+  const c=cycS();
+  if(c.sex||c.skip)return "";
+  const T=CYCS();
+  return `<div class="cycsetup">
+    <div class="csh">${T.h}</div>
+    <div class="csb">${T.b}</div>
+    <div class="csbtns">
+      <button class="csb1 notr" data-cysetup="f">${CYCL().f}</button>
+      <button class="csb1 notr" data-cysetup="m">${CYCL().m}</button>
+      <button class="csskip" data-cysetup="skip">${T.no}</button>
+    </div></div>`;
+}
+const CYCSL={
+ en:{h:"Cycle and mood tracking",
+     b:"Periods, ovulation, mood and symptoms, tracked alongside what you are running. Men get the same thing without the cycle. Off until you choose.",
+     no:"Not now"},
+ es:{h:"Seguimiento del ciclo y el \u00e1nimo",
+     b:"Periodos, ovulaci\u00f3n, \u00e1nimo y s\u00edntomas, junto a lo que est\u00e1s usando. Los hombres tienen lo mismo sin el ciclo. Apagado hasta que elijas.",
+     no:"Ahora no"}};
+function CYCS(){return CYCSL[curLang()]||CYCSL.en;}
 /* Everything you might want to flip lives here rather than being spread
    between the top bar and the bottom of the settings screen. */
 /* "Light" is already the workout-intensity label, so these two cannot come
