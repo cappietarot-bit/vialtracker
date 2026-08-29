@@ -740,6 +740,12 @@
   .mixnote.bad{border-left-color:var(--crit);background:var(--crit-soft)}
   .mixnote.warn{border-left-color:var(--warn);background:var(--warn-soft)}
   .mixnote.good{border-left-color:var(--good);background:var(--good-soft)}
+  .akacard{margin-top:14px;border:1px solid var(--line);background:var(--panel);
+    border-radius:13px;padding:13px 15px}
+  .akah{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);margin-bottom:7px}
+  .akal{display:flex;flex-wrap:wrap;gap:6px}
+  .akan{font-family:var(--mono);font-size:12px;color:var(--ink);
+    background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:4px 9px}
   .ddchev{font-style:normal;color:var(--ink3);font-size:17px;transition:transform .25s ease}
   .ddtoggle[aria-expanded="true"] .ddchev{transform:rotate(90deg);color:var(--accent)}
   .ddsup{display:none;margin-bottom:14px}
@@ -2147,7 +2153,7 @@ const PMAP={
 /* the proper name and the names people actually use — a forum post says
    GLP-3, a trial paper says LY3437943, a box says Zepbound. All of them
    should find the same card. */
-const ALIAS={"retatrutide": ["LY3437943", "GLP-3", "Reta", "triple G"], "tirzepatide": ["Mounjaro", "Zepbound", "LY3298176", "Tirz"], "semaglutide": ["Ozempic", "Wegovy", "Rybelsus", "Sema"], "cagrilintide": ["AM833", "Cagri"], "cagrisema": ["CagriSema", "cagrilintide + semaglutide"], "tesamorelin": ["Egrifta", "TH9507", "Tesa"], "sermorelin": ["Geref", "GRF (1-29)", "GHRH (1-29)"], "ipamorelin": ["NNC 26-0161", "Ipa"], "cjc1295nodac": ["Modified GRF (1-29)", "Mod GRF", "CJC-1295 without DAC"], "ss31": ["Elamipretide", "Forzinity", "MTP-131", "Bendavia"], "motsc": ["Mitochondrial ORF of the 12S rRNA type-c", "MOTS-c"], "nad": ["Nicotinamide adenine dinucleotide", "NAD+"], "5amino1mq": ["5-amino-1-methylquinolinium", "5A1MQ", "NNMT inhibitor"], "bpc157": ["Body Protection Compound 157", "Pentadecapeptide BPC 157", "PL 14736", "BPC"], "tb500": ["Thymosin Beta-4 fragment", "TB4", "Tb-500"], "ghkcu": ["Copper tripeptide-1", "Gly-His-Lys-Cu", "GHK copper"], "ahkcu": ["Ala-His-Lys-Cu", "AHK copper peptide"], "kpv": ["Lys-Pro-Val", "alpha-MSH (11-13)"], "glutathione": ["GSH", "L-glutathione", "gamma-glutamyl-cysteinyl-glycine"], "thymosinalpha1": ["Zadaxin", "Thymalfasin", "Talpha1", "TA-1"], "epithalon": ["Epitalon", "AEDG", "Ala-Glu-Asp-Gly", "Epithalamin (the extract)"], "pinealon": ["EDR", "Glu-Asp-Arg"], "dsip": ["Delta Sleep-Inducing Peptide"], "ara290": ["Cibinetide", "ARA290", "EPO helix-B peptide"], "kisspeptin10": ["KP-10", "Metastin (1-54) fragment", "Kiss1"], "lcarnitine": ["Levocarnitine", "L-carnitine L-tartrate", "LCLT"], "aod9604": ["hGH fragment 176-191", "AOD"], "pt141": ["Bremelanotide", "Vyleesi", "PT141"], "mt2": ["Melanotan II", "MT-II"], "selank": ["TP-7", "tuftsin analogue"], "semax": ["ACTH (4-10) analogue", "Met-Glu-His-Phe-Pro-Gly-Pro"], "dihexa": ["N-hexanoic-Tyr-Ile-(6) aminohexanoic amide", "PNB-0408"], "cerebrolysin": ["FPF-1070", "Cere"], "melatonin": ["N-acetyl-5-methoxytryptamine"], "ace031": ["Ramatercept", "ActRIIB-Fc", "soluble activin receptor IIB"], "adipotide": ["FTPP", "prohibitin-targeting peptidomimetic"], "epo": ["Erythropoietin", "Epoetin alfa", "Procrit", "Epogen"], "thymalin": ["Thymus polypeptide extract", "Thymalinum"], "klow": ["KPV + Larazotide + GHK-Cu + BPC-157/TB-500"], "glow": ["GHK-Cu + BPC-157 + TB-500"], "wolverine": ["BPC-157 + TB-500"], "bpc157tb500": ["Wolverine blend", "BPC-157 + TB-500"], "vip": ["Vasoactive Intestinal Peptide"], "larazotide": ["Larazotide acetate", "AT-1001", "INN-202"], "hexarelin": ["Examorelin", "EP-23905"], "ghrp2": ["Pralmorelin", "GHRP-2"], "ghrp6": ["GHRP-6", "growth hormone releasing peptide 6"], "hcg": ["Human chorionic gonadotropin"], "bacwater": ["Bacteriostatic water", "0.9% benzyl alcohol water"], "aceticacid": ["Acetic acid", "dilute acetic acid diluent"]};
+const ALIAS={"retatrutide": ["LY3437943", "GLP-3", "Reta", "triple G"], "tirzepatide": ["Mounjaro", "Zepbound", "LY3298176", "Tirz"], "semaglutide": ["Ozempic", "Wegovy", "Rybelsus", "Sema"], "cagrilintide": ["AM833", "Cagri"], "cagrisema": ["CagriSema", "cagrilintide + semaglutide"], "tesamorelin": ["Egrifta", "TH9507", "Tesa", "Egrifta SV"], "sermorelin": ["Geref", "GRF (1-29)", "GHRH (1-29)", "GRF 1-29"], "ipamorelin": ["NNC 26-0161", "Ipa"], "cjc1295nodac": ["Modified GRF (1-29)", "Mod GRF", "CJC-1295 without DAC", "Mod GRF 1-29"], "ss31": ["Elamipretide", "Forzinity", "MTP-131", "Bendavia"], "motsc": ["Mitochondrial ORF of the 12S rRNA type-c", "MOTS-c"], "nad": ["Nicotinamide adenine dinucleotide", "NAD+", "NAD"], "5amino1mq": ["5-amino-1-methylquinolinium", "5A1MQ", "NNMT inhibitor"], "bpc157": ["Body Protection Compound 157", "Pentadecapeptide BPC 157", "PL 14736", "BPC"], "tb500": ["Thymosin Beta-4 fragment", "TB4", "Tb-500", "Thymosin Beta-4", "TB 500"], "ghkcu": ["Copper tripeptide-1", "Gly-His-Lys-Cu", "GHK copper", "Cu-GHK"], "ahkcu": ["Ala-His-Lys-Cu", "AHK copper peptide"], "kpv": ["Lys-Pro-Val", "alpha-MSH (11-13)", "Lysine-proline-valine", "alpha-MSH 11-13"], "glutathione": ["GSH", "L-glutathione", "gamma-glutamyl-cysteinyl-glycine"], "thymosinalpha1": ["Zadaxin", "Thymalfasin", "Talpha1", "TA-1", "Ta1"], "epithalon": ["Epitalon", "AEDG", "Ala-Glu-Asp-Gly", "Epithalamin (the extract)", "Epithalamin"], "pinealon": ["EDR", "Glu-Asp-Arg", "EDR peptide", "Pinealon"], "dsip": ["Delta Sleep-Inducing Peptide"], "ara290": ["Cibinetide", "ARA290", "EPO helix-B peptide", "ARA 290"], "kisspeptin10": ["KP-10", "Metastin (1-54) fragment", "Kiss1", "Metastin"], "lcarnitine": ["Levocarnitine", "L-carnitine L-tartrate", "LCLT", "Carnitor", "L-carnitine tartrate"], "aod9604": ["hGH fragment 176-191", "AOD", "AOD9604"], "pt141": ["Bremelanotide", "Vyleesi", "PT141", "PT 141"], "mt2": ["Melanotan II", "MT-II"], "selank": ["TP-7", "tuftsin analogue", "Selanc"], "semax": ["ACTH (4-10) analogue", "Met-Glu-His-Phe-Pro-Gly-Pro", "ACTH 4-10 analogue", "Semaks"], "dihexa": ["N-hexanoic-Tyr-Ile-(6) aminohexanoic amide", "PNB-0408"], "cerebrolysin": ["FPF-1070", "Cere", "Cerebrolysin", "FPF 1070"], "melatonin": ["N-acetyl-5-methoxytryptamine", "Circadin", "Slenyto"], "ace031": ["Ramatercept", "ActRIIB-Fc", "soluble activin receptor IIB", "ACE 031"], "adipotide": ["FTPP", "prohibitin-targeting peptidomimetic", "Prohibitin-targeting peptide-1"], "epo": ["Erythropoietin", "Epoetin alfa", "Procrit", "Epogen", "Aranesp", "Retacrit", "Darbepoetin"], "thymalin": ["Thymus polypeptide extract", "Thymalinum", "Thymus extract", "Timalin"], "klow": ["KPV + Larazotide + GHK-Cu + BPC-157/TB-500"], "glow": ["GHK-Cu + BPC-157 + TB-500"], "wolverine": ["BPC-157 + TB-500"], "bpc157tb500": ["Wolverine blend", "BPC-157 + TB-500"], "vip": ["Vasoactive Intestinal Peptide"], "larazotide": ["Larazotide acetate", "AT-1001", "INN-202"], "hexarelin": ["Examorelin", "EP-23905"], "ghrp2": ["Pralmorelin", "GHRP-2"], "ghrp6": ["GHRP-6", "growth hormone releasing peptide 6"], "hcg": ["Human chorionic gonadotropin", "Pregnyl", "Ovidrel", "Novarel"], "bacwater": ["Bacteriostatic water", "0.9% benzyl alcohol water"], "aceticacid": ["Acetic acid", "dilute acetic acid diluent"], "testosteronecypionate": ["Depo-Testosterone", "Test C", "Test Cyp"], "testosteroneenanthate": ["Delatestryl", "Xyosted", "Test E"], "testosteronepropionate": ["Testoviron", "Test P"], "testosteroneundecanoate": ["Aveed", "Nebido", "Jatenzo"], "sustanon": ["Sustanon 250", "Omnadren", "Test blend"], "nandrolonedecanoate": ["Deca-Durabolin", "Deca"], "nandrolonephenylpropionate": ["Durabolin", "NPP"], "trenboloneacetate": ["Finaplix", "Tren A"], "trenboloneenanthate": ["Tren E"], "drostanolone": ["Masteron", "Drolban"], "methenolone": ["Primobolan", "Primo", "Nibal"], "boldenone": ["Equipoise", "EQ", "Boldenone undecylenate"], "oxandrolone": ["Anavar", "Oxandrin", "Var"], "stanozolol": ["Winstrol", "Winny", "Stromba"], "methandrostenolone": ["Dianabol", "Dbol", "Averbol", "Methandienone"], "oxymetholone": ["Anadrol", "Anapolon"], "turinabol": ["Oral Turinabol", "Tbol", "Chlorodehydromethyltestosterone"], "superdrol": ["Methasterone", "Sdrol"], "fluoxymesterone": ["Halotestin", "Halo"], "anastrozole": ["Arimidex", "Arimidex AI"], "exemestane": ["Aromasin"], "letrozole": ["Femara"], "tamoxifen": ["Nolvadex", "Soltamox"], "clomiphene": ["Clomid", "Serophene"], "enclomiphene": ["Androxal", "Enclomiphene citrate"], "hmg": ["Menopur", "Human menopausal gonadotropin"], "cabergoline": ["Dostinex", "Caber"], "raloxifene": ["Evista"]};
 function pepAlias(p){return ALIAS[pepKey(p&&p.name)]||[];}
 /* does this peptide answer to the typed text, by name or by any alias? */
 function pepMatches(name,q){
@@ -4226,6 +4232,10 @@ function coachIndex(){
     if(g.nutr){push(key,SEC("From diet"),g.nutr.food,1.5);push(key,SEC("What helps it work"),g.nutr.boost,2);
       push(key,SEC("Can food alone do it"),g.nutr.reach,1.5);}
     if(g.cyc&&g.cyc.note)push(key,SEC("Cycles"),g.cyc.note,2);
+    // brand and research names, so a question can name the product
+    const al=(ALIAS[key]||[]).concat(ALIAS[pepKey(guideName(key))]||[]);
+    if(al.length)out.push({key,sec:SEC("Also known as"),
+      text:guideName(key)+" is also sold or referred to as "+al.join(", ")+".",w:3});
   });
   _cidx=out;_cidxLang=lc;return out;
 }
@@ -4234,7 +4244,9 @@ function coachPeps(q){
   const toks=cTok(q).join(" ");
   const hits=[];
   Object.keys(GUIDES).forEach(k=>{
-    const names=[k].concat(ALIAS[k]||[]);
+    // ALIAS is keyed by pepKey of the display name, not by guide key, so
+    // looking it up by k alone silently matched nothing
+    const names=[k].concat(ALIAS[k]||[],ALIAS[pepKey(guideName(k))]||[]);
     // the display name too, via any tracked peptide pointing at this guide
     S.track.forEach(p=>{if(guideKeyFor(p.name)===k)names.push(p.name);});
     Object.keys(LUCKY).forEach(n=>{if(guideKeyFor(n)===k)names.push(n);});
@@ -4501,7 +4513,7 @@ function deepDive(id){
       <div class="ddscrim"></div>
       <div class="ddhx"><div class="ddname">${p.name}</div>
         <div class="ddcls">${g.cls||pepFamNames(p)}</div>
-        ${pepAlias(p).length?`<div class="ddalias">Also known as ${pepAlias(p).join(" · ")}</div>`:""}</div>
+</div>
       <span class="ddtier ${g.tier||"pre"}">${TIERN[g.tier]||"Limited evidence"}</span>
     </div>
     ${g.danger?`<div class="ddanger"><span class="dgi">!</span>
@@ -4597,6 +4609,11 @@ function deepDive(id){
           const n=Array.isArray(x)?x[0]:x.n,u=Array.isArray(x)?x[1]:x.u;
           return u?`<a class="src1" href="${u}" target="_blank" rel="noopener noreferrer">${n}<i>↗</i></a>`:"";
         }).join("")}</div>
+      </div>`:""}
+
+      ${pepAlias(p).length?`<div class="akacard">
+        <div class="akah">Also known as</div>
+        <div class="akal">${pepAlias(p).map(a=>`<span class="akan">${a}</span>`).join("")}</div>
       </div>`:""}
 
       <p class="ddfoot">Summarised from published research. Not medical advice, and
@@ -5316,8 +5333,10 @@ lead:{ok:"There is no genuinely safe level of lead. Lower is always better.",
 merc:{ok:"Mostly from large predatory fish. Swapping to smaller fish brings it down over months.",
  out:"High mercury usually means diet, typically tuna and other large fish. It clears slowly, so the fix is patience plus changing the source.",peps:[]}
 };
-/* a readable name for a guide key, taken from the dose table where possible */
-function guideName(k){
+/* a readable name for a guide key, taken from the dose table where possible.
+   Named for what it does rather than "guideName", which the coach already
+   defines and which this used to silently overwrite. */
+function lowDoseName(k){
   const hit=Object.keys(LOWDOSE).find(n=>pepKey(n).startsWith(pepKey(k)));
   if(hit)return hit;
   return k.charAt(0).toUpperCase()+k.slice(1);
@@ -5484,7 +5503,7 @@ function labPop(k){
         ${t.mine.length?`<div class="ltsub">In your list, acting on this pathway</div>
           <div class="tipeps">${t.mine.map(chip).join("")}</div>`:""}
         ${t.other.length?`<div class="ltsub">Not in your list, but act here too</div>
-          <div class="tipeps">${t.other.map(kk=>`<span class="tipep dim"><i style="background:${(PFAM[(PMAP[kk]||["other"])[0]]||PFAM.other).c}"></i>${guideName(kk)}</span>`).join("")}</div>`:""}
+          <div class="tipeps">${t.other.map(kk=>`<span class="tipep dim"><i style="background:${(PFAM[(PMAP[kk]||["other"])[0]]||PFAM.other).c}"></i>${lowDoseName(kk)}</span>`).join("")}</div>`:""}
         <div class="ltdisc"><b>This is not medical advice.</b> These decisions must be
           made with medical supervision.</div>
       </div>`;
@@ -6312,6 +6331,7 @@ const NOTR=new Set(["mg","mcg","ml","iu","lb","kcal","g","mg/dL","min","ApoB","N
 
 const I18N={
 es:{
+"Also known as":"También conocido como",
 "today":"hoy",
 /* --- injection sites --- */
 "Left abdomen":"Abdomen izquierdo",
@@ -7120,7 +7140,7 @@ function tr(str,lc){
 const TRSKIP=".gname,.pbn,.dn,.excn,.pname,.pexname,.altn,.rp,.lrn,.ddname,.rn,.molimg,.mono,.notr,"+
   /* guide prose is translated by id through guideView, so the text walker must
      leave it alone rather than trying to match paragraphs against the UI dict */
-  ".ddblock li,.ddlede,.ddsec p,.ddp,.ddkey li,.ddwarn li,.ddcol li,.ddalias";
+  ".ddblock li,.ddlede,.ddsec p,.ddp,.ddkey li,.ddwarn li,.ddcol li,.ddalias,.akan";
 /* Translating in place is destructive — once "Today" becomes "Hoy" the English
    key is gone and no further switch can find it. So the original is stashed the
    first time a node is seen, and every pass translates from that. */
