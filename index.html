@@ -746,6 +746,40 @@
   .akal{display:flex;flex-wrap:wrap;gap:6px}
   .akan{font-family:var(--mono);font-size:12px;color:var(--ink);
     background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:4px 9px}
+  .cyctop{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .cycmon{flex:1;text-align:center;font-weight:700;font-size:14px}
+  .cycgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .cdow{text-align:center;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink3);padding-bottom:4px}
+  .cday{position:relative;aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+    border-radius:9px;font-size:13px;color:var(--ink2);background:var(--panel2);cursor:pointer}
+  .cday.empty{background:none;cursor:default}
+  .cday.today{outline:2px solid var(--accent);outline-offset:-2px;color:var(--ink);font-weight:700}
+  .cday.bleed{background:#e0245e;color:#fff;font-weight:700}
+  .cday.predbleed{background:transparent;border:1.5px dashed #e0245e;color:#e0245e}
+  .cday.fert{background:color-mix(in srgb,#2dd4bf 22%,transparent);color:var(--ink)}
+  .cday.ov{background:#2dd4bf;color:#04211c;font-weight:700}
+  .cdot{position:absolute;bottom:5px;width:4px;height:4px;border-radius:99px;background:currentColor;opacity:.75}
+  .cyckey{display:flex;flex-wrap:wrap;gap:12px;margin-top:11px;font-size:11px;color:var(--ink3)}
+  .cyckey span{display:inline-flex;align-items:center;gap:5px}
+  .sw{width:11px;height:11px;border-radius:4px;display:inline-block}
+  .sw.bleed{background:#e0245e}
+  .sw.predbleed{border:1.5px dashed #e0245e}
+  .sw.fert{background:color-mix(in srgb,#2dd4bf 22%,transparent);border:1px solid #2dd4bf}
+  .sw.ov{background:#2dd4bf}
+  .cycins{border-left:3px solid var(--line2);background:var(--panel);border-radius:0 12px 12px 0;
+    padding:12px 14px;margin-bottom:8px}
+  .cycins.phase{border-left-color:#e0245e}
+  .cycins.own{border-left-color:var(--accent)}
+  .cycins.nutr{border-left-color:var(--good)}
+  .cinh{font-weight:700;font-size:13.5px;margin-bottom:4px}
+  .cinb{font-size:12.5px;line-height:1.55;color:var(--ink2)}
+  .cggrp{margin:14px 0 4px}
+  .cgh{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);margin-bottom:7px}
+  .cgl{display:flex;flex-wrap:wrap;gap:6px}
+  .cgchip{border:1px solid var(--line2);background:var(--panel2);color:var(--ink2);border-radius:99px;
+    padding:7px 12px;font:inherit;font-size:12.5px;cursor:pointer}
+  .cgchip.on{border-color:var(--accent);background:var(--accent-soft);color:var(--ink);font-weight:600}
+  .cycper{margin-top:4px}
   .ddchev{font-style:normal;color:var(--ink3);font-size:17px;transition:transform .25s ease}
   .ddtoggle[aria-expanded="true"] .ddchev{transform:rotate(90deg);color:var(--accent)}
   .ddsup{display:none;margin-bottom:14px}
@@ -1547,7 +1581,7 @@
       </svg>
       <div><h1>Vialback</h1><div class="sub" id="topSub">Today</div></div>
       <div class="spacer"></div>
-      <button class="iconbtn bloodbtn" id="bloodBtn" aria-label="Bloodwork" data-tip="Bloodwork"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c3.4 4.3 6.5 8 6.5 11.4A6.5 6.5 0 0 1 12 20.5a6.5 6.5 0 0 1-6.5-6.6C5.5 10.5 8.6 6.8 12 2.5Z"/></svg></button><button class="iconbtn avatar" id="profileBtn" title="Settings" aria-label="Settings">R</button>
+      <button class="iconbtn bloodbtn" id="bloodBtn" aria-label="Bloodwork" data-tip="Bloodwork"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c3.4 4.3 6.5 8 6.5 11.4A6.5 6.5 0 0 1 12 20.5a6.5 6.5 0 0 1-6.5-6.6C5.5 10.5 8.6 6.8 12 2.5Z"/></svg></button><button class="iconbtn cycbtn" id="cycBtn" aria-label="Cycle" data-tip="Cycle" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="9" r="5"/><path d="M12 14v7M9 18h6" stroke-linecap="round"/></svg></button><button class="iconbtn avatar" id="profileBtn" title="Settings" aria-label="Settings">R</button>
     </div>
   </div>
 
@@ -1559,6 +1593,7 @@
     <section class="view" id="v-gym"></section>
     <section class="view" id="v-food"></section>
     <section class="view" id="v-cal"></section>
+    <section class="view" id="v-cycle"></section>
     <section class="view" id="v-settings"></section>
   </main>
 
@@ -4166,6 +4201,195 @@ function guideView(p){
 }
 
 
+/* ================= CYCLE AND RHYTHM ==================
+   Guidance here is driven by what gets logged, not by what phase the calendar
+   says. Current evidence does not support prescribing training intensity by
+   cycle phase; symptoms and readiness track performance far better, and those
+   are the thing being logged anyway. Phase is shown as context. */
+function cycS(){
+  const c=S.cycle=S.cycle||{};
+  c.sex=c.sex||""; c.periods=c.periods||[]; c.days=c.days||{};
+  return c;
+}
+function cycSex(){return cycS().sex;}
+function cycOn(){return cycSex()==="f"||cycSex()==="m";}
+function cycStarts(){return cycS().periods.map(p=>p.start).filter(Boolean).sort();}
+
+/* Cycle length learned from logged starts. Gaps outside 18-45 days are almost
+   always a mislog or a skipped entry, so they are dropped rather than allowed
+   to drag the mean around. */
+function cycGaps(){
+  const st=cycStarts(),out=[];
+  for(let i=1;i<st.length;i++){
+    const g=Math.round((parseISO(st[i]).getTime()-parseISO(st[i-1]).getTime())/DAY);
+    if(g>=18&&g<=45)out.push(g);
+  }
+  return out;
+}
+function cycAvg(){
+  const g=cycGaps();
+  if(!g.length)return 28;
+  return Math.round(g.reduce((a,b)=>a+b,0)/g.length);
+}
+/* How much those gaps move about. This is the number every tracker hides. */
+function cycSpread(){
+  const g=cycGaps();
+  if(g.length<2)return null;
+  return Math.max.apply(null,g)-Math.min.apply(null,g);
+}
+function cycConfidence(){
+  const g=cycGaps(),sp=cycSpread();
+  if(g.length<2)return {lvl:"none",n:g.length,sp:sp};
+  if(sp<=3)return {lvl:"good",n:g.length,sp:sp};
+  if(sp<=7)return {lvl:"rough",n:g.length,sp:sp};
+  return {lvl:"wide",n:g.length,sp:sp};
+}
+function cycAvgBleed(){
+  const p=cycS().periods.filter(x=>x.start&&x.end);
+  if(!p.length)return 5;
+  const d=p.map(x=>Math.round((parseISO(x.end).getTime()-parseISO(x.start).getTime())/DAY)+1)
+           .filter(x=>x>=1&&x<=12);
+  if(!d.length)return 5;
+  return Math.round(d.reduce((a,b)=>a+b,0)/d.length);
+}
+function cycLastStart(){const st=cycStarts();return st.length?st[st.length-1]:null;}
+/* 1-based day within the current cycle, or null with nothing logged yet */
+function cycDay(dt){
+  const ls=cycLastStart();
+  if(!ls)return null;
+  const d=Math.round((parseISO(iso(dt)).getTime()-parseISO(ls).getTime())/DAY);
+  return d<0?null:d+1;
+}
+/* The luteal phase is the stable part of the cycle at roughly 14 days, so
+   ovulation is estimated back from the next expected period, not forward from
+   the last one. That is what keeps it honest on long or short cycles. */
+function cycPredict(){
+  const ls=cycLastStart();
+  if(!ls)return null;
+  const avg=cycAvg(),bleed=cycAvgBleed();
+  const start=parseISO(ls);
+  const next=new Date(start.getTime()+avg*DAY);
+  const ov=new Date(next.getTime()-14*DAY);
+  return {
+    lastStart:ls, avg:avg, bleed:bleed,
+    nextStart:iso(next),
+    ovulation:iso(ov),
+    fertileFrom:iso(new Date(ov.getTime()-5*DAY)),
+    fertileTo:iso(new Date(ov.getTime()+DAY)),
+    bleedTo:iso(new Date(start.getTime()+(bleed-1)*DAY))
+  };
+}
+function cycPhase(dt){
+  const p=cycPredict(),day=cycDay(dt);
+  if(!p||day==null)return null;
+  const k=iso(dt);
+  if(day<=p.bleed)return "menstrual";
+  if(k>=p.fertileFrom&&k<=p.fertileTo)return "ovulation";
+  if(k>p.fertileTo)return "luteal";
+  return "follicular";
+}
+/* Is this date inside a logged bleed, rather than a predicted one? */
+function cycBleedOn(k){
+  return cycS().periods.some(p=>p.start&&k>=p.start&&k<=(p.end||p.start));
+}
+/* Every ovulation this app believes in, logged cycles and projected ones.
+   For a cycle that has a following start we know its real length, so we count
+   back 14 days from that. For the ones after the last logged period we count
+   back from the running average instead. */
+function cycOvDates(){
+  const st=cycStarts(),avg=cycAvg(),out=[];
+  for(let i=0;i<st.length;i++){
+    const next=st[i+1]?parseISO(st[i+1]).getTime()
+                      :parseISO(st[i]).getTime()+avg*DAY;
+    out.push(iso(new Date(next-14*DAY)));
+  }
+  if(st.length){
+    const last=parseISO(st[st.length-1]).getTime();
+    for(let n=1;n<=3;n++)out.push(iso(new Date(last+avg*n*DAY-14*DAY)));
+  }
+  return out;
+}
+function cycPredBleedOn(k){
+  const st=cycStarts();
+  if(!st.length)return false;
+  const avg=cycAvg(),bleed=cycAvgBleed(),last=parseISO(st[st.length-1]).getTime();
+  for(let n=1;n<=3;n++){
+    const a=new Date(last+avg*n*DAY);
+    const b=new Date(a.getTime()+(bleed-1)*DAY);
+    if(k>=iso(a)&&k<=iso(b))return true;
+  }
+  return false;
+}
+function cycFertileOn(k){
+  return cycOvDates().some(o=>{
+    const t=parseISO(o).getTime();
+    return k>=iso(new Date(t-5*DAY))&&k<=iso(new Date(t+DAY));
+  });
+}
+function cycOvOn(k){return cycOvDates().indexOf(k)>=0;}
+/* start or extend a bleed on this date, or clear it */
+function cycToggleBleed(k){
+  const c=cycS();
+  const hit=c.periods.find(p=>p.start&&k>=p.start&&k<=(p.end||p.start));
+  if(hit){
+    if(hit.start===k&&(hit.end||hit.start)===k)c.periods=c.periods.filter(p=>p!==hit);
+    else if(k===hit.start)hit.start=iso(new Date(parseISO(k).getTime()+DAY));
+    else hit.end=iso(new Date(parseISO(k).getTime()-DAY));
+  }else{
+    // extend an adjacent run rather than starting a second one next to it
+    const prev=c.periods.find(p=>iso(new Date(parseISO(p.end||p.start).getTime()+DAY))===k);
+    const nextp=c.periods.find(p=>iso(new Date(parseISO(p.start).getTime()-DAY))===k);
+    if(prev)prev.end=k;
+    else if(nextp)nextp.start=k;
+    else c.periods.push({start:k,end:k});
+  }
+  c.periods.sort((a,b)=>a.start<b.start?-1:1);
+  save();
+}
+
+/* ---------- what can be logged ----------
+   The female list follows the taxonomy people already know from the mainstream
+   trackers, so nothing has to be relearned. The male list keeps the same
+   shape and drops anything cycle-specific. */
+const CYCG={
+ f:[
+  {k:"mood",n:"Mood",o:["Calm","Happy","Energetic","Frisky","Mood swings","Irritated","Sad","Anxious","Low","Feeling guilty","Obsessive thoughts","Low energy","Apathetic","Confused","Very self-critical"]},
+  {k:"sym",n:"Symptoms",o:["Everything is fine","Cramps","Tender breasts","Headache","Acne","Backache","Fatigue","Hot flashes","Night sweats","Brain fog","Joint pain","Cravings","Insomnia","Abdominal pain","Dry skin","Dry eyes"]},
+  {k:"flow",n:"Menstrual flow",one:1,o:["Light flow","Medium flow","Heavy flow","Blood clots"]},
+  {k:"drive",n:"Sex and sex drive",o:["Didn't have sex","Protected sex","Unprotected sex","Oral sex","Masturbation","Sensual touch","Orgasm","No orgasm","High sex drive","Neutral sex drive","Low sex drive"]},
+  {k:"disch",n:"Discharge",one:1,o:["No discharge","Creamy","Watery","Sticky","Egg white","Spotting","Unusual","Clumpy white","Grey"]},
+  {k:"gut",n:"Digestion",o:["Nausea","Bloating","Constipation","Diarrhoea"]},
+  {k:"test",n:"Tests",o:["Didn't take tests","Pregnancy positive","Pregnancy negative","Pregnancy faint line","Ovulation positive","Ovulation negative"]},
+  {k:"other",n:"Other",o:["Travel","Stress","Meditation","Journaling","Breathing exercises","Illness or injury","Alcohol","Hormonal therapy"]},
+  {k:"act",n:"Physical activity",o:["Didn't exercise","Yoga","Gym","Dancing","Swimming","Team sports","Running","Cycling","Walking"]}
+ ],
+ m:[
+  {k:"mood",n:"Mood",o:["Calm","Happy","Energetic","Motivated","Confident","Irritated","Angry","Anxious","Low","Flat","Foggy","Restless"]},
+  {k:"sym",n:"Body",o:["Everything is fine","Morning erection","No morning erection","Headache","Fatigue","Joint pain","Muscle soreness","Poor sleep","Night sweats","Bloating","Acne","Appetite up","Appetite down"]},
+  {k:"drive",n:"Sex and sex drive",o:["High sex drive","Neutral sex drive","Low sex drive","Sex","Masturbation","Orgasm","No orgasm","Strong erections","Weak erections"]},
+  {k:"gut",n:"Digestion",o:["Nausea","Bloating","Constipation","Diarrhoea"]},
+  {k:"other",n:"Other",o:["Travel","Stress","Meditation","Breathing exercises","Illness or injury","Alcohol"]},
+  {k:"act",n:"Physical activity",o:["Didn't exercise","Yoga","Gym","Dancing","Swimming","Team sports","Running","Cycling","Walking"]}
+ ]
+};
+function cycGroups(){return CYCG[cycSex()]||CYCG.m;}
+function cycDayLog(k){return cycS().days[k]||{};}
+function cycHas(k,grp,opt){const d=cycDayLog(k)[grp];return Array.isArray(d)&&d.indexOf(opt)>=0;}
+function cycToggle(k,grp,opt,one){
+  const c=cycS();
+  const d=c.days[k]=c.days[k]||{};
+  let a=Array.isArray(d[grp])?d[grp]:[];
+  if(a.indexOf(opt)>=0)a=a.filter(x=>x!==opt);
+  else a=one?[opt]:a.concat([opt]);
+  if(a.length)d[grp]=a;else delete d[grp];
+  if(!Object.keys(d).length)delete c.days[k];
+  save();
+}
+function cycCount(k){
+  const d=cycDayLog(k);
+  return Object.keys(d).reduce((n,g)=>n+(Array.isArray(d[g])?d[g].length:0),0);
+}
+
 /* ---------- coach ----------
    Answers assembled from the guides and your own numbers. No model, no key,
    no network: it cannot make anything up, and every answer names its source. */
@@ -6306,7 +6530,7 @@ $("#importFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new
     // macros, events, labs, labRanges and foods, so restoring a backup lost the
     // gym, the food log and every blood result
     ["track","archive","workouts","meals","macros","log","sales","resale",
-     "weights","events","labs","labRanges","foods","settings"].forEach(k=>{
+     "weights","events","labs","labRanges","foods","settings","cycle"].forEach(k=>{
       if(d[k]!==undefined)S[k]=d[k];});
     save();applyTheme();renderAll();setTab("track");
     toast("Imported "+Object.keys(d).length+" sections");
@@ -6331,6 +6555,133 @@ const NOTR=new Set(["mg","mcg","ml","iu","lb","kcal","g","mg/dL","min","ApoB","N
 
 const I18N={
 es:{
+"Light flow":"Flujo ligero","Medium flow":"Flujo medio","Heavy flow":"Flujo abundante",
+/* --- cycle and rhythm tracker --- */
+"Cycle":"Ciclo",
+"Cycle and mood":"Ciclo y \u00e1nimo",
+"Rhythm and mood":"Ritmo y \u00e1nimo",
+"My cycle":"Mi ciclo",
+"My baseline":"Mi l\u00ednea base",
+"Log today":"Registrar hoy",
+"Period started today":"El periodo empez\u00f3 hoy",
+"Remove period from today":"Quitar el periodo de hoy",
+"Mark as a period day":"Marcar como d\u00eda de periodo",
+"Remove period from this day":"Quitar el periodo de este d\u00eda",
+"Where you are":"D\u00f3nde est\u00e1s",
+"How it is going":"C\u00f3mo va",
+"Not set up":"Sin configurar",
+"Choose a profile in settings to turn this on.":"Elige un perfil en los ajustes para activarlo.",
+"Cycle tracking":"Seguimiento del ciclo",
+"Off":"Apagado",
+"Tap what applies":"Toca lo que corresponda",
+"Done":"Hecho",
+"Period":"Periodo",
+"Expected":"Previsto",
+"Fertile":"F\u00e9rtil",
+"Ovulation":"Ovulaci\u00f3n",
+"Mood":"\u00c1nimo",
+"Symptoms":"S\u00edntomas",
+"Menstrual flow":"Flujo menstrual",
+"Sex and sex drive":"Sexo y deseo",
+"Discharge":"Flujo vaginal",
+"Digestion":"Digesti\u00f3n",
+"Tests":"Pruebas",
+"Physical activity":"Actividad f\u00edsica",
+"Body":"Cuerpo",
+"Calm":"Tranquila",
+"Happy":"Contenta",
+"Energetic":"Con energ\u00eda",
+"Frisky":"Juguetona",
+"Mood swings":"Cambios de humor",
+"Irritated":"Irritada",
+"Sad":"Triste",
+"Anxious":"Ansiosa",
+"Low":"Baja",
+"Feeling guilty":"Con sentimiento de culpa",
+"Obsessive thoughts":"Pensamientos obsesivos",
+"Low energy":"Sin energ\u00eda",
+"Apathetic":"Ap\u00e1tica",
+"Confused":"Confundida",
+"Very self-critical":"Muy autocr\u00edtica",
+"Motivated":"Motivado",
+"Confident":"Seguro",
+"Angry":"Enfadado",
+"Flat":"Plano",
+"Foggy":"Espeso",
+"Restless":"Inquieto",
+"Everything is fine":"Todo bien",
+"Cramps":"C\u00f3licos",
+"Tender breasts":"Pechos sensibles",
+"Headache":"Dolor de cabeza",
+"Acne":"Acn\u00e9",
+"Backache":"Dolor de espalda",
+"Fatigue":"Fatiga",
+"Hot flashes":"Sofocos",
+"Night sweats":"Sudores nocturnos",
+"Brain fog":"Niebla mental",
+"Joint pain":"Dolor articular",
+"Cravings":"Antojos",
+"Insomnia":"Insomnio",
+"Abdominal pain":"Dolor abdominal",
+"Dry skin":"Piel seca",
+"Dry eyes":"Ojos secos",
+"Morning erection":"Erecci\u00f3n matutina",
+"No morning erection":"Sin erecci\u00f3n matutina",
+"Muscle soreness":"Agujetas",
+"Poor sleep":"Mal sue\u00f1o",
+"Appetite up":"M\u00e1s apetito",
+"Appetite down":"Menos apetito",
+"Heavy":"Abundante",
+"Blood clots":"Co\u00e1gulos",
+"Didn't have sex":"Sin sexo",
+"Protected sex":"Sexo con protecci\u00f3n",
+"Unprotected sex":"Sexo sin protecci\u00f3n",
+"Oral sex":"Sexo oral",
+"Masturbation":"Masturbaci\u00f3n",
+"Sensual touch":"Caricias",
+"Orgasm":"Orgasmo",
+"No orgasm":"Sin orgasmo",
+"High sex drive":"Deseo alto",
+"Neutral sex drive":"Deseo normal",
+"Low sex drive":"Deseo bajo",
+"Sex":"Sexo",
+"Strong erections":"Erecciones firmes",
+"Weak erections":"Erecciones flojas",
+"No discharge":"Sin flujo",
+"Creamy":"Cremoso",
+"Watery":"Acuoso",
+"Sticky":"Pegajoso",
+"Egg white":"Clara de huevo",
+"Spotting":"Manchado",
+"Unusual":"Inusual",
+"Clumpy white":"Blanco grumoso",
+"Grey":"Gris",
+"Nausea":"N\u00e1useas",
+"Bloating":"Hinchaz\u00f3n",
+"Constipation":"Estre\u00f1imiento",
+"Diarrhoea":"Diarrea",
+"Didn't take tests":"Sin pruebas",
+"Pregnancy positive":"Embarazo positivo",
+"Pregnancy negative":"Embarazo negativo",
+"Pregnancy faint line":"Embarazo l\u00ednea tenue",
+"Ovulation positive":"Ovulaci\u00f3n positiva",
+"Ovulation negative":"Ovulaci\u00f3n negativa",
+"Travel":"Viaje",
+"Stress":"Estr\u00e9s",
+"Meditation":"Meditaci\u00f3n",
+"Journaling":"Escribir un diario",
+"Breathing exercises":"Ejercicios de respiraci\u00f3n",
+"Illness or injury":"Enfermedad o lesi\u00f3n",
+"Alcohol":"Alcohol",
+"Hormonal therapy":"Terapia hormonal",
+"Didn't exercise":"Sin ejercicio",
+"Yoga":"Yoga",
+"Dancing":"Baile",
+"Swimming":"Nataci\u00f3n",
+"Team sports":"Deporte de equipo",
+"Running":"Correr",
+"Cycling":"Ciclismo",
+"Walking":"Caminar",
 "Also known as":"También conocido como",
 "today":"hoy",
 /* --- injection sites --- */
@@ -7189,7 +7540,7 @@ function watchLang(){
     requestAnimationFrame(()=>{queued=false;applyLang();});
   });
   ["#sheet","#dayBody","#player","#deepBody",
-   "#v-track","#v-gym","#v-food","#v-labs","#v-cal","#v-settings","#v-coach","#v-guide"
+   "#v-track","#v-gym","#v-food","#v-labs","#v-cal","#v-settings","#v-coach","#v-guide","#v-cycle"
   ].forEach(sel=>{
     const el=$(sel);
     if(el)langObs.observe(el,{childList:true,subtree:true});
@@ -7222,6 +7573,223 @@ function langPop(first){
   if($("#lgClose"))$("#lgClose").onclick=()=>{S.settings.langAsked=true;save();closeModal();};
 }
 
+
+/* ---------- cycle screen ---------- */
+let cycDate=new Date();
+const PHASEN={en:{menstrual:"Menstrual",follicular:"Follicular",ovulation:"Fertile window",luteal:"Luteal"},
+ es:{menstrual:"Menstrual",follicular:"Folicular",ovulation:"Ventana fértil",luteal:"Lútea"}};
+function phName(p){return (PHASEN[curLang()]||PHASEN.en)[p]||"-";}
+const CYCT={
+ en:{
+  phaseW:{
+   menstrual:"Bleeding. Iron goes out with it, which is the one nutrient worth being deliberate about this week.",
+   follicular:"Oestrogen climbing after the bleed. Most people feel steadily better through this stretch.",
+   ovulation:"Oestrogen peaks and drops, LH surges. This is the window where pregnancy is possible.",
+   luteal:"Progesterone up. Appetite, temperature and sleep disruption all tend to rise before the next bleed."},
+  setup:"Log the first day of a period on the calendar and everything else here starts working.",
+  day:(d,p)=>`Day ${d} · ${p}`,
+  nextIn:(n,d)=>`Next period expected in ${n} day${n===1?"":"s"}, around ${d}`,
+  nextWas:d=>`Next period was expected around ${d}`,
+  confNone:"That is based on a 28 day default. Two logged periods and it starts using yours instead.",
+  confGood:(n,a,sp)=>`Your last ${n} cycles ran ${a} days give or take ${sp}, so this estimate is a firm one.`,
+  confRough:sp=>`Your cycles have varied by ${sp} days, so treat this as a window rather than a date.`,
+  confWide:sp=>`Your cycles have varied by ${sp} days. Predictions on a spread that wide are close to guesswork, and no app can fix that by being confident about it.`,
+  fertH:(a,b)=>`Fertile window ${a} to ${b}`,
+  fertB:"Estimated by counting back 14 days from the expected period, which holds up better than counting forward.",
+  ownH:"What you usually log in this phase",
+  ownB:(n,ph,list)=>`Across ${n} logged days in your ${ph} phase, you most often logged ${list}. That is your pattern, not a rule about cycles.`,
+  trainH:"Training this week",
+  trainB:"Go by how you feel on the day. Current evidence does not show cycle phase reliably changing what you can lift, and symptoms predict a session far better than the calendar does. Keep logging and this will fill in with your own pattern.",
+  eatH:"Worth eating this week",
+  eatMen:"Iron, because you are losing some. Red meat, lentils, spinach with something acidic alongside it. If periods are heavy and you are tired, ferritin is the blood test that answers it.",
+  eatLut:"Appetite and cravings genuinely rise here, it is not a willpower failure. Magnesium and calcium have modest trial support for premenstrual symptoms. Protein and fibre make the swing easier to ride.",
+  m14:"Last 14 days",
+  mWood:(a,b)=>`Morning erections logged on ${a} of ${b} days you recorded. It is a rough but real proxy for sleep quality and androgen status, which is why it is worth tracking alongside a protocol.`,
+  mNone:"Nothing logged yet. Morning erections, energy and mood are the three that move first when a protocol is working or when sleep is not.",
+  mTiredH:"Fatigue is showing up",
+  mTiredB:n=>`Logged on ${n} of the last 14 days. Worth lining up against what you started or changed in that window.`,
+  mAngH:"Irritability is showing up",
+  mAngB:n=>`Logged on ${n} of the last 14 days. Same question: what changed in the protocol, the sleep or the deficit.`,
+  mWhyH:"Why track this at all",
+  mWhyB:"Nothing here predicts a cycle, because there is not one. It is a baseline: the point is to see mood, drive and sleep move against what you are running, rather than to guess afterwards."},
+ es:{
+  phaseW:{
+   menstrual:"Sangrado. El hierro se va con él, y es el nutriente al que merece la pena prestar atención esta semana.",
+   follicular:"El estrógeno sube después del sangrado. La mayoría se encuentra cada vez mejor en este tramo.",
+   ovulation:"El estrógeno llega al pico y cae, la LH se dispara. Esta es la ventana en la que el embarazo es posible.",
+   luteal:"La progesterona sube. El apetito, la temperatura y las interrupciones del sueño tienden a subir antes del siguiente sangrado."},
+  setup:"Registra el primer día de un periodo en el calendario y todo lo demás de aquí empieza a funcionar.",
+  day:(d,p)=>`Día ${d} · ${p}`,
+  nextIn:(n,d)=>`Próximo periodo previsto en ${n} día${n===1?"":"s"}, hacia el ${d}`,
+  nextWas:d=>`El próximo periodo se esperaba hacia el ${d}`,
+  confNone:"Eso se basa en un valor por defecto de 28 días. Con dos periodos registrados empieza a usar los tuyos.",
+  confGood:(n,a,sp)=>`Tus últimos ${n} ciclos duraron ${a} días más o menos ${sp}, así que esta estimación es firme.`,
+  confRough:sp=>`Tus ciclos han variado ${sp} días, así que tómalo como una franja y no como una fecha.`,
+  confWide:sp=>`Tus ciclos han variado ${sp} días. Predecir sobre una dispersión así es casi adivinar, y ninguna app arregla eso mostrándose segura.`,
+  fertH:(a,b)=>`Ventana fértil del ${a} al ${b}`,
+  fertB:"Estimada contando 14 días hacia atrás desde el periodo previsto, que aguanta mejor que contar hacia delante.",
+  ownH:"Lo que sueles registrar en esta fase",
+  ownB:(n,ph,list)=>`En ${n} días registrados de tu fase ${ph}, lo que más anotaste fue ${list}. Ese es tu patrón, no una regla sobre los ciclos.`,
+  trainH:"Entrenar esta semana",
+  trainB:"Guíate por cómo te encuentres ese día. La evidencia actual no muestra que la fase del ciclo cambie de forma fiable lo que puedes levantar, y los síntomas predicen una sesión mucho mejor que el calendario. Sigue registrando y esto se irá llenando con tu propio patrón.",
+  eatH:"Qué conviene comer esta semana",
+  eatMen:"Hierro, porque estás perdiendo algo. Carne roja, lentejas, espinacas con algo ácido al lado. Si los periodos son abundantes y estás cansada, la ferritina es el análisis que lo responde.",
+  eatLut:"El apetito y los antojos suben de verdad aquí, no es un fallo de fuerza de voluntad. El magnesio y el calcio tienen un apoyo modesto en ensayos para los síntomas premenstruales. La proteína y la fibra hacen el vaivén más llevadero.",
+  m14:"Últimos 14 días",
+  mWood:(a,b)=>`Erecciones matutinas registradas en ${a} de ${b} días que anotaste. Es un indicador tosco pero real de la calidad del sueño y del estado androgénico, y por eso merece seguirlo junto a un protocolo.`,
+  mNone:"Aún no hay nada registrado. Las erecciones matutinas, la energía y el ánimo son las tres cosas que se mueven primero cuando un protocolo funciona o cuando el sueño no.",
+  mTiredH:"Está apareciendo fatiga",
+  mTiredB:n=>`Registrada en ${n} de los últimos 14 días. Merece cruzarlo con lo que empezaste o cambiaste en esa ventana.`,
+  mAngH:"Está apareciendo irritabilidad",
+  mAngB:n=>`Registrada en ${n} de los últimos 14 días. Misma pregunta: qué cambió en el protocolo, en el sueño o en el déficit.`,
+  mWhyH:"Para qué sirve registrar esto",
+  mWhyB:"Aquí nada predice un ciclo, porque no lo hay. Es una línea base: la idea es ver cómo se mueven el ánimo, el deseo y el sueño frente a lo que estás usando, en lugar de adivinarlo después."}
+};
+function CY(){return CYCT[curLang()]||CYCT.en;}
+/* what her own log says about this phase, which beats a generic rule */
+function cycOwnPattern(phase){
+  if(!phase)return null;
+  const c=cycS(),tally={};
+  let days=0;
+  Object.keys(c.days).forEach(k=>{
+    const ph=cycPhase(parseISO(k));
+    if(ph!==phase)return;
+    days++;
+    ["sym","mood","gut"].forEach(g=>{
+      (c.days[k][g]||[]).forEach(o=>{if(o!=="Everything is fine")tally[o]=(tally[o]||0)+1;});
+    });
+  });
+  if(days<3)return null;
+  const top=Object.keys(tally).sort((a,b)=>tally[b]-tally[a]).slice(0,3)
+    .filter(o=>tally[o]>=2);
+  return top.length?{days:days,top:top}:null;
+}
+function cycTrend(grp,opt,win){
+  const c=cycS();let n=0;
+  for(let i=0;i<win;i++){
+    const k=iso(new Date(Date.now()-i*DAY));
+    if((c.days[k]||{})[grp]&&c.days[k][grp].indexOf(opt)>=0)n++;
+  }
+  return n;
+}
+function cycInsights(){
+  const out=[],T=CY();
+  const today=new Date(),k=iso(today);
+  if(cycSex()==="f"){
+    const p=cycPredict(),day=cycDay(today),ph=cycPhase(today);
+    if(!p){out.push({lvl:"plain",t:T.setup});return out;}
+    const conf=cycConfidence();
+    out.push({lvl:"phase",t:T.day(day,phName(ph)),b:T.phaseW[ph]||""});
+    const dl=Math.round((parseISO(p.nextStart).getTime()-parseISO(k).getTime())/DAY);
+    out.push({lvl:"plain",
+      t:dl>0?T.nextIn(dl,fmtShort(p.nextStart)):T.nextWas(fmtShort(p.nextStart)),
+      b:conf.lvl==="none"?T.confNone
+        :conf.lvl==="good"?T.confGood(conf.n+1,p.avg,conf.sp)
+        :conf.lvl==="rough"?T.confRough(conf.sp)
+        :T.confWide(conf.sp)});
+    if(ph!=="menstrual"&&ph!=="ovulation")
+      out.push({lvl:"plain",t:T.fertH(fmtShort(p.fertileFrom),fmtShort(p.fertileTo)),b:T.fertB});
+    const own=cycOwnPattern(ph);
+    out.push(own?{lvl:"own",t:T.ownH,
+                  b:T.ownB(own.days,phName(ph).toLowerCase(),own.top.map(x=>L(x)).join(", "))}
+                :{lvl:"plain",t:T.trainH,b:T.trainB});
+    if(ph==="menstrual")out.push({lvl:"nutr",t:T.eatH,b:T.eatMen});
+    if(ph==="luteal")out.push({lvl:"nutr",t:T.eatH,b:T.eatLut});
+  }else{
+    const wood=cycTrend("sym","Morning erection",14),
+          nowood=cycTrend("sym","No morning erection",14),
+          logged=wood+nowood;
+    out.push({lvl:"phase",t:T.m14,b:logged?T.mWood(wood,logged):T.mNone});
+    const tired=cycTrend("sym","Fatigue",14),
+          ang=cycTrend("mood","Irritated",14)+cycTrend("mood","Angry",14);
+    if(tired>=4)out.push({lvl:"own",t:T.mTiredH,b:T.mTiredB(tired)});
+    if(ang>=4)out.push({lvl:"own",t:T.mAngH,b:T.mAngB(ang)});
+    out.push({lvl:"plain",t:T.mWhyH,b:T.mWhyB});
+  }
+  return out;
+}
+/* Dates spliced into a sentence never reach tr(), so they format in the
+   reader's own locale rather than being translated afterwards. */
+const LOCM={en:"en-US",es:"es-ES",ar:"ar",zh:"zh-CN",ru:"ru-RU"};
+function curLocale(){return LOCM[curLang()]||"en-US";}
+function fmtShort(k){
+  const d=parseISO(k);
+  return d.toLocaleDateString(curLocale(),{month:"short",day:"numeric"});
+}
+function renderCycle(){
+  const el=$("#v-cycle");
+  if(!el)return;
+  if(!cycOn()){
+    el.innerHTML=`<div class="vsub">Cycle</div>
+      <div class="vhead"><h2>Not set up</h2><div class="spacer"></div></div>
+      <div class="panel"><div class="stonote">Choose a profile in settings to turn this on.</div></div>`;
+    return;
+  }
+  const f=cycSex()==="f";
+  const y=cycDate.getFullYear(),m=cycDate.getMonth();
+  const first=new Date(y,m,1).getDay(),days=new Date(y,m+1,0).getDate(),td=iso(new Date());
+  let cells="";
+  for(let i=0;i<first;i++)cells+=`<div class="cday empty"></div>`;
+  for(let d=1;d<=days;d++){
+    const k=iso(new Date(y,m,d));
+    const cls=[ "cday" ];
+    if(k===td)cls.push("today");
+    if(f&&cycBleedOn(k))cls.push("bleed");
+    else if(f&&cycPredBleedOn(k))cls.push("predbleed");
+    else if(f&&cycOvOn(k))cls.push("ov");
+    else if(f&&cycFertileOn(k))cls.push("fert");
+    const n=cycCount(k);
+    cells+=`<div class="${cls.join(" ")}" data-cyc="${k}"><span class="num">${d}</span>${
+      n?`<span class="cdot"></span>`:""}</div>`;
+  }
+  const ins=cycInsights();
+  el.innerHTML=`<div class="vsub">${f?"Cycle and mood":"Rhythm and mood"}</div>
+    <div class="vhead"><h2>${f?"My cycle":"My baseline"}</h2><div class="spacer"></div></div>
+    <div class="panel">
+      <div class="cyctop"><button class="mini" id="cycPrev">‹</button>
+        <span class="cycmon">${cycDate.toLocaleDateString(curLocale(),{month:"long",year:"numeric"})}</span>
+        <button class="mini" id="cycNext">›</button></div>
+      <div class="cycgrid">${["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=>`<div class="cdow">${d}</div>`).join("")}${cells}</div>
+      ${f?`<div class="cyckey">
+        <span><i class="sw bleed"></i>Period</span>
+        <span><i class="sw predbleed"></i>Expected</span>
+        <span><i class="sw fert"></i>Fertile</span>
+        <span><i class="sw ov"></i>Ovulation</span></div>`:""}
+    </div>
+    <button class="primary" id="cycLogBtn">Log today</button>
+    ${f?`<button class="ghost" id="cycPerBtn">${cycBleedOn(td)?"Remove period from today":"Period started today"}</button>`:""}
+    <div class="inshead"><span class="ih">${f?"Where you are":"How it is going"}</span><i class="il"></i></div>
+    ${ins.map(x=>`<div class="cycins ${x.lvl}"><div class="cinh">${x.t}</div>${
+      x.b?`<div class="cinb">${x.b}</div>`:""}</div>`).join("")}
+    <button class="disclaimer" id="cycDisc">⚠ Not medical advice — tap to read</button>`;
+  $("#cycPrev").onclick=()=>{cycDate=new Date(y,m-1,1);renderCycle();};
+  $("#cycNext").onclick=()=>{cycDate=new Date(y,m+1,1);renderCycle();};
+  $("#cycLogBtn").onclick=()=>cycLogSheet(iso(new Date()));
+  if($("#cycPerBtn"))$("#cycPerBtn").onclick=()=>{cycToggleBleed(iso(new Date()));renderCycle();};
+  if($("#cycDisc"))$("#cycDisc").onclick=showDisclaimer;
+  $$("[data-cyc]",el).forEach(c=>c.onclick=()=>cycLogSheet(c.dataset.cyc));
+  if(curLang()!=="en")applyLang();
+}
+function cycLogSheet(k){
+  const f=cycSex()==="f";
+  const draw=()=>{
+    const groups=cycGroups();
+    $("#sheet").innerHTML=`<h3>${WD[parseISO(k).getDay()]} · ${fmtShort(k)}</h3>
+      <div class="msub">${f&&cycDay(parseISO(k))?`Cycle day ${cycDay(parseISO(k))}`:"Tap what applies"}</div>
+      ${f?`<button class="ghost cycper" id="cycPer2">${cycBleedOn(k)?"Remove period from this day":"Mark as a period day"}</button>`:""}
+      ${groups.map(g=>`<div class="cggrp"><div class="cgh">${g.n}</div>
+        <div class="cgl">${g.o.map(o=>`<button class="cgchip${cycHas(k,g.k,o)?" on":""}"
+          data-cg="${g.k}" data-co="${o.replace(/"/g,"&quot;")}" data-one="${g.one?1:0}">${o}</button>`).join("")}</div></div>`).join("")}
+      <button class="primary" id="cgDone">Done</button>`;
+    $$("[data-cg]",$("#sheet")).forEach(b=>b.onclick=()=>{
+      cycToggle(k,b.dataset.cg,b.dataset.co,b.dataset.one==="1");draw();});
+    if($("#cycPer2"))$("#cycPer2").onclick=()=>{cycToggleBleed(k);draw();};
+    $("#cgDone").onclick=()=>{closeModal();renderCycle();};
+    if(curLang()!=="en")applyLang();
+  };
+  draw();
+  $("#modal").classList.add("on");
+}
 
 /* ---------- coach screen ---------- */
 let coachQ="",coachRes=null;
@@ -7274,25 +7842,31 @@ function coachCard(r){
 }
 
 /* ============ nav / shell ============ */
-const SUBS={track:"Today",guide:"Lab",labs:"Bloodwork",gym:"Recovery",food:"Food",coach:"Coach",settings:"Settings"};
+const SUBS={track:"Today",guide:"Lab",cycle:"Cycle",labs:"Bloodwork",gym:"Recovery",food:"Food",coach:"Coach",settings:"Settings"};
 let tab="track";
 function setTab(t){tab=t;$$(".view").forEach(v=>v.classList.remove("on"));$("#v-"+t).classList.add("on");
   $$("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   $("#bloodBtn").classList.toggle("on",t==="labs");
+  if($("#cycBtn"))$("#cycBtn").classList.toggle("on",t==="cycle");
   // "add peptide" belongs on Peps, where the list actually lives
   $("#topSub").textContent=SUBS[t]||"";
   $("#fab").style.display=t==="guide"?"grid":"none";
-  ({track:renderTrack,guide:renderGuide,labs:renderLabs,gym:renderGym,food:renderFood,coach:renderCoach,settings:renderSettings}[t]||(()=>{}))();
+  ({track:renderTrack,guide:renderGuide,labs:renderLabs,gym:renderGym,food:renderFood,coach:renderCoach,cycle:renderCycle,settings:renderSettings}[t]||(()=>{}))();
   applyLang();
   window.scrollTo({top:0,behavior:"smooth"});}
 $$("#nav button").forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
 $("#profileBtn").onclick=()=>quickSet();
 $("#bloodBtn").onclick=()=>setTab("labs");
+$("#cycBtn").onclick=()=>setTab("cycle");
+/* the icon only exists for someone who has chosen a profile */
+function syncCycBtn(){const b=$("#cycBtn");if(b)b.style.display=cycOn()?"grid":"none";}
 /* Everything you might want to flip lives here rather than being spread
    between the top bar and the bottom of the settings screen. */
 /* "Light" is already the workout-intensity label, so these two cannot come
    from the shared dictionary */
 const THEMEL={en:{d:"Dark",l:"Light"},es:{d:"Oscuro",l:"Claro"}};
+const CYCLBL={en:{f:"Female",m:"Male"},es:{f:"Mujer",m:"Hombre"}};
+function CYCL(){return CYCLBL[curLang()]||CYCLBL.en;}
 function quickSet(){
   const dark=(S.settings.theme||"dark")==="dark";
   const TH=THEMEL[curLang()]||THEMEL.en;
@@ -7308,6 +7882,12 @@ function quickSet(){
       <span class="qsv">${L.f} ${L.n}</span><i class="ddchev">\u203a</i></button>
     <div class="qsrow"><span class="qsl">Restock notifications</span>${tog("qsNotif",!!S.settings.notify)}</div>
     <div class="qsrow"><span class="qsl">Daily dose reminder</span>${tog("qsRemind",!!S.settings.remind)}</div>
+    <div class="qsrow"><span class="qsl">Cycle tracking</span>
+      <div class="qsseg notr">
+        <button class="qsb ${cycSex()===""?"on":""}" data-qsex="">Off</button>
+        <button class="qsb ${cycSex()==="f"?"on":""}" data-qsex="f">${CYCL().f}</button>
+        <button class="qsb ${cycSex()==="m"?"on":""}" data-qsex="m">${CYCL().m}</button>
+      </div></div>
     <button class="qsrow qsgo" id="qsAll"><span class="qsl">All settings</span><i class="ddchev">\u203a</i></button>
     <button class="ghost" id="qsClose">Close</button>`;
   $("#modal").classList.add("on");
@@ -7320,6 +7900,10 @@ function quickSet(){
   $("#qsRemind").onclick=async()=>{
     if(!S.settings.remind){const r=await askNotify();if(!r)return;}
     S.settings.remind=!S.settings.remind;save();updateBadge();quickSet();};
+  $$("[data-qsex]",$("#sheet")).forEach(b=>b.onclick=()=>{
+    cycS().sex=b.dataset.qsex;save();syncCycBtn();
+    if(!cycOn()&&tab==="cycle")setTab("track");
+    quickSet();});
   $("#qsAll").onclick=()=>{closeModal();setTab("settings");};
   $("#qsClose").onclick=closeModal;
   if(curLang()!=="en")applyLang();
@@ -7360,7 +7944,7 @@ $("#deepClose").onclick=closeDeep;
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#deepView").classList.contains("on"))closeDeep();});
 if(!S.foods.length&&S.meals.length){const seen={};
   S.meals.forEach(m=>{const k=foodKey(m.name);if(!seen[k]){seen[k]=1;saveFoodItem(m);}});save();}
-applyLabRanges();initTips();renderTrack();syncNative();applyLang();watchLang();
+applyLabRanges();initTips();renderTrack();syncNative();applyLang();watchLang();syncCycBtn();
 initSW();startReminderLoop();
 /* If localStorage came back empty, something cleared it — pull the data back
    from the mirror before the user starts typing over a blank app. Then ask the
