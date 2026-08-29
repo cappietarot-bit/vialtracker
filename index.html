@@ -7097,8 +7097,8 @@ function quickSet(){
   $("#sheet").innerHTML=`<h3>Quick settings</h3>
     <div class="qsrow"><span class="qsl">Appearance</span>
       <div class="qsseg notr">
-        <button class="qsb ${dark?"on":""}" data-theme="dark">${TH.d}</button>
-        <button class="qsb ${dark?"":"on"}" data-theme="light">${TH.l}</button>
+        <button class="qsb ${dark?"on":""}" data-qstheme="dark">${TH.d}</button>
+        <button class="qsb ${dark?"":"on"}" data-qstheme="light">${TH.l}</button>
       </div></div>
     <button class="qsrow qsgo" id="qsLang"><span class="qsl">Language</span>
       <span class="qsv">${L.f} ${L.n}</span><i class="ddchev">\u203a</i></button>
@@ -7107,8 +7107,10 @@ function quickSet(){
     <button class="qsrow qsgo" id="qsAll"><span class="qsl">All settings</span><i class="ddchev">\u203a</i></button>
     <button class="ghost" id="qsClose">Close</button>`;
   $("#modal").classList.add("on");
-  $$("[data-theme]").forEach(b=>b.onclick=()=>{
-    S.settings.theme=b.dataset.theme;applyTheme();save();quickSet();});
+  // scoped to the sheet: applyTheme() puts data-theme on <html>, and a
+  // document-wide lookup here bound this handler to the root element
+  $$("[data-qstheme]",$("#sheet")).forEach(b=>b.onclick=()=>{
+    S.settings.theme=b.dataset.qstheme;applyTheme();save();quickSet();});
   $("#qsLang").onclick=()=>langPop(false);
   $("#qsNotif").onclick=()=>{S.settings.notify=!S.settings.notify;save();quickSet();};
   $("#qsRemind").onclick=async()=>{
