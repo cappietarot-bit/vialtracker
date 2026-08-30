@@ -1,4 +1,4 @@
-/* Vialback service worker.
+/* The Lab service worker.
 
    Two jobs. It caches the app so it opens with no signal — the whole thing is
    one 5 MB file, so once it is cached there is nothing else to fetch. And it
@@ -9,7 +9,7 @@
    new deploy is picked up on the next online load rather than being pinned to
    whatever was cached first. Everything else is cache-first. */
 
-const CACHE = "vialback-v1";
+const CACHE = "thelab-v2";
 const SHELL = ["./", "./index.html", "./manifest.json",
                "./icon-192.png", "./icon-512.png", "./favicon.png"];
 
@@ -57,7 +57,7 @@ self.addEventListener("fetch", e => {
 self.addEventListener("message", e => {
   const d = e.data || {};
   if (d.type !== "notify") return;
-  self.registration.showNotification(d.title || "Vialback", {
+  self.registration.showNotification(d.title || "The Lab", {
     body: d.body || "",
     icon: "./icon-192.png",
     badge: "./icon-192.png",
