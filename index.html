@@ -758,6 +758,8 @@
   .cday.predbleed{background:transparent;border:1.5px dashed #e0245e;color:#e0245e}
   .cday.fert{background:color-mix(in srgb,#2dd4bf 22%,transparent);color:var(--ink)}
   .cday.ov{background:#2dd4bf;color:#04211c;font-weight:700}
+  .cmk{position:absolute;bottom:1px;right:2px;font-size:13px;line-height:1;
+    filter:drop-shadow(0 1px 2px rgba(0,0,0,.55))}
   .cdot{position:absolute;bottom:5px;width:4px;height:4px;border-radius:99px;background:currentColor;opacity:.75}
   .cyckey{display:flex;flex-wrap:wrap;gap:12px;margin-top:11px;font-size:11px;color:var(--ink3)}
   .cyckey span{display:inline-flex;align-items:center;gap:5px}
@@ -8369,6 +8371,17 @@ function langPop(first){
 
 
 /* ---------- cycle screen ---------- */
+/* A day's marker on the calendar. Sex outranks orgasm, so a day with both
+   shows the heart rather than two symbols competing in one cell. */
+const SEXACTS=["Protected sex","Unprotected sex","Oral sex","Sex"];
+const SOLOACTS=["Orgasm","Masturbation"];
+function cycMark(k){
+  const d=(cycDayLog(k).drive)||[];
+  if(SEXACTS.some(x=>d.indexOf(x)>=0))return "\u2764\ufe0f";
+  if(SOLOACTS.some(x=>d.indexOf(x)>=0))return "\ud83d\udca6";
+  return "";
+}
+
 let cycDate=new Date();
 const PHASEN={en:{menstrual:"Menstrual",follicular:"Follicular",ovulation:"Fertile window",luteal:"Luteal"},
  es:{menstrual:"Menstrual",follicular:"Folicular",ovulation:"Ventana fértil",luteal:"Lútea"}};
@@ -8572,9 +8585,9 @@ function renderCycle(){
     else if(f&&cycPredBleedOn(k))cls.push("predbleed");
     else if(f&&cycOvOn(k))cls.push("ov");
     else if(f&&cycFertileOn(k))cls.push("fert");
-    const n=cycCount(k);
+    const n=cycCount(k),mk=cycMark(k);
     cells+=`<div class="${cls.join(" ")}" data-cyc="${k}"><span class="num">${d}</span>${
-      n?`<span class="cdot"></span>`:""}</div>`;
+      mk?`<span class="cmk">${mk}</span>`:n?`<span class="cdot"></span>`:""}</div>`;
   }
   const ins=cycInsights();
   el.innerHTML=`<div class="vsub">${f?"Cycle and mood":"Rhythm and mood"}</div>
@@ -8588,7 +8601,9 @@ function renderCycle(){
         <span><i class="sw bleed"></i>Period</span>
         <span><i class="sw predbleed"></i>Expected</span>
         <span><i class="sw fert"></i>Fertile</span>
-        <span><i class="sw ov"></i>Ovulation</span></div>`:""}
+        <span><i class="sw ov"></i>Ovulation</span>
+        <span>\u2764\ufe0f Sex</span>
+        <span>\ud83d\udca6 Orgasm</span></div>`:""}
     </div>
     <button class="primary" id="cycLogBtn">Log today</button>
     ${f?`<button class="ghost" id="cycPerBtn">${cycBleedOn(td)?"Remove period from today":"Period started today"}</button>`:""}
