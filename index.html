@@ -304,6 +304,23 @@
   .dddose{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:13px 15px;
     font-size:14.5px;line-height:1.6;color:var(--ink2)}
   /* the three evidence buckets, colour-keyed by how solid they are */
+  .ddfold{padding:0;overflow:hidden}
+  .ddfh{width:100%;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+    background:none;border:0;padding:13px 15px 8px;font:inherit;color:var(--ink);
+    text-align:left;cursor:pointer}
+  .ddfh .ddchev{margin-left:auto;font-style:normal;color:var(--ink3);
+    transition:transform .18s ease;align-self:center}
+  .ddfh[aria-expanded="true"] .ddchev{transform:rotate(90deg)}
+  .ddfh:hover .ddbt{color:var(--accent-ink)}
+  .ddfs{padding:0 15px 13px;color:var(--ink2);font-size:13.5px;line-height:1.6}
+  .ddfs p{margin:0 0 6px}
+  .ddfs p:last-child{margin-bottom:0}
+  .ddfs .ddfx{color:var(--ink3)}
+  .ddfb{display:none;padding:0 15px 13px}
+  .ddfold.on .ddfs{display:none}
+  .ddfold.on .ddfb{display:block}
+  body.rtl .ddfh{text-align:right}
+  body.rtl .ddfh .ddchev{margin-left:0;margin-right:auto}
   .ddblock{border:1px solid var(--line);border-left-width:3px;border-radius:11px;
     padding:13px 15px;margin-bottom:12px;background:var(--panel)}
   .ddblock.k{border-left-color:var(--good)}
@@ -4699,13 +4716,14 @@ function cycMoodStats(win){
     const d=c.days[k];
     if(!(d.mood||d.sym))return;
     out.days++;
-    if(cycSwing(k))out.swings++;
+    const sw=cycSwing(k);
+    if(sw)out.swings++;
     (d.mood||[]).forEach(o=>out.tally[o]=(out.tally[o]||0)+1);
     (d.sym||[]).forEach(o=>{if(o!=="Everything is fine")out.sym[o]=(out.sym[o]||0)+1;});
     const ph=cycSex()==="f"?cycPhase(parseISO(k)):null;
     if(ph){
       const b=out.byPhase[ph]=out.byPhase[ph]||{days:0,swings:0};
-      b.days++; if(cycSwing(k))b.swings++;
+      b.days++; if(sw)b.swings++;
     }
   });
   return out;
@@ -5217,6 +5235,8 @@ const CTPL={
   tSteady:"Has it reached a steady level?", tTaking:"Are you actually taking it?",
   tDiet:"What it needs from your diet", tSays:"What the guides say about that",
   tDose:"How much", more:n=>`Show ${n} more`, less:"Show fewer",
+  tAlc:"Drinking on this",
+  alcLog:n=>`Your log has alcohol on <b>${n}</b> of the last 30 days.`,
   tFound:"From the guides", tNone:"Nothing found", tRx:"With what you are prescribed",
   noneT2:'No passage in the guides matches that. Try a peptide name, or a word like "stack", "bloodwork", "timing" or "nausea".',
   tAlong:n=>`Running ${n} alongside what you already take`,
@@ -5267,6 +5287,8 @@ const CTPL={
   adhLow:" Si est\u00e1s juzgando si funciona, has hecho solo parte de un protocolo.",
   diet:(n,b)=>`<b>${n}</b> \u2014 ${b}`,
   tDose:"Cu\u00e1nto", more:n=>`Ver ${n} m\u00e1s`, less:"Ver menos",
+  tAlc:"Beber con esto",
+  alcLog:n=>`Tu registro tiene alcohol en <b>${n}</b> de los \u00faltimos 30 d\u00edas.`,
   dep:(n,why)=>`Depende de <b>${n}</b>. ${why}`}
 };
 function CT(){return CTPL[curLang()]||CTPL.en;}
@@ -5469,7 +5491,8 @@ function ciMeds(q,keys){
 const CYCSYN={
  "morning wood":"Morning erection","am wood":"Morning erection","wood":"Morning erection",
  "morning erections":"Morning erection","erection":"Morning erection","erections":"Morning erection",
- "libido":"High sex drive","sex drive":"High sex drive","horny":"High sex drive",
+ "libido":"High sex drive","sex drive":"High sex drive", "drive":"High sex drive", "sex life":"High sex drive",
+ "libido baja":"High sex drive", "no wood":"No morning erection", "morning glory":"Morning erection","horny":"High sex drive",
  "cramping":"Cramps","period pain":"Cramps","bloated":"Bloating",
  "tired":"Fatigue","exhausted":"Fatigue","knackered":"Fatigue",
  "cant sleep":"Insomnia","sleepless":"Insomnia","spots":"Acne","breakouts":"Acne",
@@ -5477,30 +5500,70 @@ const CYCSYN={
  "c\u00f3licos":"Cramps","cansancio":"Fatigue","fatiga":"Fatigue","insomnio":"Insomnia"
 };
 /* which logged options a question is about */
-function cycOptMatch(q){
-  const t=" "+String(q||"").toLowerCase().replace(/[^a-z0-9\u00c0-\u017f ]/g," ")
-    .replace(/\s+/g," ")+" ";
-  const hits=[];
-  const add=(grp,opt)=>{if(!hits.some(h=>h.opt===opt))hits.push({grp:grp,opt:opt});};
-  cycGroups().forEach(g=>g.o.forEach(o=>{
-    const x=o.toLowerCase().replace(/[^a-z0-9\u00c0-\u017f ]/g," ").trim();
-    if(x.length>3&&t.indexOf(" "+x+" ")>=0)add(g.k,o);
-    const es=(typeof I18N!=="undefined"&&I18N[curLang()]&&I18N[curLang()][o])||"";
-    const xe=String(es).toLowerCase().trim();
-    if(xe.length>3&&t.indexOf(" "+xe+" ")>=0)add(g.k,o);
-  }));
-  Object.keys(CYCSYN).forEach(sy=>{
-    if(t.indexOf(" "+sy+" ")<0)return;
-    const opt=CYCSYN[sy];
-    cycGroups().forEach(g=>{if(g.o.indexOf(opt)>=0)add(g.k,opt);});
-  });
-  return hits;
-}
 /* the option this one is the opposite of, where there is one */
 const CYCOPP={"Morning erection":"No morning erection","No morning erection":"Morning erection",
  "High sex drive":"Low sex drive","Low sex drive":"High sex drive",
  "Strong erections":"Weak erections","Weak erections":"Strong erections",
  "Appetite up":"Appetite down","Appetite down":"Appetite up"};
+/* Words that turn a match into its opposite. "No morning wood" is a report of
+   not having it, and there is an option for exactly that. */
+const CYCNEG=/(?:^|\s)(no|not|without|never|lost|losing|zero|nada|sin|ning[uú]n|ninguna|ya no)$/;
+function cycOptMatch(q){
+  const t=" "+String(q||"").toLowerCase().replace(/[^a-z0-9À-ſ ]/g," ")
+    .replace(/\s+/g," ")+" ";
+  const groups=cycGroups();
+  // where each candidate matched, so a longer phrase can suppress a shorter
+  // one sitting inside it: "low sex drive" has to beat the "sex drive" synonym
+  const cand=[];
+  const at=(phrase)=>{
+    const i=t.indexOf(" "+phrase+" ");
+    return i<0?null:{i:i+1,len:phrase.length};
+  };
+  groups.forEach(g=>g.o.forEach(o=>{
+    const x=o.toLowerCase().replace(/[^a-z0-9À-ſ ]/g," ").trim();
+    let p=x.length>3?at(x):null;
+    if(!p){
+      const es=(typeof I18N!=="undefined"&&I18N[curLang()]&&I18N[curLang()][o])||"";
+      const xe=String(es).toLowerCase().trim();
+      if(xe.length>3)p=at(xe);
+    }
+    if(p)cand.push({grp:g.k,opt:o,i:p.i,len:p.len});
+  }));
+  Object.keys(CYCSYN).forEach(sy=>{
+    const p=at(sy);
+    if(!p)return;
+    const opt=CYCSYN[sy];
+    const g=groups.find(g=>g.o.indexOf(opt)>=0);
+    if(g)cand.push({grp:g.k,opt:opt,i:p.i,len:p.len});
+  });
+
+  // longest match first, and anything overlapping one already taken is the
+  // same mention read less precisely
+  cand.sort((a,b)=>b.len-a.len);
+  const hits=[],taken=[];
+  cand.forEach(c=>{
+    if(taken.some(x=>c.i<x.i+x.len&&x.i<c.i+c.len))return;
+    if(hits.some(h=>h.opt===c.opt))return;
+    taken.push(c);
+    let opt=c.opt;
+    // a negation in front of it means the opposite option, where there is one
+    if(CYCNEG.test(t.slice(0,c.i).replace(/\s+$/,""))&&CYCOPP[opt])opt=CYCOPP[opt];
+    else{
+      // the phrase carries no polarity but the sentence might: "my sex drive
+      // is low" matched only the synonym, which points at the high option
+      const opp=CYCOPP[opt];
+      if(opp){
+        const lead=opp.toLowerCase().split(" ")[0];
+        const own=opt.toLowerCase().split(" ")[0];
+        if(lead!==own&&lead.length>2&&t.indexOf(" "+lead+" ")>=0&&
+           t.indexOf(" "+own+" ")<0)opt=opp;
+      }
+    }
+    const g=groups.find(g=>g.o.indexOf(opt)>=0);
+    hits.push({grp:g?g.k:c.grp,opt:opt});
+  });
+  return hits;
+}
 /* how often an option was logged in a window, and in the window before it */
 function cycOptCount(grp,opt,win,offset){
   const c=cycS();let n=0;
@@ -5543,6 +5606,78 @@ function ciComp(q,keys){
     blocks.push({kind:"warn",text:c.neg});
   });
   return {title:M.cpT,blocks:blocks,sources:[]};
+}
+/* ---------- alcohol ----------
+   Its own table rather than a line in each guide, because the interactions are
+   mechanistic and repeat across whole families. Read against the mood log,
+   which has an Alcohol option, so the answer can use what was actually logged
+   rather than asking. */
+const ALCOA=["alcohol","drink","drinks","drinking","drank","beer","wine","booze",
+ "liquor","spirits","whisky","whiskey","vodka","tequila","rum","gin","pint",
+ "pints","hangover","hungover","drunk","night out","bender","alcohol","beber",
+ "bebida","bebidas","tomar","cerveza","vino","copas","resaca","borracho",
+ "emborrach","alcoholismo","trago","tragos"];
+const ALCO=[
+ {fam:"gear",lvl:"warn",t:"Alcohol and anabolic steroids injure the liver by different routes, which is why the combination is worse than either number suggests. Steroids, particularly the oral ones, cause cholestatic injury: bile flow slows and bilirubin climbs. Alcohol causes fat accumulation first and inflammation after. One is a plumbing problem and the other is a chemical burn, and the liver is absorbing both at once. Enzymes rising on gear are expected; enzymes rising on gear plus a drinking week are the ones that turn into a hospital story."},
+ {key:"dianabol",lvl:"warn",t:"This is the pairing to actually avoid. Methandrostenolone is 17-alpha-alkylated, a modification that exists purely to survive first-pass metabolism, and surviving it means the liver processes the drug repeatedly instead of once. Every published case of serious liver injury on this compound involves either a long run, a high dose, or alcohol. Drinking through a four week dbol cycle is the single most reliable way to turn a manageable rise in ALT into cholestatic jaundice, and the itching and dark urine that precede it are late signs, not early ones."},
+ {fam:"gear",lvl:"warn",t:"Alcohol raises oestradiol and lowers testosterone on its own. It increases aromatase activity, and because the liver clears oestrogen, a liver busy with alcohol clears less of it. On an aromatising compound that is a third push in the same direction, and it is a common reason gynecomastia appears in someone whose dose has not changed. Heavy drinking also suppresses the testicular axis directly, so it works against the thing being taken."},
+ {key:"anastrozole",lvl:"warn",t:"Alcohol works against what this drug is for, by raising oestradiol while the drug lowers it, so the dose you settled on stops meaning what it meant. The larger problem is bone. Aromatase inhibitors reduce bone mineral density, and alcohol independently reduces it too, through both direct effects on osteoblasts and poorer calcium handling. Running an AI for months while drinking regularly stacks two of the few things that quietly cost bone, in someone who will not find out for years."},
+ {key:"testcyp",lvl:"warn",t:"Two things worth watching rather than a hard interaction. Alcohol raises blood pressure and is a diuretic, so on a compound that already raises haematocrit and blood pressure, a heavy night pushes both in the wrong direction at once, and dehydration on a thick blood count is the specific combination that matters. Alcohol also lowers testosterone acutely, which on replacement dosing muddies any read you take on how the dose is working."},
+ {key:"trenacetate",lvl:"warn",t:"The compound is already the most reliable disruptor of sleep and mood in this app, and alcohol degrades both in the same direction. It suppresses REM and slow-wave sleep in the second half of the night, which is exactly the part trenbolone already takes, and it lowers impulse control on a compound whose most consistent user report is a shorter fuse. Night sweats and insomnia on tren plus alcohol is not two problems, it is one problem compounding."},
+ {fam:"glp",lvl:"warn",t:"These slow gastric emptying, so alcohol leaves the stomach more slowly and unpredictably. The same two drinks can hit later and harder than expected, or arrive all at once when the stomach finally empties, and people misjudge it. There is a real hypoglycaemia risk too: alcohol blocks the liver's production of glucose while these drugs increase insulin release, and if insulin or a sulfonylurea is also in the picture that combination is the one that causes a genuine low."},
+ {fam:"glp",lvl:"warn",t:"Pancreatitis is the shared risk worth naming. Alcohol is the leading cause of it, and this drug class carries a pancreatitis warning of its own. The absolute risk on either alone is small, and nobody has measured the two together, but they are additive on the same organ by different mechanisms. Severe abdominal pain going through to the back, especially after drinking, is the symptom that means stop and be seen rather than wait."},
+ {fam:"glp",lvl:"good",t:"One effect runs the other way, and it is well documented. People on these drugs consistently report wanting alcohol less, and that has moved from anecdote to formal study: GLP-1 receptors sit in the reward pathways of the brain as well as the gut. Randomised work in people with alcohol use disorder has shown reduced drinking, and it is now being trialled for exactly that. If drinking has quietly dropped off since starting, that is the drug, not willpower."},
+ {fam:"sleep",lvl:"warn",t:"Alcohol is a sedative and it does shorten the time to fall asleep, which is why it feels like it helps. What it does after that is the problem: it suppresses REM sleep and fragments the second half of the night as it clears, so total sleep looks normal while the restorative part of it is gone. Taking something for sleep and drinking on the same night is paying for the same thing twice and getting neither."},
+ {fam:"gh",lvl:"warn",t:"Growth hormone is released in pulses, and the largest one comes in the first few hours of deep sleep. That pulse is what a secretagogue is timed around, which is why these are dosed at night. Alcohol suppresses slow-wave sleep specifically, so it blunts the very pulse the compound is trying to amplify. Drinking on the night of an evening dose does not cancel the dose, but it takes away most of what it was aimed at."},
+ {key:"nad",lvl:"plain",t:"There is a direct biochemical link here that is worth knowing. Alcohol is broken down in two steps, and both consume NAD+, converting it to NADH. Heavy drinking shifts the whole cell's NAD+ to NADH ratio, and that shift is itself the reason alcohol drives fat accumulation in the liver. So the thing this compound is taken to raise is the thing alcohol most directly depletes. It is not dangerous to combine, but it does mean drinking works against it more specifically than against most things here."},
+ {key:"gluta",lvl:"plain",t:"Alcohol metabolism produces acetaldehyde, which the liver neutralises using glutathione, so drinking depletes exactly what this is taken to raise. That is also the reason N-acetylcysteine keeps coming up alongside drinking. Worth being honest about the limit: this supports the liver's own handling of a load, it does not license the load, and no amount of it makes a drinking week safe on a 17-alkylated oral."},
+ {fam:"regen",lvl:"warn",t:"Alcohol impairs healing in ways that are measured rather than assumed. It suppresses collagen synthesis, slows the inflammatory phase that starts repair, and blunts muscle protein synthesis for hours after drinking. Taking something for a tendon or a wound while drinking regularly means working against the repair on the same tissue, and the tendon is the slowest thing in the body to heal in the first place."},
+ {fam:"muscle",lvl:"warn",t:"A single heavy session measurably reduces muscle protein synthesis for the following day, and it does so even when protein is eaten alongside it. The effect is on the signalling rather than on the nutrition, so eating well around a night out does not remove it. For anyone running something specifically to build or hold muscle, this is the most direct way to spend the effect without noticing."},
+ {fam:"metabolic",lvl:"plain",t:"Alcohol is metabolised first, ahead of everything else, because the body has no way to store it. Fat oxidation is suppressed while it is being cleared, so a night of drinking pauses the process most of these compounds are taken to support, on top of the calories themselves. Nothing here is dangerous, and it is worth knowing that the pause is real rather than assuming the drug carries on regardless."}];
+/* Does the question mention drinking? Whole words, so "drinks" counts and
+   "drive" does not. */
+function coachAlco(q){
+  const t=" "+cFold(q).replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ")+" ";
+  return ALCOA.some(w=>t.indexOf(" "+cFold(w)+" ")>=0);
+}
+/* Drinking alongside what is actually being run.
+
+   Scoped like every other answer: if the question names a compound, only that
+   compound's entries; otherwise what is currently tracked, because a general
+   question about drinking is a question about drinking on this stack. */
+function ciAlcohol(q,keys){
+  if(!coachAlco(q))return null;
+  const fams=k=>PMAP[pepKey(guideName(k))]||[];
+  let scope=keys&&keys.length?keys.slice()
+    :activeTrack().filter(p=>!p.label).map(p=>guideKeyFor(p.name)).filter(Boolean);
+  scope=[...new Set(scope)];
+  const famSet=new Set();
+  scope.forEach(k=>fams(k).forEach(f=>famSet.add(f)));
+  const blocks=[],seen=new Set();
+  ALCO.forEach(h=>{
+    const rel=h.key?scope.indexOf(h.key)>=0:famSet.has(h.fam);
+    // with nothing tracked and nothing named, the liver entries still apply to
+    // anyone asking, and staying silent would be the least useful answer
+    if(!rel&&scope.length)return;
+    if(!rel&&!scope.length&&h.fam!=="gear")return;
+    const who=h.key?guideName(h.key):(PFAM[h.fam]||{}).n||h.fam;
+    if(seen.has(h.t))return;
+    seen.add(h.t);
+    blocks.push({kind:h.lvl==="warn"?"warn":h.lvl==="good"?"good":"plain",
+      spec:h.key?1:0,
+      text:`<b>${L(who)}</b><br>${L(h.t)}`});
+  });
+  if(!blocks.length)return null;
+  // severity first, and within it the entry about the compound that was asked
+  // about, ahead of the one about its whole family
+  const rank={warn:0,plain:1,good:2};
+  blocks.sort((a,b)=>(rank[a.kind]-rank[b.kind])||(b.spec-a.spec));
+  // what the log already knows, so the answer is about this person
+  const drank=cycOn()?cycOptCount("other","Alcohol",30,0):0;
+  if(drank)blocks.push({kind:"plain",text:CT().alcLog(drank)});
+  return {title:CT().tAlc,blocks:blocks.slice(0,6),
+    more:blocks.slice(6),
+    sources:scope.filter(k=>ALCO.some(h=>h.key===k))};
 }
 function ciMood(q,keys){
   // the log knows every word it accepts, so naming one is enough to land here
@@ -5598,8 +5733,8 @@ function coachAnswer(q){
   const keys=coachPeps(q);
   // most specific first: a question naming a peptide and a nutrient is a
   // nutrition question, not a stacking question that happens to contain "with"
-  const handlers=[ciMeds,ciComp,ciMood,ciNutrition,ciLabs,ciAdherence,ciSideEffect,
-    ciLevel,ciDose,ciTiming,ciStack];
+  const handlers=[ciMeds,ciComp,ciAlcohol,ciMood,ciNutrition,ciLabs,ciAdherence,
+    ciSideEffect,ciLevel,ciDose,ciTiming,ciStack];
   for(const h of handlers){
     let r=null;try{r=h(q,keys);}catch(e){}
     if(r&&r.blocks&&r.blocks.length)return r;
@@ -5621,6 +5756,51 @@ function coachAnswer(q){
    The long-form page for one peptide: what's actually established, what's only
    suggested, and what nobody knows yet — kept out of the card so the list stays
    scannable. Findings are grouped by the evidence grade stored on each entry. */
+/* ---------- deep dive folds ----------
+   A long section shows what it contains and opens on a tap. The summary comes
+   from the section's own text, so it stays true as the guides change and needs
+   no separate translation. */
+const DDTPL={
+ en:{n:(n,k)=>`<b>${n}</b> ${n===1?"finding":"findings"} ${k}.`,
+     top:t=>`Covering ${t}.`,
+     prac:n=>`<b>${n}</b> practical ${n===1?"note":"notes"}.`,
+     anec:"What people consistently report, kept separate from the evidence because it is not evidence.",
+     src:n=>`<b>${n}</b> ${n===1?"link":"links"} into the published literature, so you can read it rather than take my word for it.`,
+     mol:"The 2D chemical structure from PubChem.",
+     more:"Read it"},
+ es:{n:(n,k)=>`<b>${n}</b> ${n===1?"hallazgo":"hallazgos"} ${k}.`,
+     top:t=>`Sobre ${t}.`,
+     prac:n=>`<b>${n}</b> ${n===1?"nota práctica":"notas prácticas"}.`,
+     anec:"Lo que la gente reporta de forma constante, separado de la evidencia porque no es evidencia.",
+     src:n=>`<b>${n}</b> ${n===1?"enlace":"enlaces"} a la literatura publicada, para que la leas en vez de creerme.`,
+     mol:"La estructura química en 2D, de PubChem.",
+     more:"Leer"}};
+function DDT(){return DDTPL[curLang()]||DDTPL.en;}
+/* the opening sentence, for a preview of what the section sounds like */
+function ddFirst(t){
+  const s=String(t||"").replace(/<[^>]*>/g,"").trim();
+  const i=s.indexOf(". ");
+  return i>40?s.slice(0,i+1):s;
+}
+/* Findings are written as "Topic: the finding", which the list already turns
+   into a heading, so the topics make an honest contents line. */
+function ddTopics(items){
+  const out=[];
+  (items||[]).forEach(x=>{const m=/^([^.:]{3,30}):\s+/.exec(x);if(m)out.push(m[1]);});
+  return out;
+}
+let _ddfN=0;
+function ddFold(cls,title,note,summary,body){
+  if(!body)return "";
+  const n=++_ddfN;
+  return `<div class="ddblock ${cls} ddfold">
+    <button class="ddfh" data-ddf="${n}" aria-expanded="false">
+      <span class="ddbt">${title}</span>${note?`<span class="ddbn">${note}</span>`:""}
+      <i class="ddchev">›</i></button>
+    <div class="ddfs">${summary}</div>
+    <div class="ddfb">${body}</div>
+  </div>`;
+}
 function deepDive(id){
   const p=pById(id);if(!p)return;
   const g=guideView(p);if(!g)return;
@@ -5635,11 +5815,16 @@ function deepDive(id){
     const rest=x.slice(m[0].length);
     return `<b class="evk">${m[1]}</b>${rest.charAt(0).toUpperCase()}${rest.slice(1)}`;
   };
-  const block=(cls,title,note,items)=>items.length?`
-    <div class="ddblock ${cls}">
-      <div class="ddbh"><span class="ddbt">${title}</span><span class="ddbn">${note}</span></div>
-      <ul>${items.map(x=>`<li>${evLine(x)}</li>`).join("")}</ul>
-    </div>`:"";
+  const block=(cls,title,note,items,kind)=>{
+    if(!items.length)return "";
+    const D=DDT(),tp=ddTopics(items);
+    // one or two labelled findings is not a contents line, it is a fragment of
+    // one, and the preview sentence says more than it does
+    const sum=`<p>${D.n(items.length,kind||note)}${tp.length>2?" "+D.top(tp.slice(0,6).join(", ")):""}</p>
+      <p class="ddfx">${ddFirst(items[0])}</p>`;
+    return ddFold(cls,title,note,sum,
+      `<ul>${items.map(x=>`<li>${evLine(x)}</li>`).join("")}</ul>`);
+  };
   $("#deepBody").innerHTML=`
     <div class="ddhero" style="background:${pepPaint(p)}">
       <div class="ddscrim"></div>
@@ -5656,11 +5841,14 @@ function deepDive(id){
         <ul>${g.key.map(k=>`<li>${k}</li>`).join("")}</ul></div>`:""}
       <p class="ddlede">${g.what||""}</p>
 
-      <div class="ddsec"><h4>How it's thought to work</h4>
-        <p>${g.mech||"Mechanism not well characterised."}</p></div>
+      ${(g.mech||"").length>420
+        ? ddFold("m","How it's thought to work","",
+            `<p>${ddFirst(g.mech)}</p>`,`<p>${g.mech}</p>`)
+        : `<div class="ddsec"><h4>How it's thought to work</h4>
+             <p>${g.mech||"Mechanism not well characterised."}</p></div>`}
 
-      ${block("k","What's established",g.kn||"backed by human trials",known)}
-      ${block("s","What's suggested","animal, cell or small human data",sugg)}
+      ${block("k","What's established",g.kn||"backed by human trials",known,"backed by human trials")}
+      ${block("s","What's suggested","animal, cell or small human data",sugg,"from animal, cell or small human data")}
 
       ${levelChart(p)}
 
@@ -5681,23 +5869,21 @@ function deepDive(id){
           <ul>${g.bad.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:""}
       </div>
 
-      ${block("u","What's unknown","no data, or the trial went the wrong way",unknown)}
+      ${block("u","What's unknown","no data, or the trial went the wrong way",unknown,"with no data, or where the trial went the wrong way")}
 
       ${(g.warn||[]).length?`<div class="ddwarn"><div class="ddwh">Before you dose</div>
         <ul>${g.warn.map(w=>`<li>${w}</li>`).join("")}</ul></div>`:""}
 
-      ${(g.prac||[]).length?`<div class="ddcard prac">
-        <div class="ddch"><span class="dot"></span>Running it in practice</div>
-        ${g.prac.map(x=>`<p class="ddp"><b class="nlbl">${x[0]}</b>${x[1]}</p>`).join("")}
-      </div>`:""}
+      ${(g.prac||[]).length?ddFold("prac","Running it in practice","",
+        `<p>${DDT().prac(g.prac.length)} ${DDT().top(g.prac.map(x=>x[0]).join(", "))}</p>`,
+        g.prac.map(x=>`<p class="ddp"><b class="nlbl">${x[0]}</b>${x[1]}</p>`).join("")):""}
 
-      ${g.anec?`<div class="ddcard anec">
-        <div class="ddch"><span class="dot"></span>What people report</div>
-        <p class="ddp">${g.anec}</p>
+      ${g.anec?ddFold("anec","What people report","",
+        `<p>${DDT().anec}</p><p class="ddfx">${ddFirst(g.anec)}</p>`,
+        `<p class="ddp">${g.anec}</p>
         <p class="ddp sm anecnote">These are consistent community reports, not study findings.
           They are here because dismissing what people notice is its own kind of blind spot —
-          but treat them as leads, not evidence.</p>
-      </div>`:""}
+          but treat them as leads, not evidence.</p>`):""}
 
       ${g.nutr?`<div class="ddcard nutr">
         <div class="ddch"><span class="dot"></span>Can you get it from food?</div>
@@ -5707,9 +5893,9 @@ function deepDive(id){
       </div>`:""}
 
       ${((g.pair||[]).length||(g.extra||[]).length)?`
-        <button class="ddtoggle food" id="ddSup" aria-expanded="false">
+        <button class="ddtoggle food" id="ddSup" aria-expanded="true">
           <span><span class="dot"></span>Nutrient detail &amp; food sources</span><i class="ddchev">›</i></button>
-        <div class="ddsup" id="ddSupBody">
+        <div class="ddsup on" id="ddSupBody">
           ${(g.pair||[]).map(k=>{const nn=N[k];return nn?`<div class="nut">
             <div class="nn"><span>${nn.n}</span></div><div class="note">${nn.a}</div>
             ${foodChips(nn.f)}</div>`:"";}).join("")}
@@ -5757,6 +5943,12 @@ function deepDive(id){
     sup.setAttribute("aria-expanded",String(!open));
     $("#ddSupBody").classList.toggle("on",!open);
   };
+  // one handler for every fold, rather than one per section
+  $$("[data-ddf]",$("#deepBody")).forEach(b=>b.onclick=()=>{
+    const open=b.getAttribute("aria-expanded")==="true";
+    b.setAttribute("aria-expanded",String(!open));
+    b.closest(".ddfold").classList.toggle("on",!open);
+  });
   $("#deepView").classList.add("on");
   applyLang();
   $("#deepView").scrollTop=0;
@@ -7624,6 +7816,23 @@ const NOTR=new Set(["mg","mcg","ml","iu","lb","kcal","g","mg/dL","min","ApoB","N
 
 const I18N={
 es:{
+/* --- alcohol --- */
+"Alcohol and anabolic steroids injure the liver by different routes, which is why the combination is worse than either number suggests. Steroids, particularly the oral ones, cause cholestatic injury: bile flow slows and bilirubin climbs. Alcohol causes fat accumulation first and inflammation after. One is a plumbing problem and the other is a chemical burn, and the liver is absorbing both at once. Enzymes rising on gear are expected; enzymes rising on gear plus a drinking week are the ones that turn into a hospital story.":"El alcohol y los esteroides anab\u00f3licos da\u00f1an el h\u00edgado por v\u00edas distintas, y por eso la combinaci\u00f3n es peor de lo que sugiere cualquiera de las dos cifras. Los esteroides, sobre todo los orales, causan da\u00f1o colest\u00e1sico: el flujo biliar se enlentece y la bilirrubina sube. El alcohol produce primero acumulaci\u00f3n de grasa y despu\u00e9s inflamaci\u00f3n. Uno es un problema de ca\u00f1er\u00edas y el otro una quemadura qu\u00edmica, y el h\u00edgado absorbe ambos a la vez. Que las enzimas suban con ciclo es esperable; que suban con ciclo m\u00e1s una semana de copas es lo que acaba en el hospital.",
+"This is the pairing to actually avoid. Methandrostenolone is 17-alpha-alkylated, a modification that exists purely to survive first-pass metabolism, and surviving it means the liver processes the drug repeatedly instead of once. Every published case of serious liver injury on this compound involves either a long run, a high dose, or alcohol. Drinking through a four week dbol cycle is the single most reliable way to turn a manageable rise in ALT into cholestatic jaundice, and the itching and dark urine that precede it are late signs, not early ones.":"Esta es la combinaci\u00f3n que conviene evitar de verdad. La metandrostenolona es 17-alfa-alquilada, una modificaci\u00f3n que existe solo para sobrevivir al primer paso hep\u00e1tico, y sobrevivirlo significa que el h\u00edgado procesa el f\u00e1rmaco una y otra vez en lugar de una sola. Todos los casos publicados de da\u00f1o hep\u00e1tico grave con este compuesto implican un ciclo largo, una dosis alta o alcohol. Beber durante un ciclo de cuatro semanas de dbol es la forma m\u00e1s fiable de convertir una subida manejable de ALT en ictericia colest\u00e1sica, y el picor y la orina oscura que la preceden son signos tard\u00edos, no tempranos.",
+"Alcohol raises oestradiol and lowers testosterone on its own. It increases aromatase activity, and because the liver clears oestrogen, a liver busy with alcohol clears less of it. On an aromatising compound that is a third push in the same direction, and it is a common reason gynecomastia appears in someone whose dose has not changed. Heavy drinking also suppresses the testicular axis directly, so it works against the thing being taken.":"El alcohol por s\u00ed solo sube el estradiol y baja la testosterona. Aumenta la actividad de la aromatasa y, como el h\u00edgado depura el estr\u00f3geno, un h\u00edgado ocupado con alcohol depura menos. Sobre un compuesto que aromatiza eso es un tercer empuj\u00f3n en la misma direcci\u00f3n, y es una raz\u00f3n frecuente de que aparezca ginecomastia en alguien que no ha cambiado la dosis. Beber mucho tambi\u00e9n suprime el eje testicular directamente, as\u00ed que trabaja en contra de lo que se est\u00e1 tomando.",
+"Alcohol works against what this drug is for, by raising oestradiol while the drug lowers it, so the dose you settled on stops meaning what it meant. The larger problem is bone. Aromatase inhibitors reduce bone mineral density, and alcohol independently reduces it too, through both direct effects on osteoblasts and poorer calcium handling. Running an AI for months while drinking regularly stacks two of the few things that quietly cost bone, in someone who will not find out for years.":"El alcohol trabaja en contra de para lo que sirve este f\u00e1rmaco: sube el estradiol mientras el f\u00e1rmaco lo baja, as\u00ed que la dosis que ajustaste deja de significar lo que significaba. El problema mayor es el hueso. Los inhibidores de aromatasa reducen la densidad mineral \u00f3sea, y el alcohol tambi\u00e9n la reduce por su cuenta, tanto por efecto directo sobre los osteoblastos como por peor manejo del calcio. Usar un IA durante meses bebiendo con regularidad suma dos de las pocas cosas que cuestan hueso en silencio, en alguien que no lo sabr\u00e1 hasta dentro de a\u00f1os.",
+"Two things worth watching rather than a hard interaction. Alcohol raises blood pressure and is a diuretic, so on a compound that already raises haematocrit and blood pressure, a heavy night pushes both in the wrong direction at once, and dehydration on a thick blood count is the specific combination that matters. Alcohol also lowers testosterone acutely, which on replacement dosing muddies any read you take on how the dose is working.":"Dos cosas que vigilar, m\u00e1s que una interacci\u00f3n dura. El alcohol sube la tensi\u00f3n y es diur\u00e9tico, as\u00ed que sobre un compuesto que ya sube el hematocrito y la tensi\u00f3n, una noche fuerte empuja ambos en la direcci\u00f3n equivocada a la vez, y la deshidrataci\u00f3n con la sangre espesa es la combinaci\u00f3n concreta que importa. El alcohol tambi\u00e9n baja la testosterona de forma aguda, lo que en dosis de reemplazo enturbia cualquier lectura sobre c\u00f3mo est\u00e1 funcionando la dosis.",
+"The compound is already the most reliable disruptor of sleep and mood in this app, and alcohol degrades both in the same direction. It suppresses REM and slow-wave sleep in the second half of the night, which is exactly the part trenbolone already takes, and it lowers impulse control on a compound whose most consistent user report is a shorter fuse. Night sweats and insomnia on tren plus alcohol is not two problems, it is one problem compounding.":"Este compuesto ya es el que m\u00e1s fiablemente altera el sue\u00f1o y el \u00e1nimo de toda la app, y el alcohol degrada ambos en la misma direcci\u00f3n. Suprime el sue\u00f1o REM y el de ondas lentas en la segunda mitad de la noche, que es justo la parte que la trembolona ya se lleva, y baja el control de impulsos en un compuesto cuyo reporte m\u00e1s constante es tener la mecha m\u00e1s corta. Sudores nocturnos e insomnio con tren m\u00e1s alcohol no son dos problemas, es un problema multiplic\u00e1ndose.",
+"These slow gastric emptying, so alcohol leaves the stomach more slowly and unpredictably. The same two drinks can hit later and harder than expected, or arrive all at once when the stomach finally empties, and people misjudge it. There is a real hypoglycaemia risk too: alcohol blocks the liver's production of glucose while these drugs increase insulin release, and if insulin or a sulfonylurea is also in the picture that combination is the one that causes a genuine low.":"Estos enlentecen el vaciado g\u00e1strico, as\u00ed que el alcohol sale del est\u00f3mago m\u00e1s despacio y de forma impredecible. Las mismas dos copas pueden llegar m\u00e1s tarde y m\u00e1s fuerte de lo esperado, o llegar de golpe cuando el est\u00f3mago por fin se vac\u00eda, y la gente lo calcula mal. Tambi\u00e9n hay un riesgo real de hipoglucemia: el alcohol bloquea la producci\u00f3n hep\u00e1tica de glucosa mientras estos f\u00e1rmacos aumentan la liberaci\u00f3n de insulina, y si adem\u00e1s hay insulina o una sulfonilurea de por medio, esa es la combinaci\u00f3n que provoca una bajada de verdad.",
+"Pancreatitis is the shared risk worth naming. Alcohol is the leading cause of it, and this drug class carries a pancreatitis warning of its own. The absolute risk on either alone is small, and nobody has measured the two together, but they are additive on the same organ by different mechanisms. Severe abdominal pain going through to the back, especially after drinking, is the symptom that means stop and be seen rather than wait.":"La pancreatitis es el riesgo compartido que hay que nombrar. El alcohol es su causa principal, y esta clase de f\u00e1rmacos lleva su propia advertencia de pancreatitis. El riesgo absoluto con cualquiera de los dos por separado es peque\u00f1o, y nadie ha medido los dos juntos, pero se suman sobre el mismo \u00f3rgano por mecanismos distintos. Dolor abdominal intenso que atraviesa hacia la espalda, sobre todo despu\u00e9s de beber, es el s\u00edntoma que significa parar y que te vean, no esperar.",
+"One effect runs the other way, and it is well documented. People on these drugs consistently report wanting alcohol less, and that has moved from anecdote to formal study: GLP-1 receptors sit in the reward pathways of the brain as well as the gut. Randomised work in people with alcohol use disorder has shown reduced drinking, and it is now being trialled for exactly that. If drinking has quietly dropped off since starting, that is the drug, not willpower.":"Un efecto va en la direcci\u00f3n contraria, y est\u00e1 bien documentado. Quienes toman estos f\u00e1rmacos reportan de forma constante que les apetece menos beber, y eso ha pasado de an\u00e9cdota a estudio formal: los receptores GLP-1 est\u00e1n en las v\u00edas de recompensa del cerebro adem\u00e1s de en el intestino. Trabajos aleatorizados en personas con trastorno por consumo de alcohol han mostrado menos consumo, y ahora se est\u00e1 ensayando exactamente para eso. Si beber ha ido cayendo solo desde que empezaste, es el f\u00e1rmaco, no la fuerza de voluntad.",
+"Alcohol is a sedative and it does shorten the time to fall asleep, which is why it feels like it helps. What it does after that is the problem: it suppresses REM sleep and fragments the second half of the night as it clears, so total sleep looks normal while the restorative part of it is gone. Taking something for sleep and drinking on the same night is paying for the same thing twice and getting neither.":"El alcohol es un sedante y s\u00ed acorta el tiempo que tardas en dormirte, por eso parece que ayuda. El problema es lo que hace despu\u00e9s: suprime el sue\u00f1o REM y fragmenta la segunda mitad de la noche mientras se elimina, as\u00ed que el total de sue\u00f1o parece normal mientras la parte reparadora ha desaparecido. Tomar algo para dormir y beber la misma noche es pagar dos veces por lo mismo y no quedarte con ninguna de las dos.",
+"Growth hormone is released in pulses, and the largest one comes in the first few hours of deep sleep. That pulse is what a secretagogue is timed around, which is why these are dosed at night. Alcohol suppresses slow-wave sleep specifically, so it blunts the very pulse the compound is trying to amplify. Drinking on the night of an evening dose does not cancel the dose, but it takes away most of what it was aimed at.":"La hormona del crecimiento se libera en pulsos, y el mayor llega en las primeras horas de sue\u00f1o profundo. Ese pulso es en torno al que se programa un secretagogo, y por eso estos se dosifican de noche. El alcohol suprime espec\u00edficamente el sue\u00f1o de ondas lentas, as\u00ed que amortigua justo el pulso que el compuesto intenta amplificar. Beber la noche de una dosis nocturna no anula la dosis, pero le quita casi todo aquello a lo que apuntaba.",
+"There is a direct biochemical link here that is worth knowing. Alcohol is broken down in two steps, and both consume NAD+, converting it to NADH. Heavy drinking shifts the whole cell's NAD+ to NADH ratio, and that shift is itself the reason alcohol drives fat accumulation in the liver. So the thing this compound is taken to raise is the thing alcohol most directly depletes. It is not dangerous to combine, but it does mean drinking works against it more specifically than against most things here.":"Aqu\u00ed hay un v\u00ednculo bioqu\u00edmico directo que vale la pena conocer. El alcohol se descompone en dos pasos, y ambos consumen NAD+, convirti\u00e9ndolo en NADH. Beber mucho desplaza la proporci\u00f3n NAD+/NADH de toda la c\u00e9lula, y ese desplazamiento es en s\u00ed mismo la raz\u00f3n por la que el alcohol acumula grasa en el h\u00edgado. As\u00ed que lo que este compuesto se toma para subir es justo lo que el alcohol m\u00e1s directamente agota. No es peligroso combinarlos, pero s\u00ed significa que beber trabaja en su contra de forma m\u00e1s espec\u00edfica que contra casi todo lo dem\u00e1s aqu\u00ed.",
+"Alcohol metabolism produces acetaldehyde, which the liver neutralises using glutathione, so drinking depletes exactly what this is taken to raise. That is also the reason N-acetylcysteine keeps coming up alongside drinking. Worth being honest about the limit: this supports the liver's own handling of a load, it does not license the load, and no amount of it makes a drinking week safe on a 17-alkylated oral.":"El metabolismo del alcohol produce acetaldeh\u00eddo, que el h\u00edgado neutraliza usando glutati\u00f3n, as\u00ed que beber agota exactamente lo que esto se toma para subir. Esa es tambi\u00e9n la raz\u00f3n por la que la N-acetilciste\u00edna aparece una y otra vez junto al alcohol. Vale la pena ser honesto sobre el l\u00edmite: esto apoya el manejo que el h\u00edgado hace de una carga, no autoriza la carga, y ninguna cantidad hace que una semana de copas sea segura sobre un oral 17-alquilado.",
+"Alcohol impairs healing in ways that are measured rather than assumed. It suppresses collagen synthesis, slows the inflammatory phase that starts repair, and blunts muscle protein synthesis for hours after drinking. Taking something for a tendon or a wound while drinking regularly means working against the repair on the same tissue, and the tendon is the slowest thing in the body to heal in the first place.":"El alcohol deteriora la cicatrizaci\u00f3n de formas medidas, no supuestas. Suprime la s\u00edntesis de col\u00e1geno, ralentiza la fase inflamatoria que inicia la reparaci\u00f3n y amortigua la s\u00edntesis de prote\u00edna muscular durante horas despu\u00e9s de beber. Tomar algo para un tend\u00f3n o una herida mientras se bebe con regularidad significa trabajar en contra de la reparaci\u00f3n del mismo tejido, y el tend\u00f3n ya es de por s\u00ed lo m\u00e1s lento del cuerpo en curar.",
+"A single heavy session measurably reduces muscle protein synthesis for the following day, and it does so even when protein is eaten alongside it. The effect is on the signalling rather than on the nutrition, so eating well around a night out does not remove it. For anyone running something specifically to build or hold muscle, this is the most direct way to spend the effect without noticing.":"Una sola sesi\u00f3n fuerte reduce de forma medible la s\u00edntesis de prote\u00edna muscular durante el d\u00eda siguiente, y lo hace incluso comiendo prote\u00edna junto con ella. El efecto es sobre la se\u00f1alizaci\u00f3n, no sobre la nutrici\u00f3n, as\u00ed que comer bien alrededor de una noche de fiesta no lo elimina. Para quien est\u00e9 usando algo espec\u00edficamente para construir o mantener m\u00fasculo, esta es la forma m\u00e1s directa de gastarse el efecto sin darse cuenta.",
+"Alcohol is metabolised first, ahead of everything else, because the body has no way to store it. Fat oxidation is suppressed while it is being cleared, so a night of drinking pauses the process most of these compounds are taken to support, on top of the calories themselves. Nothing here is dangerous, and it is worth knowing that the pause is real rather than assuming the drug carries on regardless.":"El alcohol se metaboliza primero, antes que todo lo dem\u00e1s, porque el cuerpo no tiene forma de almacenarlo. La oxidaci\u00f3n de grasa queda suprimida mientras se elimina, as\u00ed que una noche de copas pausa el proceso que la mayor\u00eda de estos compuestos se toman para apoyar, adem\u00e1s de las calor\u00edas en s\u00ed. Nada de esto es peligroso, y vale la pena saber que la pausa es real en lugar de suponer que el f\u00e1rmaco sigue adelante igual.",
 /* --- prescriptions --- */
 "My prescriptions":"Mis recetas",
 "Tick anything you take. Nothing leaves the phone; this only decides which interaction notes you see.":"Marca lo que tomes. Nada sale del tel\u00e9fono; esto solo decide qu\u00e9 notas de interacci\u00f3n ves.",
