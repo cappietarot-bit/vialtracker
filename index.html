@@ -4,12 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<title>Vialback</title>
 <meta name="theme-color" content="#0b1211">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Vialback">
+<meta name="apple-mobile-web-app-title" content="The Lab">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -577,6 +576,11 @@
   .ansbox{background:var(--panel);border:1px solid var(--line);border-radius:13px;
     padding:15px 16px;margin-bottom:11px}
   .anshead{font-size:16px;font-weight:800;letter-spacing:-.02em;margin-bottom:11px}
+  .ansmore{display:block;width:100%;margin-top:4px;padding:9px 12px;
+    background:transparent;border:1px dashed var(--line);border-radius:10px;
+    color:var(--ink2);font-family:inherit;font-size:13px;font-weight:600;
+    cursor:pointer;letter-spacing:-.01em}
+  .ansmore:hover{border-color:var(--accent);border-style:solid;color:var(--ink)}
   .ansb{font-size:13.5px;line-height:1.6;color:var(--ink2);padding:10px 0;
     border-top:1px solid var(--line)}
   .ansb:first-of-type{border-top:0;padding-top:0}
@@ -4788,7 +4792,7 @@ function cycCount(k){
 /* ---------- coach ----------
    Answers assembled from the guides and your own numbers. No model, no key,
    no network: it cannot make anything up, and every answer names its source. */
-const CSTOP=new Set([
+const CSTOP0=[
  /* Spanish function words, so "puedo tomar X con Y" scores on the nouns */
  "el","la","los","las","un","una","unos","unas","de","del","al","y","o","pero","si","no",
  "es","son","era","ser","estoy","esta","estan","que","qu\u00e9","cual","cu\u00e1l","como","c\u00f3mo",
@@ -4799,7 +4803,13 @@ const CSTOP=new Set([
  "to","of","in","on","at","for","with","from","by","as","it","its","this","that","these","those",
  "i","my","me","you","your","do","does","did","can","could","should","would","will","shall","may",
  "have","has","had","not","no","yes","what","when","why","how","which","who","about","any","some",
- "get","got","take","taking","use","using","need","want","am","im","dont","doesnt"]);
+ "get","got","take","taking","use","using","need","want","am","im","dont","doesnt",
+ "tell","tells","telling","told","explain","know","knows","think","mean","means",
+ "much","many","lot","really","actually","just","still","ever","even","please",
+ "thing","things","stuff","something","anything","someone","anyone","everything",
+ "decir","dime","dice","saber","s\u00e9","creo","significa","mucho","mucha","muchos",
+ "muchas","poco","cosa","cosas","algo","alguien","realmente","solo","s\u00f3lo"];
+const CSTOP=new Set(CSTOP0.map(cFold));
 /* people search with the word they would say, not the one the guide used */
 const CSYN={
  tired:["fatigue","tiredness","lethargy","energy"], exhausted:["fatigue","tiredness"],
@@ -4816,11 +4826,13 @@ const CSYN={
  kidney:["renal"], brain:["cognitive","neuro","hippocamp"],
  sex:["libido","arousal","erectile"], libido:["arousal","sexual"],
  shot:["dose","injection"], jab:["dose","injection"],
+ pin:["injection","inject","dose"], pinning:["injection","inject"],
+ pins:["injection","inject"], pinned:["injection","inject"],
  bruise:["bleeding","haemorrhage"], lump:["injection site","scar"],
  headache:["headaches","sodium"], dizzy:["light-headed","blood pressure","sodium"]
 };
 function cTok(q){
-  const base=String(q||"").toLowerCase().replace(/[^a-z0-9+\- ]/g," ").split(/\s+/)
+  const base=cFold(q).replace(/[^a-z0-9+\- ]/g," ").split(/\s+/)
     .filter(w=>w.length>2&&!CSTOP.has(w));
   const out=base.slice();
   base.forEach(w=>{(CSYN[w]||[]).forEach(x=>{if(!out.includes(x))out.push(x);});});
@@ -4874,29 +4886,56 @@ function coachIndex(){
   });
   _cidx=out;_cidxLang=lc;return out;
 }
+/* One trailing vowel off, so the Spanish spelling of a name reaches the
+   English entry it belongs to. */
+function esStem(t){return /[aeo]$/.test(t)?t.slice(0,-1):t;}
+/* Every name that points at a guide, built once.
+
+   This used to be rebuilt for every question: for each of the 40 guides it
+   walked all ~110 catalogue names and resolved each with guideKeyFor, which
+   itself sorts all 40 guide keys. That was about 4,000 guideKeyFor calls per
+   question and, measured in the browser, 12.3 ms of the 13.1 ms a question
+   cost. None of it depends on the question. */
+let _cnames=null,_cnamesFor=null;
+function coachNames(){
+  const sig=S.track.map(p=>p.name).join("|");
+  if(_cnames&&_cnamesFor===sig)return _cnames;
+  const m=Object.create(null);
+  const add=(n,k)=>{const t=pepKey(n);
+    if(t.length>=3)(m[t]=m[t]||[]).indexOf(k)<0&&m[t].push(k);};
+  Object.keys(GUIDES).forEach(k=>{
+    add(k,k);
+    // ALIAS is keyed by pepKey of the display name, not by guide key, so
+    // looking it up by k alone silently matched nothing
+    (ALIAS[k]||[]).forEach(n=>add(n,k));
+    (ALIAS[pepKey(guideName(k))]||[]).forEach(n=>add(n,k));
+  });
+  Object.keys(LUCKY).forEach(n=>{const k=guideKeyFor(n);if(k)add(n,k);});
+  S.track.forEach(p=>{const k=guideKeyFor(p.name);if(k)add(p.name,k);});
+  _cnames=m;_cnamesFor=sig;
+  return m;
+}
 /* which tracked peptides a question is about */
 function coachPeps(q){
   const toksArr=cTok(q).map(t=>t.replace(/[^a-z0-9]/g,"")).filter(Boolean);
-  const joined=toksArr.join("");
-  const hits=[];
-  Object.keys(GUIDES).forEach(k=>{
-    // ALIAS is keyed by pepKey of the display name, not by guide key, so
-    // looking it up by k alone silently matched nothing
-    const names=[k].concat(ALIAS[k]||[],ALIAS[pepKey(guideName(k))]||[]);
-    // the display name too, via any tracked peptide pointing at this guide
-    S.track.forEach(p=>{if(guideKeyFor(p.name)===k)names.push(p.name);});
-    Object.keys(LUCKY).forEach(n=>{if(guideKeyFor(n)===k)names.push(n);});
-    const m=names.some(n=>{
-      const t=pepKey(n);
-      if(t.length<3)return false;
-      // a short key must be a whole token: "epo" should not match "depo"
-      if(toksArr.indexOf(t)>=0)return true;
-      // a long one may span tokens, since "testosterone cypionate" arrives split
-      return t.length>=5&&joined.indexOf(t)>=0;
-    });
-    if(m)hits.push(k);
-  });
-  return [...new Set(hits)];
+  if(!toksArr.length)return [];
+  const joined=toksArr.join(""),M=coachNames(),hits=[];
+  for(const t in M){
+    // a short key must be a whole token: "epo" should not match "depo"
+    let hit=toksArr.indexOf(t)>=0;
+    // a long one may span tokens, since "testosterone cypionate" arrives split
+    if(!hit&&t.length>=5&&joined.indexOf(t)>=0)hit=true;
+    if(!hit){
+      // Spanish changes the final vowel and nothing else on most of these:
+      // semaglutida, tirzepatida, anastrozol, testosterona. Long enough that
+      // dropping one trailing vowel cannot reach a different compound.
+      const st=esStem(t);
+      if(st.length>=8&&(joined.indexOf(st)>=0||toksArr.some(x=>esStem(x)===st)))
+        hit=true;
+    }
+    if(hit)M[t].forEach(k=>{if(hits.indexOf(k)<0)hits.push(k);});
+  }
+  return hits;
 }
 function pepFor(key){
   return S.track.find(p=>guideKeyFor(p.name)===key||p.guideKey===key)||null;
@@ -4909,25 +4948,79 @@ function guideName(key){
 /* index rows about a prescription carry no peptide key, so they label with
    the section on its own rather than an empty name and a stray separator */
 function srcLabel(h){return h.key?guideName(h.key)+" · "+h.sec:h.sec;}
-/* How many index rows each word appears in. A word in half the corpus tells
-   you almost nothing; a word in three rows decides the match. */
-let _cdf=null,_cdfLang=null;
-function coachDF(){
-  const lc=curLang();
-  if(_cdf&&_cdfLang===lc)return _cdf;
-  const idx=coachIndex(),df={};
+/* ---------- how the index is searched ----------
+   Built once per language alongside the index: term frequencies, row lengths,
+   adjacent word pairs, a postings list, and the words of the corpus grouped by
+   stem. A question then touches only the rows that contain one of its words
+   instead of re-scanning every row's prose, and matches whole words rather
+   than fragments of longer ones. */
+/* Accents folded away rather than cut out. The old character class had no
+   room for them, so an accented letter ended the token and "sueno" with a
+   tilde indexed as "sue". Folding the corpus and the question the same way
+   means they meet in the middle, and a question typed without accents, as
+   people type on a phone, still matches the accented text. */
+function cFold(t){
+  return String(t||"").toLowerCase().normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"");
+}
+const CSUF=["ings","ing","ies","ied","edly","ely","es","ed","s"];
+function cStem(w){
+  for(let i=0;i<CSUF.length;i++){
+    const f=CSUF[i];
+    if(w.length-f.length>=3&&w.slice(-f.length)===f)return w.slice(0,-f.length);
+  }
+  return w;
+}
+let _cpost=null,_cpostFor=null;
+function coachPost(){
+  const idx=coachIndex();
+  if(_cpost&&_cpostFor===idx)return _cpost;
+  const tf=[],ln=[],big=[],post=Object.create(null),stems=Object.create(null);
+  let tot=0;
   idx.forEach(r=>{
-    const seen={};
-    (String(r.stext||r.text).toLowerCase().match(/[a-z0-9+\-]{3,}/g)||[]).forEach(w=>{
-      if(!seen[w]){seen[w]=1;df[w]=(df[w]||0)+1;}});
+    const toks=cFold(r.stext||r.text).match(/[a-z0-9+\-]{3,}/g)||[];
+    const f=Object.create(null),b=Object.create(null);
+    for(let j=0;j<toks.length;j++){
+      f[toks[j]]=(f[toks[j]]||0)+1;
+      if(j)b[toks[j-1]+" "+toks[j]]=1;
+    }
+    const i=tf.length;
+    tf.push(f);ln.push(toks.length||1);big.push(b);tot+=toks.length||1;
+    for(const t in f){
+      (post[t]=post[t]||[]).push(i);
+      const st=cStem(t);
+      (stems[st]=stems[st]||Object.create(null))[t]=1;
+    }
   });
-  _cdf={df:df,n:idx.length||1};_cdfLang=lc;
-  return _cdf;
+  _cpost={tf:tf,ln:ln,big:big,post:post,stems:stems,n:idx.length||1,
+          avg:tot/(idx.length||1)};
+  _cpostFor=idx;
+  return _cpost;
 }
+/* A word in three rows decides the match; a word in half the corpus decides
+   nothing. */
 function cIdf(t){
-  const d=coachDF();
-  return Math.log((d.n+1)/((d.df[t]||0)+1))+0.2;
+  const P=coachPost(),n=(P.post[t]||[]).length;
+  return Math.log(1+(P.n-n+0.5)/(n+0.5));
 }
+/* the word itself plus every word in the corpus sharing its stem, so "tendons"
+   reaches "tendon" without inventing a word the corpus does not contain */
+function cVars(t){
+  const P=coachPost(),o=Object.create(null);
+  if(P.post[t])o[t]=1;
+  const g=P.stems[cStem(t)];
+  if(g)for(const x in g)o[x]=1;
+  return Object.keys(o);
+}
+/* Short forms the three-character floor was throwing away, which is how "do I
+   need an AI on dbol" arrived as a question with no words in it. */
+const CACRO={
+ ai:["aromatase","inhibitor","oestradiol"], ais:["aromatase","inhibitor"],
+ e2:["oestradiol","estradiol"], pct:["recovery","restart","suppression"],
+ trt:["testosterone","replacement"], bp:["blood","pressure"],
+ gh:["growth","hormone"], hct:["haematocrit","hematocrit"],
+ gyno:["gynecomastia","gynaecomastia","breast"], ed:["erectile"],
+ hrt:["hormone","replacement"], t3:["thyroid"], t4:["thyroid"]};
 /* every word that is part of a peptide name the question already matched */
 function nameToks(keys){
   const out=new Set();
@@ -4938,41 +5031,181 @@ function nameToks(keys){
   });
   return out;
 }
-function coachSearch(q,limit){
-  let toks=cTok(q).filter((t,i,a)=>a.indexOf(t)===i);
-  if(!toks.length)return [];
-  const mine=new Set(S.track.map(p=>guideKeyFor(p.name)));
-  const named=new Set(coachPeps(q));
-  // the name picks the entry; the rest of the question picks the passage. Keep
-  // the name only when it is all there is to go on.
-  if(named.size){
-    const nt=nameToks([...named]);
-    const rest=toks.filter(t=>!nt.has(t));
-    if(rest.length)toks=rest;
+/* One group per idea in the question rather than per word. CSYN turns "tired"
+   into four tokens, and counting them separately made a row that matched one
+   of them look as though it had covered most of what was asked. */
+function cGroups(q,named){
+  const raw=cFold(q).replace(/[^a-z0-9+\- ]/g," ")
+    .split(/\s+/).filter(Boolean);
+  const base=raw.filter(w=>w.length>2&&!CSTOP.has(w));
+  raw.forEach(w=>{(CACRO[w]||[]).forEach(x=>{if(base.indexOf(x)<0)base.push(x);});});
+  const nt=named.length?nameToks(named):new Set();
+  // every spelling of a named compound, so a fragment of the name is read as
+  // the name and not as a word the corpus is missing
+  const frag=[];
+  named.forEach(k=>{
+    [k].concat(ALIAS[k]||[],ALIAS[pepKey(guideName(k))]||[])
+      .forEach(n=>frag.push(pepKey(n)));
+    S.track.forEach(p=>{if(guideKeyFor(p.name)===k)frag.push(pepKey(p.name));});
+    Object.keys(LUCKY).forEach(n=>{if(guideKeyFor(n)===k)frag.push(pepKey(n));});
+  });
+  const out=[];
+  base.forEach(w=>{
+    if(nt.has(w))return;
+    const m=Object.create(null);
+    cVars(w).forEach(x=>{m[x]=1;});
+    (CSYN[w]||[]).forEach(sy=>cVars(sy).forEach(x=>{m[x]=1;}));
+    const ms=Object.keys(m);
+    if(ms.length){out.push({w:w,m:ms,idf:Math.max.apply(null,ms.map(cIdf))});return;}
+    // a word this corpus does not contain anywhere. "cyp" of "test cyp" is the
+    // name again rather than a missing idea, and treating it as missing was
+    // enough to block the whole question.
+    if(frag.some(f=>f&&f.indexOf(w)>=0))return;
+    out.push({w:w,m:[],idf:cIdf(w)});
+  });
+  if(!out.length&&base.length){
+    // nothing but the name: "tell me about dianabol"
+    const only=[];
+    base.forEach(w=>{const v=cVars(w);if(v.length)only.push({w:w,m:v,idf:cIdf(w)});});
+    return {g:only,nameOnly:true};
   }
-  const idf={},total=toks.reduce((n,t)=>{idf[t]=cIdf(t);return n+idf[t];},0)||1;
-  const scored=coachIndex().map(row=>{
-    const low=String(row.stext||row.text).toLowerCase();
+  return {g:out,nameOnly:false};
+}
+/* How much of the question a row has to account for before it counts as an
+   answer to it. Naming a compound already fixes the subject, so within that
+   compound's own pages the rest of the question only has to point at the right
+   passage. Everything else has to answer most of what was asked. */
+function cMSM(n,named,nameOnly){
+  if(named||nameOnly)return 0.34;
+  if(n<=1)return 0.99;
+  if(n===2)return 0.80;
+  return 0.58;
+}
+const CK1=1.2,CB=0.72,CPHR=1.6,CMMR=0.55;
+const CCRIT=["Before you dose","Get this right"];
+/* Returns the passages worth showing and the ones worth offering. The split is
+   the point: three answers read, six do not. */
+function cSec(en){const lc=curLang();if(lc==="en")return en;
+  const v=tr(en,lc);return v!=null?v:en;}
+function coachSearch(q,want,hard){
+  want=want||3;hard=hard||8;
+  const named=coachPeps(q);
+  const G=cGroups(q,named),gs=G.g;
+  if(!gs.length)return {hits:[],more:[],why:"empty"};
+  const live=gs.filter(g=>g.m.length);
+  if(!live.length)return {hits:[],more:[],why:"nothing in the guides uses that word"};
+
+  const P=coachPost(),idx=coachIndex();
+  const mine=new Set(S.track.map(p=>guideKeyFor(p.name)));
+  const total=gs.reduce((n,g)=>n+g.idf,0)||1;
+  const seen=Object.create(null),cand=[];
+  live.forEach(g=>g.m.forEach(v=>(P.post[v]||[]).forEach(i=>{
+    if(!seen[i]){seen[i]=1;cand.push(i);}})));
+
+  const ws=gs.map(g=>g.w),bigr=Object.create(null);
+  for(let i=1;i<ws.length;i++)bigr[ws[i-1]+" "+ws[i]]=1;
+  const msm=cMSM(gs.length,named.length>0,G.nameOnly);
+
+  let scored=[];
+  cand.forEach(i=>{
+    const row=idx[i];
+    // a list of brand names is how a question finds an entry, never the answer
+    // to one, and it used to be the top result for anything naming a compound
+    if(row.sec===cSec("Also known as"))return;
+    const inScope=named.length>0&&named.indexOf(row.key)>=0;
+    const tf=P.tf[i],dl=P.ln[i];
     let sc=0,info=0;
-    toks.forEach(t=>{
-      if(low.indexOf(t)<0)return;
-      const rep=Math.min(3,low.split(t).length-1);
-      sc+=row.w*idf[t]*(1+0.15*(rep-1));
-      info+=idf[t];
+    live.forEach(g=>{
+      let f=0;
+      for(let j=0;j<g.m.length;j++)f+=tf[g.m[j]]||0;
+      if(!f)return;
+      // BM25: the second mention of a word is worth much less than the first,
+      // and a long passage no longer scores merely for being long
+      sc+=g.idf*(f*(CK1+1))/(f+CK1*(1-CB+CB*dl/P.avg));
+      info+=g.idf;
     });
-    if(!info)return null;
-    // share of the question, measured by how much it was worth, not by count
+    if(!info)return;
     const cover=info/total;
-    sc*=(0.3+0.7*cover);
-    if(named.size&&named.has(row.key))sc*=3;        // asked about by name
-    else if(named.size)sc*=0.12;                    // asked about something else
-    if(mine.has(row.key))sc*=1.4;                   // you actually run it
-    return Object.assign({},row,{sc:sc,cover:cover});
-  }).filter(Boolean).sort((a,b)=>b.sc-a.sc);
-  // one common word in common is not an answer. If a term of the question
-  // appears nowhere at all, cover stays low and nothing is returned, which is
-  // the honest result.
-  return scored.filter(r=>r.cover>=0.45).slice(0,limit||6);
+    if(cover<((inScope||G.nameOnly)?msm:Math.max(msm,0.58)))return;
+    if(Object.keys(bigr).some(b=>P.big[i][b]))sc*=CPHR;
+    sc*=row.w*(0.35+0.65*cover);
+    if(named.length)sc*=inScope?3:(G.nameOnly?0.85:0.12);
+    if(mine.has(row.key))sc*=1.4;
+    scored.push(Object.assign({},row,{sc:sc,cover:cover,i:i}));
+  });
+
+  if(named.length&&!G.nameOnly){
+    // Naming a compound is a scope, not a hint. Anything inside it wins; a
+    // passage from another guide may only answer if it actually mentions what
+    // was asked about, which is what makes a cross-reference a cross-reference
+    // rather than a passage about a different compound that used the same
+    // words. Without this, a question about injecting tren was answered with
+    // testosterone's section on injection frequency, under its heading.
+    const ins=scored.filter(r=>named.indexOf(r.key)>=0);
+    if(ins.length)scored=ins;
+    else{
+      const nt=nameToks(named);
+      scored=scored.filter(r=>{
+        const tf=P.tf[r.i];
+        for(const w of nt)if(tf[w])return true;
+        return false;
+      });
+    }
+  }
+  if(!scored.length)return {hits:[],more:[],why:"nothing close enough"};
+  scored.sort((a,b)=>b.sc-a.sc);
+  if(G.nameOnly){
+    // "tell me about X" leads with what X is. A guide rarely repeats its own
+    // name in its own prose, so plain term matching ranks other entries'
+    // mentions of it above the entry itself.
+    const lead=[],have=Object.create(null);
+    idx.forEach((r,i)=>{
+      if(named.indexOf(r.key)>=0&&(r.sec===cSec("What it is")||r.sec===cSec("How it works"))){
+        lead.push(Object.assign({},r,{sc:1e9-lead.length,cover:1,i:i}));have[i]=1;}
+    });
+    scored=lead.concat(scored.filter(r=>!have[r.i]));
+  }
+
+  // a result earns its place against the best answer found, not against a
+  // fixed number that means something different for every question
+  let top=0;
+  scored.forEach(r=>{if(r.sc<1e8&&r.sc>top)top=r.sc;});
+  if(!top)top=scored[0].sc;
+  const pool=scored.filter(r=>r.sc>=1e8||r.sc>=top*0.28).slice(0,40);
+
+  // MMR, so the third result is not the first one said again
+  const picked=[],rest=pool.slice(),cnt=Object.create(null);
+  while(rest.length&&picked.length<hard){
+    let best=-1,bi=0;
+    for(let j=0;j<rest.length;j++){
+      const r=rest[j];
+      let pen=0;
+      picked.forEach(p=>{
+        const a=P.tf[r.i],b=P.tf[p.i];
+        const ka=Object.keys(a),kb=Object.keys(b);
+        const sm=ka.length<kb.length?ka:kb,bg=ka.length<kb.length?b:a;
+        let ov=0;
+        sm.forEach(t=>{if(bg[t])ov++;});
+        pen=Math.max(pen,ov/(sm.length||1));
+      });
+      // two passages from one guide are two angles on it; five are the guide
+      // read out loud
+      pen=Math.max(pen,0.5*Math.min(1,(cnt[r.key]||0)/2));
+      const v=r.sc*(1-CMMR*pen);
+      if(v>best){best=v;bi=j;}
+    }
+    const r=rest.splice(bi,1)[0];
+    cnt[r.key]=(cnt[r.key]||0)+1;
+    picked.push(r);
+  }
+
+  const hits=picked.slice(0,want);
+  // a warning that is genuinely relevant does not go behind a button
+  picked.slice(want).forEach(r=>{
+    if(CCRIT.some(c=>cSec(c)===r.sec)&&r.sc>=top*0.55)hits.push(r);
+  });
+  const shown=new Set(hits.map(r=>r.i));
+  return {hits:hits,more:picked.filter(r=>!shown.has(r.i)),why:"ok"};
 }
 
 /* The coach writes its own sentences, so they need their own templates.
@@ -4983,6 +5216,7 @@ const CTPL={
   tOverlap:"Do these overlap?", tMeasure:"What to measure", tWhen:"When to take it",
   tSteady:"Has it reached a steady level?", tTaking:"Are you actually taking it?",
   tDiet:"What it needs from your diet", tSays:"What the guides say about that",
+  tDose:"How much", more:n=>`Show ${n} more`, less:"Show fewer",
   tFound:"From the guides", tNone:"Nothing found", tRx:"With what you are prescribed",
   noneT2:'No passage in the guides matches that. Try a peptide name, or a word like "stack", "bloodwork", "timing" or "nausea".',
   tAlong:n=>`Running ${n} alongside what you already take`,
@@ -5032,6 +5266,7 @@ const CTPL={
   adh:(n,hit,due,pct,tail)=>`<b>${n}</b>: ${hit} de ${due} dosis programadas en los \u00faltimos 30 d\u00edas \u2014 <b>${pct}%</b>.${tail}`,
   adhLow:" Si est\u00e1s juzgando si funciona, has hecho solo parte de un protocolo.",
   diet:(n,b)=>`<b>${n}</b> \u2014 ${b}`,
+  tDose:"Cu\u00e1nto", more:n=>`Ver ${n} m\u00e1s`, less:"Ver menos",
   dep:(n,why)=>`Depende de <b>${n}</b>. ${why}`}
 };
 function CT(){return CTPL[curLang()]||CTPL.en;}
@@ -5104,6 +5339,8 @@ function ciLabs(q,keys){
 function ciTiming(q,keys){
   // "night sweats" is a symptom, not a question about when to take something
   if(/night sweats|sudores nocturnos/i.test(q))return null;
+  // "is it safe before surgery" uses a timing word without being about timing
+  if(/surgery|operation|anaesthe|anesthe|endoscop|cirug|operaci|anestes/i.test(q))return null;
   if(!/\b(when|timing|time of day|morning|night|before|after|empty stomach|fasted|workout|cuando|cu\u00e1ndo|moment|hora|ma\u00f1ana|manana|noche|antes|despu\u00e9s|despues|ayunas|entren)/i.test(q))return null;
   if(!keys.length)return null;
   const blocks=[];
@@ -5137,6 +5374,27 @@ function ciLevel(q,keys){
       on==null?C.steadyNone:on<days?C.steadyRamp(on):C.steadyPast(on-days))});
   });
   return blocks.length?{title:CT().tSteady,blocks,sources:keys}:null;
+}
+/* "How much should I take" is the most ordinary question here and it had no
+   handler, so it fell through to search and came back with the brand names.
+   The dosing section is the answer; the numbered lines from the two lists that
+   also carry a dose are what people get wrong about it. */
+function ciDose(q,keys){
+  if(!/\b(dose|doses|dosing|dosage|how much|how many|mg\b|mcg|iu\b|units|titrat|ramp up|start(ing)? (at|on|with)|dosis|cuánto|cuanto|cuánta|cuanta|miligramos|unidades|empezar con|subir la dosis)/i.test(q))return null;
+  if(!keys.length)return null;
+  const NUM=/\bmg\b|mcg|\biu\b|units|dose|dosing|titrat|per week|weekly|daily|twice|every other day/i;
+  const blocks=[];
+  keys.forEach(k=>{
+    const g=GV(k),en=GUIDES[k];if(!g||!en)return;
+    if(g.dose)blocks.push({kind:"plain",text:`<b>${guideName(k)}</b><br>${g.dose}`});
+    // matched against the English so the filter keeps working in any language,
+    // shown translated
+    (en.key||[]).forEach((x,i)=>{if(NUM.test(x))
+      blocks.push({kind:"good",text:(g.key&&g.key[i])||x});});
+    (en.warn||[]).forEach((x,i)=>{if(NUM.test(x))
+      blocks.push({kind:"warn",text:(g.warn&&g.warn[i])||x});});
+  });
+  return blocks.length?{title:CT().tDose,blocks:blocks.slice(0,5),sources:keys}:null;
 }
 function ciAdherence(q,keys){
   if(!/\b(adherence|consistent|missing|missed|often enough|skipping|compliance|streak|adherenc|constan|salt\u00e1ndome|saltando|salt\u00e9|olvid|falt|racha|cumplimiento|me estoy saltando)/i.test(q))return null;
@@ -5340,18 +5598,23 @@ function coachAnswer(q){
   const keys=coachPeps(q);
   // most specific first: a question naming a peptide and a nutrient is a
   // nutrition question, not a stacking question that happens to contain "with"
-  const handlers=[ciMeds,ciComp,ciMood,ciNutrition,ciLabs,ciAdherence,ciSideEffect,ciLevel,ciTiming,ciStack];
+  const handlers=[ciMeds,ciComp,ciMood,ciNutrition,ciLabs,ciAdherence,ciSideEffect,
+    ciLevel,ciDose,ciTiming,ciStack];
   for(const h of handlers){
     let r=null;try{r=h(q,keys);}catch(e){}
     if(r&&r.blocks&&r.blocks.length)return r;
   }
-  const hits=coachSearch(q,6);
-  if(!hits.length)return {title:CT().tNone,
+  const R=coachSearch(q,3);
+  if(!R.hits.length)return {title:CT().tNone,
     blocks:[{kind:"plain",text:CT().noneT2}],
     sources:[]};
+  const mk=h=>({kind:"plain",text:`<b>${srcLabel(h)}</b><br>${h.text}`});
   return {title:CT().tFound,
-    blocks:hits.map(h=>({kind:"plain",text:`<b>${srcLabel(h)}</b><br>${h.text}`})),
-    sources:[...new Set(hits.map(h=>h.key).filter(Boolean))]};
+    blocks:R.hits.map(mk),
+    // offered rather than shown: the ranker ordered these for diversity, so
+    // they are the next different thing to say, not the next paragraph
+    more:R.more.map(mk),
+    sources:[...new Set(R.hits.map(h=>h.key).filter(Boolean))]};
 }
 
 /* ---------- deep dive ----------
@@ -8742,12 +9005,17 @@ function renderCoach(){
     const p=pepFor(b.dataset.cgo);
     if(p)deepDive(p.id);else toast("Add it to your list to open the full guide");});
   $("#cDisc",el).onclick=showDisclaimer;
+  if($("#ansMore",el))$("#ansMore",el).onclick=()=>{
+    coachRes.moreOpen=!coachRes.moreOpen;renderCoach();};
   if($("#askAgain",el))$("#askAgain",el).onclick=()=>{coachQ="";coachRes=null;renderCoach();};
 }
 function coachCard(r){
+  const more=r.more||[],open=!!r.moreOpen;
+  const blocks=open?r.blocks.concat(more):r.blocks;
   return `<div class="ansbox">
     <div class="anshead">${r.title}</div>
-    ${r.blocks.map(b=>`<div class="ansb ${b.kind}">${b.text}</div>`).join("")}
+    ${blocks.map(b=>`<div class="ansb ${b.kind}">${b.text}</div>`).join("")}
+    ${more.length?`<button class="ansmore" id="ansMore">${open?CT().less:CT().more(more.length)}</button>`:""}
     ${r.sources.length?`<div class="anssrc"><span class="asl">Read the full guide</span>
       ${r.sources.map(k=>`<button class="asrc" data-cgo="${k}">${guideName(k)} ›</button>`).join("")}</div>`:""}
   </div>
