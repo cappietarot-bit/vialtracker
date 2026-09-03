@@ -1722,11 +1722,34 @@
   }
   .primary:active{transform:translateY(1px)}
 
+  /* ============================================================
+     CURRENT LIVE PASS — restrained instrument refinements
+     ============================================================ */
+  body{overflow-x:hidden}
+  .app{max-width:1040px}
+  .top{border-bottom-color:color-mix(in srgb,var(--accent) 20%,var(--line));background:color-mix(in srgb,var(--bg) 68%,transparent)}
+  .brand{min-height:38px}.brand .sub{color:var(--accent-ink)}
+  .iconbtn{background-color:color-mix(in srgb,var(--panel) 76%,transparent);border-color:color-mix(in srgb,var(--line2) 82%,transparent)}
+  .vhead{margin-top:8px;margin-bottom:18px}.vhead h2{font-size:29px}.vsub{color:var(--accent-ink)}
+  .panel,.card,.guide,.stat,.cal,.hgrid,.buycard,.saletot .box,.reccard,.daysheet,.sheet{background-clip:padding-box}
+  .card:hover{border-color:color-mix(in srgb,var(--accent) 34%,var(--line2))}
+  .hgrid{background-image:repeating-linear-gradient(0deg,transparent 0,transparent 31px,color-mix(in srgb,var(--accent) 4%,transparent) 32px),repeating-linear-gradient(90deg,transparent 0,transparent 31px,color-mix(in srgb,var(--accent) 4%,transparent) 32px),var(--glass)}
+  .hcell{background-color:color-mix(in srgb,var(--panel2) 68%,transparent)}
+  .hcell:not(.empty){border-color:color-mix(in srgb,var(--line2) 56%,transparent)}
+  .hcell:hover:not(.empty):not(.sel){box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 24%,transparent)}
+  .ring,.mring{filter:drop-shadow(0 4px 12px color-mix(in srgb,var(--accent) 18%,transparent))}
+  .nav{border-top-color:color-mix(in srgb,var(--accent) 18%,var(--line));background-color:color-mix(in srgb,var(--bg) 70%,transparent)}
+  .nav .ni{border:1px solid transparent}.nav button.on .ni{border-color:color-mix(in srgb,var(--accent) 38%,transparent)}
+  .fab{width:52px;height:52px;border-radius:17px}
+  .daysheet,.sheet{background-color:color-mix(in srgb,var(--panel) 90%,transparent)}
+  .toast{border:1px solid color-mix(in srgb,var(--accent) 28%,transparent)}
+  @media(min-width:860px){.app{padding-left:96px}.top{padding-inline:24px}main{padding:22px 24px}.nav{width:96px;padding-inline:10px}.nav button{min-height:58px}}
+  @media(max-width:520px){.top{padding-inline:13px}main{padding:13px}.vhead h2{font-size:27px}.card,.panel,.guide,.cal{border-radius:16px}}
 </style>
 
-<div class="app">
-  <div class="top">
-    <div class="brand">
+<div class="app" data-component="lab-app">
+  <div class="top" data-component="app-header">
+    <div class="brand" data-component="brand-mark">
       <svg class="logo" viewBox="0 0 40 40" fill="none" aria-hidden="true">
         <rect x="14" y="3" width="12" height="7" rx="2" fill="var(--accent)"/>
         <path d="M15 10h10v20a5 5 0 0 1-5 5 5 5 0 0 1-5-5V10Z" fill="none" stroke="var(--accent)" stroke-width="2.4"/>
@@ -1762,7 +1785,7 @@
   </div>
   <div class="alertborder" id="alertBorder"></div>
 
-  <nav class="nav" id="nav">
+  <nav class="nav" id="nav" data-component="app-nav">
     <button data-tab="track" class="on"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4" stroke-linecap="round"/></svg></span>Today</button>
     <button data-tab="guide"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 012-2h12v18H6a2 2 0 01-2-2V5Z"/><path d="M8 3v18M12 8h4M12 12h4" stroke-linecap="round"/></svg></span>Stack</button>
     <button data-tab="coach"><span class="ni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12c0 3.6-3.6 6.5-8 6.5a10 10 0 01-2.6-.34L5 20l1.2-3.2A6.8 6.8 0 014 12c0-3.6 3.6-6.5 8-6.5s8 2.9 8 6.5Z" stroke-linejoin="round"/><path d="M9 11.5h6M9 14h3.5" stroke-linecap="round"/></svg></span>Coach</button>
