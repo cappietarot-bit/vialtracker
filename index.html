@@ -1676,6 +1676,14 @@
   .big,.num,.ring,.kpi,.stat{text-shadow:0 0 14px var(--glow)}
   .fab{box-shadow:0 0 0 1px var(--gline),0 8px 26px -6px var(--glow)}
 
+  .bgimg{position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background-position:center top;background-size:cover;
+    background-repeat:no-repeat;opacity:0;transition:opacity .5s ease}
+  .bgimg.on{opacity:1}
+  :root[data-theme="light"] .bgimg{display:none}
+  @media(prefers-color-scheme:light){:root:not([data-theme="dark"]) .bgimg{display:none}}
+  @media(prefers-reduced-motion:reduce){.bgimg{transition:none}}
+
   /* ================= lab glass ================= */
   /* Three states, because "system" stamps no attribute at all: bare :root is
      light, the media query covers system-dark, the attribute covers the
@@ -1782,6 +1790,7 @@
 
   <button class="fab" id="fab" aria-label="Add peptide">+</button>
   <div class="install" id="installBar"></div>
+  <div class="bgimg" id="bgimg"></div>
   <div class="bguard" id="bguard"></div>
   <div class="dayoverlay" id="dayOverlay"></div>
   <div class="player" id="player"></div>
@@ -10088,11 +10097,37 @@ function coachCard(r){
 /* ============ nav / shell ============ */
 const SUBS={track:"Today",guide:"Stack",cycle:"Cycle",labs:"Bloodwork",gym:"Recovery",food:"Food",coach:"Coach",settings:"Settings"};
 let tab="track";
+/* body.sex is the one with a default and the one the macro calculator sets;
+   the cycle setup is the fallback for someone who only used that screen */
+function userSex(){
+  const b=(S.body&&S.body.sex)||"",c=(S.cycle&&S.cycle.sex)||"";
+  return (b==="f"||(!b&&c==="f"))?"f":"m";
+}
+/* probed once per file per session: absent art is a fallback, not an error */
+const _bgSeen={};
+function setBg(t){
+  const bg=$("#bgimg");if(!bg)return;
+  const names=userSex()==="f"?["bg-"+t+"-f.webp","bg-"+t+".webp"]
+                             :["bg-"+t+".webp"];
+  (function tryAt(i){
+    if(i>=names.length){bg.classList.remove("on");return;}
+    const url=names[i];
+    if(_bgSeen[url]===false)return tryAt(i+1);
+    const paint=()=>{bg.style.backgroundImage=
+      `linear-gradient(rgba(11,18,17,.34),rgba(11,18,17,.62)),url("${url}")`;
+      bg.classList.add("on");};
+    if(_bgSeen[url])return paint();
+    const im=new Image();
+    im.onload=()=>{_bgSeen[url]=true;paint();};
+    im.onerror=()=>{_bgSeen[url]=false;tryAt(i+1);};
+    im.src=url;
+  })(0);
+}
 function setTab(t){tab=t;
   // opening the gym is the one place the photos are needed now
   if(t==="gym"&&!Object.keys(EXPHOTO).length)
     loadPhotos().then(ok=>{if(ok&&tab==="gym")setTab("gym");});
-$$(".view").forEach(v=>v.classList.remove("on"));$("#v-"+t).classList.add("on");
+setBg(t);$$(".view").forEach(v=>v.classList.remove("on"));$("#v-"+t).classList.add("on");
   $$("#nav button").forEach(b=>b.classList.toggle("on",b.dataset.tab===t));
   $("#bloodBtn").classList.toggle("on",t==="labs");
   if($("#cycBtn"))$("#cycBtn").classList.toggle("on",t==="cycle");
@@ -10249,7 +10284,7 @@ applyLabRanges();initTips();renderTrack();syncNative();applyLang();watchLang();s
 /* repair any period list fragmented by the old edit behaviour */
 if(cycS().periods.length){const before=JSON.stringify(cycS().periods);
   if(JSON.stringify(cycNormalise())!==before)save();}
-initSW();startReminderLoop();
+initSW();startReminderLoop();setBg(tab);
 /* the one thing that has to be seen before anything else */
 setTimeout(supervisionGate,700);
 /* If localStorage came back empty, something cleared it — pull the data back
