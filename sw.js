@@ -9,7 +9,7 @@
    new deploy is picked up on the next online load rather than being pinned to
    whatever was cached first. Everything else is cache-first. */
 
-const CACHE = "thelab-v3";
+const CACHE = "thelab-v4";
 const SHELL = ["./", "./index.html", "./manifest.json",
                "./icon-192.png", "./icon-512.png", "./favicon.png"];
 // The exercise photos are a separate file now, so the first load is 0.8 MB

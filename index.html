@@ -1632,6 +1632,22 @@
   /* light-theme specific softening */
   :root[data-theme="light"] .bodysvg,:root:not([data-theme="dark"]) .bodysvg{filter:drop-shadow(0 6px 16px rgba(14,26,24,.12))}
   @media(prefers-color-scheme:light){.bodysvg{filter:drop-shadow(0 6px 16px rgba(14,26,24,.12))}}
+  /* Sits above the nav rather than at the top, because that is where the
+     thumb already is, and it clears the nav by measuring it instead of
+     hardcoding a height that changes with the safe-area inset. */
+  .bguard{position:fixed;left:10px;right:10px;z-index:29;display:none;
+    bottom:calc(var(--navh,64px) + 10px);
+    background:var(--crit-soft);border:1px solid var(--crit);
+    border-radius:14px;padding:11px 13px;box-shadow:var(--shadow-lg)}
+  .bguard.on{display:block}
+  .bgt{font-weight:700;font-size:13.5px;color:var(--crit);margin-bottom:2px}
+  .bgs{font-size:12.5px;color:var(--ink2);line-height:1.45}
+  .bgr{display:flex;gap:8px;margin-top:9px}
+  .bgb{flex:1;background:var(--crit);color:#fff;border:0;border-radius:9px;
+    padding:9px;font-weight:700;font-size:12.5px}
+  .bgx{background:transparent;color:var(--ink3);border:1px solid var(--line2);
+    border-radius:9px;padding:9px 13px;font-size:12.5px}
+
   /* ================= lab glass ================= */
   /* Three states, because "system" stamps no attribute at all: bare :root is
      light, the media query covers system-dark, the attribute covers the
@@ -1737,6 +1753,7 @@
 
   <button class="fab" id="fab" aria-label="Add peptide">+</button>
   <div class="install" id="installBar"></div>
+  <div class="bguard" id="bguard"></div>
   <div class="dayoverlay" id="dayOverlay"></div>
   <div class="player" id="player"></div>
   <div class="deepview" id="deepView">
@@ -7611,6 +7628,7 @@ function supervisionGate(){
     S.settings.agreed=true;save();
     gateUp=false;
     closeModal();
+    backupGuard();
     if(!S.settings.seenTip){S.settings.seenTip=true;save();setTimeout(showTip,350);}
   };
 }
@@ -8589,6 +8607,15 @@ es:{
 "Several of the compounds covered are prescription-only or controlled, and some cause real harm without monitoring. A doctor who knows your history is the person to decide what you take and how much.":"Varios de los compuestos que se tratan son de prescripci\u00f3n o est\u00e1n controlados, y algunos hacen da\u00f1o real sin seguimiento. Un m\u00e9dico que conozca tu historial es quien debe decidir qu\u00e9 tomas y cu\u00e1nto.",
 "Get bloodwork. It is the only way to know what is actually happening, and this app is far more useful with it than without.":"Hazte anal\u00edticas. Es la \u00fanica forma de saber qu\u00e9 est\u00e1 pasando de verdad, y esta app es mucho m\u00e1s \u00fatil con ellas que sin ellas.",
 "If something is going wrong, stop and get seen. Nothing here is worth a liver.":"Si algo va mal, para y que te vean. Nada de lo que hay aqu\u00ed vale un h\u00edgado.",
+/* --- interface --- */
+"Nothing here is backed up":"No hay ninguna copia de esto",
+"Your backup is out of date":"Tu copia de seguridad est\u00e1 desactualizada",
+"days logged, stored only on this device.":"d\u00edas registrados, guardados solo en este dispositivo.",
+"Deleting the home screen icon erases all of it.":"Si borras el icono de la pantalla de inicio, se borra todo.",
+"Last saved":"Guardado por \u00faltima vez hace",
+"days ago.":"d\u00edas.",
+"Save a backup":"Guardar una copia",
+"Later":"M\u00e1s tarde",
 /* --- alcohol --- */
 "Alcohol and anabolic steroids injure the liver by different routes, which is why the combination is worse than either number suggests. Steroids, particularly the oral ones, cause cholestatic injury: bile flow slows and bilirubin climbs. Alcohol causes fat accumulation first and inflammation after. One is a plumbing problem and the other is a chemical burn, and the liver is absorbing both at once. Enzymes rising on gear are expected; enzymes rising on gear plus a drinking week are the ones that turn into a hospital story.":"El alcohol y los esteroides anab\u00f3licos da\u00f1an el h\u00edgado por v\u00edas distintas, y por eso la combinaci\u00f3n es peor de lo que sugiere cualquiera de las dos cifras. Los esteroides, sobre todo los orales, causan da\u00f1o colest\u00e1sico: el flujo biliar se enlentece y la bilirrubina sube. El alcohol produce primero acumulaci\u00f3n de grasa y despu\u00e9s inflamaci\u00f3n. Uno es un problema de ca\u00f1er\u00edas y el otro una quemadura qu\u00edmica, y el h\u00edgado absorbe ambos a la vez. Que las enzimas suban con ciclo es esperable; que suban con ciclo m\u00e1s una semana de copas es lo que acaba en el hospital.",
 "This is the pairing to actually avoid. Methandrostenolone is 17-alpha-alkylated, a modification that exists purely to survive first-pass metabolism, and surviving it means the liver processes the drug repeatedly instead of once. Every published case of serious liver injury on this compound involves either a long run, a high dose, or alcohol. Drinking through a four week dbol cycle is the single most reliable way to turn a manageable rise in ALT into cholestatic jaundice, and the itching and dark urine that precede it are late signs, not early ones.":"Esta es la combinaci\u00f3n que conviene evitar de verdad. La metandrostenolona es 17-alfa-alquilada, una modificaci\u00f3n que existe solo para sobrevivir al primer paso hep\u00e1tico, y sobrevivirlo significa que el h\u00edgado procesa el f\u00e1rmaco una y otra vez en lugar de una sola. Todos los casos publicados de da\u00f1o hep\u00e1tico grave con este compuesto implican un ciclo largo, una dosis alta o alcohol. Beber durante un ciclo de cuatro semanas de dbol es la forma m\u00e1s fiable de convertir una subida manejable de ALT en ictericia colest\u00e1sica, y el picor y la orina oscura que la preceden son signos tard\u00edos, no tempranos.",
@@ -10126,7 +10153,37 @@ function quickSet(){
 function closeModal(){$("#modal").classList.remove("on");}
 $("#modal").onclick=e=>{if(e.target.id==="modal"&&!gateUp)closeModal();};
 $("#dayOverlay").onclick=e=>{if(e.target.id==="dayOverlay")closeDay();};
-function renderAll(){renderTrack();}
+/* How much of this exists nowhere else. Counted in things the user
+   recognises, not bytes. */
+function dataAtRisk(){
+  return Object.keys(S.log||{}).length+(S.workouts||[]).length
+        +(S.meals||[]).length+(S.weights||[]).length
+        +Object.keys(S.labs||{}).length;
+}
+function backupGuard(){
+  const el=$("#bguard");if(!el)return;
+  const nav=$("#nav");
+  if(nav)document.documentElement.style.setProperty(
+    "--navh",Math.round(nav.getBoundingClientRect().height)+"px");
+  const n=dataAtRisk(),age=backupAge();
+  const never=age==null,stale=age!=null&&age>=7;
+  const snoozed=(S.settings.bgSnooze||0)>Date.now();
+  /* nothing worth losing yet, or there is a recent copy, or a stale one was
+     put off — a warning that is always up is a warning nobody reads */
+  if(n<3||(!never&&!stale)||(stale&&snoozed)){
+    el.classList.remove("on");el.innerHTML="";return;}
+  const days=Object.keys(S.log||{}).length;
+  el.innerHTML=`<div class="bgt">${never?L("Nothing here is backed up"):L("Your backup is out of date")}</div>
+    <div class="bgs">${days} ${L("days logged, stored only on this device.")}
+      ${never?L("Deleting the home screen icon erases all of it."):`${L("Last saved")} ${age} ${L("days ago.")}`}</div>
+    <div class="bgr"><button class="bgb" id="bgSave">${L("Save a backup")}</button>
+    ${never?"":`<button class="bgx" id="bgLater">${L("Later")}</button>`}</div>`;
+  el.classList.add("on");
+  $("#bgSave").onclick=async()=>{await exportData();save();backupGuard();};
+  const lt=$("#bgLater");
+  if(lt)lt.onclick=()=>{S.settings.bgSnooze=Date.now()+3*DAY;save();backupGuard();};
+}
+function renderAll(){renderTrack();backupGuard();}
 let tT;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(tT);tT=setTimeout(()=>t.classList.remove("on"),1900);}
 
 /* tooltips: hover on desktop, press-and-hold on touch */
