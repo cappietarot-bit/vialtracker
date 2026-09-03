@@ -9,7 +9,7 @@
    new deploy is picked up on the next online load rather than being pinned to
    whatever was cached first. Everything else is cache-first. */
 
-const CACHE = "thelab-v4";
+const CACHE = "thelab-v5";
 const SHELL = ["./", "./index.html", "./manifest.json",
                "./icon-192.png", "./icon-512.png", "./favicon.png"];
 // The exercise photos are a separate file now, so the first load is 0.8 MB
@@ -41,8 +41,10 @@ self.addEventListener("fetch", e => {
     // network first: a new build should win as soon as there is a connection
     e.respondWith(
       fetch(req).then(res => {
-        const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
+        if (res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
+        }
         return res;
       }).catch(() => caches.match(req).then(r => r || caches.match("./index.html")))
     );
@@ -51,8 +53,11 @@ self.addEventListener("fetch", e => {
 
   e.respondWith(
     caches.match(req).then(hit => hit || fetch(req).then(res => {
-      const copy = res.clone();
-      caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
+      // only real responses: a stored 404 outlives the reason for it
+      if (res.ok) {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
+      }
       return res;
     }))
   );

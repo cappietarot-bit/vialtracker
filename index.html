@@ -1687,14 +1687,24 @@
   @media(prefers-color-scheme:light){:root:not([data-theme="dark"]) .bgimg{display:none}}
   @media(prefers-reduced-motion:reduce){.bgimg{transition:none}}
 
+  /* The overlay covers the per-tab layer, so it carries its own. background
+     on a scrolling box is placed against the box, not the content, which is
+     why this needs no fixed attachment and no pseudo-element. */
+  .deepview{
+    background-image:linear-gradient(rgba(11,18,17,.22),rgba(11,18,17,.55)),
+      var(--deepbg);
+    background-position:center top;background-size:cover;
+    background-repeat:no-repeat;
+  }
+
   /* ================= lab glass ================= */
   /* Three states, because "system" stamps no attribute at all: bare :root is
      light, the media query covers system-dark, the attribute covers the
      explicit toggle. A token defined in only one of them is the classic
      unreadable-artifact bug. */
-  :root{--gpane:var(--panel);--gline:var(--line);--gedge:rgba(255,255,255,1);--gedge2:transparent;--gnav:color-mix(in srgb,var(--bg) 92%,transparent);--gsheet:var(--panel);--glow:transparent;--grid:transparent;--scan:transparent;--bloom1:transparent;--bloom2:transparent;--brk:transparent;}
-  @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--gpane:rgba(11,22,21,.52);--gline:rgba(110,235,215,.28);--gedge:rgba(190,255,245,.20);--gedge2:rgba(170,255,246,.85);--gnav:rgba(6,13,12,.62);--gsheet:rgba(10,19,18,.78);--glow:rgba(45,212,191,.75);--grid:rgba(125,245,225,.075);--scan:rgba(150,255,240,.030);--bloom1:rgba(22,195,175,.40);--bloom2:rgba(28,140,205,.26);--brk:rgba(90,240,220,.55);}}
-  :root[data-theme="dark"]{--gpane:rgba(11,22,21,.52);--gline:rgba(110,235,215,.28);--gedge:rgba(190,255,245,.20);--gedge2:rgba(170,255,246,.85);--gnav:rgba(6,13,12,.62);--gsheet:rgba(10,19,18,.78);--glow:rgba(45,212,191,.75);--grid:rgba(125,245,225,.075);--scan:rgba(150,255,240,.030);--bloom1:rgba(22,195,175,.40);--bloom2:rgba(28,140,205,.26);--brk:rgba(90,240,220,.55);}
+  :root{--gpane:var(--panel);--gline:var(--line);--gedge:rgba(255,255,255,1);--gedge2:transparent;--gnav:color-mix(in srgb,var(--bg) 92%,transparent);--gsheet:var(--panel);--glow:transparent;--grid:transparent;--scan:transparent;--bloom1:transparent;--bloom2:transparent;--brk:transparent;--deepbg:none;}
+  @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--gpane:rgba(11,22,21,.52);--gline:rgba(110,235,215,.28);--gedge:rgba(190,255,245,.20);--gedge2:rgba(170,255,246,.85);--gnav:rgba(6,13,12,.62);--gsheet:rgba(10,19,18,.78);--glow:rgba(45,212,191,.75);--grid:rgba(125,245,225,.075);--scan:rgba(150,255,240,.030);--bloom1:rgba(22,195,175,.40);--bloom2:rgba(28,140,205,.26);--brk:rgba(90,240,220,.55);--deepbg:url("bg-deep.webp");}}
+  :root[data-theme="dark"]{--gpane:rgba(11,22,21,.52);--gline:rgba(110,235,215,.28);--gedge:rgba(190,255,245,.20);--gedge2:rgba(170,255,246,.85);--gnav:rgba(6,13,12,.62);--gsheet:rgba(10,19,18,.78);--glow:rgba(45,212,191,.75);--grid:rgba(125,245,225,.075);--scan:rgba(150,255,240,.030);--bloom1:rgba(22,195,175,.40);--bloom2:rgba(28,140,205,.26);--brk:rgba(90,240,220,.55);--deepbg:url("bg-deep.webp");}
 
   /* The room. body's background propagates to the canvas, which leaves body
      itself paintable, so a z-index:-1 pseudo-element lands on top of the flat
