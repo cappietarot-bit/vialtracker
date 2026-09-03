@@ -9,12 +9,18 @@
    new deploy is picked up on the next online load rather than being pinned to
    whatever was cached first. Everything else is cache-first. */
 
-const CACHE = "thelab-v2";
+const CACHE = "thelab-v3";
 const SHELL = ["./", "./index.html", "./manifest.json",
                "./icon-192.png", "./icon-512.png", "./favicon.png"];
+// The exercise photos are a separate file now, so the first load is 0.8 MB
+// instead of 3.8 MB. Cached like the rest of the shell, but fetched after the
+// page is already usable rather than before it can paint.
+const LAZY = ["./photos.js"];
 
 self.addEventListener("install", e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).catch(() => {}));
+  e.waitUntil(caches.open(CACHE).then(c =>
+    c.addAll(SHELL).then(() => c.addAll(LAZY).catch(() => {}))
+  ).catch(() => {}));
   self.skipWaiting();
 });
 
