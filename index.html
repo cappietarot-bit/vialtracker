@@ -304,6 +304,15 @@
   .dddose{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:13px 15px;
     font-size:14.5px;line-height:1.6;color:var(--ink2)}
   /* the three evidence buckets, colour-keyed by how solid they are */
+  .splitrow{display:flex;gap:7px;margin-bottom:8px}
+  .splitb{flex:1;padding:10px 9px;border:1px solid var(--line);border-radius:10px;
+    background:var(--panel);color:var(--ink2);font-family:inherit;font-size:12.5px;
+    font-weight:650;line-height:1.3;cursor:pointer;text-align:center}
+  .splitb.on{border-color:var(--accent);background:var(--accent-soft);
+    color:var(--accent-ink)}
+  .splitnote{color:var(--ink3);font-size:12.5px;line-height:1.5}
+  .splitwhy{margin-top:11px;padding:11px 13px;border:1px dashed var(--line2);
+    border-radius:10px;color:var(--ink2);font-size:12.5px;line-height:1.6}
   .ddfold{padding:0;overflow:hidden}
   .ddfh{width:100%;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
     background:none;border:0;padding:13px 15px 8px;font:inherit;color:var(--ink);
@@ -3013,7 +3022,12 @@ const EXPAT={
 "Cable Curl":"curl","Barbell Curl":"curl","Preacher Curl":"curl","Reverse Wrist Curl":"curl",
 "Farmer Carry":"shrug","Squat":"squat","Standing Calf Raise":"calf","Seated Calf Raise":"calf",
 "Jump Rope":"calf","Pull-Up":"pulldown","Dumbbell Row":"row","Upright Row":"lateral",
-"Lateral Raise":"lateral","Good Morning":"hinge"};
+"Lateral Raise":"lateral","Good Morning":"hinge",
+"Incline Machine Press":"press","Machine Lateral Raise":"lateral","Machine Row":"row",
+"Cable Pullover":"pulldown","Cable Preacher Curl":"curl","Cable Hammer Curl":"curl",
+"Overhead Rope Extension":"pushdown","Hack Squat":"squat","Romanian Deadlift":"hinge",
+/* no leg-curl animation exists, and the hinge is the closer of the two */
+"Lying Leg Curl":"hinge","Seated Leg Curl":"hinge"};
 function pat(n){return EXPAT[n]||"press";}
 function demoSVG(name,cls){
   return `<svg viewBox="0 0 120 172" class="demo p-${pat(name)} ${cls||""}" aria-hidden="true">
@@ -3047,7 +3061,38 @@ const ROUTINES={
   {n:"Lat Pulldown",r:12,w:120,s:3},{n:"Seated Cable Row",r:12,w:130,s:3},
   {n:"Bent Over Row",r:10,w:95,s:3},{n:"Face Pull",r:15,w:50,s:3},
   {n:"Shrugs",r:15,w:80,s:3},{n:"Rear Delt Fly",r:15,w:30,s:3},
-  {n:"Back Extension",r:15,w:0,s:3}]}};
+  {n:"Back Extension",r:15,w:0,s:3}]},
+ sChest:{n:"Chest · Side delts",view:"f",muscles:["chest","shoulders","triceps"],ex:[
+  {n:"Incline Machine Press",r:10,w:120,s:3},{n:"Seated Chest Press",r:10,w:110,s:2},
+  {n:"Chest Fly",r:12,w:90,s:2},{n:"Cable Crossover",r:12,w:40,s:2},
+  {n:"Machine Lateral Raise",r:12,w:50,s:3}]},
+ sBack:{n:"Back · Rear delts",view:"b",muscles:["lats","traps","biceps","shoulders"],ex:[
+  {n:"Pull-Up",r:8,w:0,s:2},{n:"Lat Pulldown",r:10,w:130,s:3},
+  {n:"Machine Row",r:10,w:120,s:3},{n:"Seated Cable Row",r:10,w:130,s:2},
+  {n:"Cable Pullover",r:12,w:60,s:2},{n:"Rear Delt Fly",r:15,w:35,s:3},
+  {n:"Face Pull",r:15,w:45,s:2}]},
+ sArms:{n:"Arms",view:"f",muscles:["triceps","biceps","forearms"],ex:[
+  {n:"Bar Triceps Pushdown",r:12,w:70,s:3},{n:"Cable Preacher Curl",r:10,w:50,s:3},
+  {n:"Overhead Rope Extension",r:12,w:45,s:2},{n:"Cable Hammer Curl",r:12,w:45,s:2},
+  {n:"Cable Rope Pushdown",r:15,w:55,s:2},{n:"Preacher Curl",r:10,w:45,s:2}]},
+ sLegs:{n:"Legs",view:"b",muscles:["hamstrings","quads","glutes","calves"],ex:[
+  {n:"Lying Leg Curl",r:12,w:90,s:3},{n:"Seated Leg Curl",r:12,w:100,s:2},
+  {n:"Romanian Deadlift",r:10,w:135,s:2},{n:"Hack Squat",r:10,w:180,s:3},
+  {n:"Sled 45 Leg Wide Press",r:15,w:400,s:2},{n:"Leg Extension",r:15,w:150,s:2},
+  {n:"Seated Calf Raise",r:15,w:90,s:3}]}};
+/* ---------- training splits ----------
+   A split is which days exist and in what order. The routines are the same
+   shape whichever split names them, so adding one is adding a list. */
+const SPLITS={
+ plr:{n:"Push · Legs · Pull",days:["upper","lower","pull"],
+  sub:"Three days. Everything that presses, then legs, then everything that pulls.",
+  note:"Each muscle gets trained once per rotation with a clear job per day, which makes it easy to see whether a session went well. It is the least complicated way to cover the whole body and the easiest to keep to when the week goes wrong."},
+ bpart:{n:"Four-day body part",days:["sChest","sBack","sArms","sLegs"],
+  sub:"Chest, back, arms, legs, rotating with no fixed rest days.",
+  note:"Fewer muscles per session, so each gets more attention and more recovery before it comes round again. Low set counts and high effort: two to three working sets an exercise, eight to twelve reps, taken to or near failure with a slow lowering phase. Mostly machines and cables, because that is what lets you reach failure without a spotter. Rotate when you are ready rather than on fixed days."}};
+function curSplit(){
+  return SPLITS[(S.settings&&S.settings.split)||"plr"]||SPLITS.plr;
+}
 function workoutFor(dateKey){return S.workouts.find(w=>w.date===dateKey)||null;}
 function exHistory(name){
   const out=[];
@@ -3336,14 +3381,24 @@ function dayFood(el,key){
 function dayWorkout(el,key){
   const w=workoutFor(key);
   if(!w){
-    el.innerHTML=`<div class="dpad"><div class="lbl" style="margin-bottom:9px">Pick a routine</div>
-      <div class="rlist">${Object.keys(ROUTINES).map(k=>{const R=ROUTINES[k];
-        return `<button class="rcard" data-rt="${k}"><div class="rthumb">${miniBody(R.muscles,k==="pull"?"b":"f")}</div>
+    const SP=curSplit();
+    el.innerHTML=`<div class="dpad">
+      <div class="lbl" style="margin-bottom:7px">Your split</div>
+      <div class="splitrow">${Object.keys(SPLITS).map(k=>
+        `<button class="splitb${SPLITS[k]===SP?" on":""}" data-sp="${k}">${SPLITS[k].n}</button>`).join("")}</div>
+      <div class="splitnote">${SP.sub}</div>
+      <div class="lbl" style="margin:13px 0 9px">Pick a routine</div>
+      <div class="rlist">${SP.days.filter(k=>ROUTINES[k]).map(k=>{const R=ROUTINES[k];
+        return `<button class="rcard" data-rt="${k}"><div class="rthumb">${miniBody(R.muscles,R.view||"f")}</div>
           <div class="rinfo"><div class="rn">${R.n}</div>
             <div class="rm2">${R.ex.length} exercises · ${R.muscles.map(m=>(MUSCLES.find(x=>x.id===m)||{}).n).filter(Boolean).join(", ")}</div></div>
           <span class="gcaret">›</span></button>`;}).join("")}</div>
+      <div class="splitwhy">${SP.note}</div>
       <button class="ghost" id="restDay" style="margin-top:10px">Rest day</button></div>`;
     $$("[data-rt]",el).forEach(b=>b.onclick=()=>startRoutine(key,b.dataset.rt));
+    $$("[data-sp]",el).forEach(b=>b.onclick=()=>{
+      S.settings.split=b.dataset.sp;save();
+      renderDayBody(key,key===iso(new Date()));});
     $("#restDay",el).onclick=()=>toast("Rest day");
     return;
   }
