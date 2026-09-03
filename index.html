@@ -3250,7 +3250,7 @@ function dayPeps(el,key,isToday){
       <span class="ackck">✓</span>${allDone(dueList,key)?'All shots done — tap to undo':'Mark all shots done'}</button></div>`:""}
     <div class="halves">${half('am','☀','Morning',am,key,isToday)}${half('pm','☾','Night',pm,key,isToday)}</div>
     ${restList.length?`<div class="dpad restwrap">
-      <div class="lbl" style="margin-bottom:8px">Not scheduled today · ${restList.length}</div>
+      <div class="lbl" style="margin-bottom:8px">${L("Not scheduled today")} · ${restList.length}</div>
       ${restList.map(p=>{const dn=!!logd[p.id];
         return `<div class="drow muted ${dn?'done':''}">
           <button class="check ${dn?'on':''}" data-log="${p.id}" aria-label="Log ${p.name} anyway">${dn?'✓':''}</button>
@@ -3899,9 +3899,7 @@ function levelChart(p){
         <g fill="var(--ink3)" font-family="var(--mono)" font-size="7">
           <text x="2" y="124">dose</text><text x="252" y="124">${span<48?span+"h":Math.round(span/24)+"d"}</text></g>
       </svg>
-      <p class="ddp sm">Half-life about <b>${unit}</b>. It clears long before the next dose, so nothing
-      builds up — each shot is a pulse, not a level. Timing within the day matters here; total
-      weekly exposure does not.</p></div>`;
+      <p class="ddp sm">${L("Half-life about")} <b>${unit}</b>. ${L("It clears long before the next dose, so nothing builds up \u2014 each shot is a pulse, not a level. Timing within the day matters here; total weekly exposure does not.")}</p></div>`;
   }
   const weeks=10,step=6,hours=weeks*168;
   const ser=levelSeries(p,hours,step);
@@ -3924,11 +3922,10 @@ function levelChart(p){
       <g fill="var(--ink3)" font-family="var(--mono)" font-size="7">
         <text x="2" y="124">${weeks}w ago</text><text x="272" y="124">now</text></g>
     </svg>
-    <p class="ddp sm">Half-life about <b>${hl>=24?Math.round(hl/24)+" days":hl+" h"}</b>, so it takes roughly
-    <b>${days} days</b> to reach a stable level after any dose change.
-    ${on!=null&&on<days?`You are <b>${on} days</b> in — still climbing.`
-      :on!=null?`You passed that <b>${on-days} days</b> ago, so what you feel now is this dose, not the ramp.`
-      :`Log a few doses and this fills in from your own schedule.`}</p></div>`;
+    <p class="ddp sm">${LVLT().steady(hl>=24?LVLT().d(Math.round(hl/24)):LVLT().h(hl),days)}
+    ${on!=null&&on<days?LVLT().climbing(on)
+      :on!=null?LVLT().passed(on-days)
+      :LVLT().none}</p></div>`;
 }
 /* earliest logged dose for a peptide */
 function firstDoseDate(p){
@@ -5814,7 +5811,7 @@ function deepDive(id){
     const D=DDT(),tp=ddTopics(items);
     // one or two labelled findings is not a contents line, it is a fragment of
     // one, and the preview sentence says more than it does
-    const sum=`<p>${D.n(items.length,kind||note)}${tp.length>2?" "+D.top(tp.slice(0,6).join(", ")):""}</p>
+    const sum=`<p>${D.n(items.length,L(kind||note))}${tp.length>2?" "+D.top(tp.slice(0,6).join(", ")):""}</p>
       <p class="ddfx">${ddFirst(items[0])}</p>`;
     return ddFold(cls,title,note,sum,
       `<ul>${items.map(x=>`<li>${evLine(x)}</li>`).join("")}</ul>`);
@@ -5881,9 +5878,9 @@ function deepDive(id){
 
       ${g.nutr?`<div class="ddcard nutr">
         <div class="ddch"><span class="dot"></span>Can you get it from food?</div>
-        <p class="ddp"><b class="nlbl">From diet</b>${g.nutr.food}</p>
-        <p class="ddp"><b class="nlbl">What helps it work</b>${g.nutr.boost}</p>
-        <p class="ddp"><b class="nlbl">Can food alone do it</b>${g.nutr.reach}</p>
+        <p class="ddp"><b class="nlbl">${L("From diet")}</b>${g.nutr.food}</p>
+        <p class="ddp"><b class="nlbl">${L("What helps it work")}</b>${g.nutr.boost}</p>
+        <p class="ddp"><b class="nlbl">${L("Can food alone do it")}</b>${g.nutr.reach}</p>
       </div>`:""}
 
       ${((g.pair||[]).length||(g.extra||[]).length)?`
@@ -5910,13 +5907,12 @@ function deepDive(id){
       ${molFor(p.guideKey||p.id)?`<div class="ddcard mol">
         <div class="ddch"><span class="dot"></span>Structure</div>
         <div class="molbox"><img class="molimg" src="${molFor(p.guideKey||p.id).i}" alt="2D structure of ${p.name}"></div>
-        <p class="ddp sm">2D structure from PubChem, compound <a href="https://pubchem.ncbi.nlm.nih.gov/compound/${molFor(p.guideKey||p.id).c}" target="_blank" rel="noopener noreferrer">CID ${molFor(p.guideKey||p.id).c}</a>. Short peptides are flexible chains rather than rigid shapes, so this is the chemical structure, not a snapshot of how it sits in solution.</p>
+        <p class="ddp sm">${L("2D structure from PubChem, compound")} <a href="https://pubchem.ncbi.nlm.nih.gov/compound/${molFor(p.guideKey||p.id).c}" target="_blank" rel="noopener noreferrer">CID ${molFor(p.guideKey||p.id).c}</a>. ${L("Short peptides are flexible chains rather than rigid shapes, so this is the chemical structure, not a snapshot of how it sits in solution.")}</p>
       </div>`:""}
 
       ${(g.src||[]).length?`<div class="ddcard src">
         <div class="ddch"><span class="dot"></span>Check it yourself</div>
-        <p class="ddp sm">Every claim above comes from published research. These open the
-          literature so you can read it rather than take my word for it.</p>
+        <p class="ddp sm">${L("Every claim above comes from published research. These open the literature so you can read it rather than take my word for it.")}</p>
         <div class="srclist">${g.src.map(x=>{
           const n=Array.isArray(x)?x[0]:x.n,u=Array.isArray(x)?x[1]:x.u;
           return u?`<a class="src1" href="${u}" target="_blank" rel="noopener noreferrer">${n}<i>↗</i></a>`:"";
@@ -7658,6 +7654,30 @@ function renderSales(){
 }
 
 /* ============ SETTINGS ============ */
+/* Sentences with a number in them cannot be translated by looking up the
+   finished string, so they get a function per language like the rest. */
+const STOTPL={
+ en:{used:(u,q)=>q?`Using ${u} MB of about ${q} MB available`:`Using ${u} MB`},
+ es:{used:(u,q)=>q?`Usando ${u} MB de unos ${q} MB disponibles`:`Usando ${u} MB`}
+};
+function STOT(){return STOTPL[curLang()]||STOTPL.en;}
+/* The level chart's steady-state caption: numbers threaded through a
+   sentence, so it needs a function per language rather than a lookup. */
+const LVLTPL={
+ en:{
+  steady:(hl,days)=>`Half-life about <b>${hl}</b>, so it takes roughly <b>${days} days</b> to reach a stable level after any dose change.`,
+  climbing:on=>`You are <b>${on} days</b> in \u2014 still climbing.`,
+  passed:d=>`You passed that <b>${d} days</b> ago, so what you feel now is this dose, not the ramp.`,
+  none:"Log a few doses and this fills in from your own schedule.",
+  d:n=>`${n} days`, h:n=>`${n} h`},
+ es:{
+  steady:(hl,days)=>`Vida media de unas <b>${hl}</b>, así que hacen falta aproximadamente <b>${days} días</b> para alcanzar un nivel estable tras cualquier cambio de dosis.`,
+  climbing:on=>`Llevas <b>${on} días</b> \u2014 todavía subiendo.`,
+  passed:d=>`Eso lo pasaste hace <b>${d} días</b>, así que lo que notas ahora es esta dosis, no la rampa.`,
+  none:"Registra unas cuantas dosis y esto se rellenará con tu propio calendario.",
+  d:n=>`${n} días`, h:n=>`${n} h`}
+};
+function LVLT(){return LVLTPL[curLang()]||LVLTPL.en;}
 function renderSettings(){
   const el=$("#v-settings");
   const rows=S.track.map(p=>`<div class="setrow"><div class="cbx ${p.status!=='removed'?'on':''}" data-keep="${p.id}">${p.status!=='removed'?'✓':''}</div>
@@ -7748,6 +7768,8 @@ function renderSettings(){
       The reminder is raised when you open the app after your chosen hour${sw?"":" (and this browser has no service worker, so only while it is open)"}.
       Add it to your home screen for the badge to appear.`);
     el.innerHTML=bits.join(" ");
+    // written after an await, so the page has already been translated
+    if(typeof applyLang==="function")applyLang();
   })();
   $$("[data-keep]",el).forEach(b=>b.onclick=()=>{const p=pById(b.dataset.keep);p.status=p.status==='removed'?'active':'removed';save();renderSettings();});
   $$("[data-remove]",el).forEach(b=>b.onclick=()=>{S.track=S.track.filter(x=>x.id!==b.dataset.remove);save();renderSettings();toast("Removed");});
@@ -7760,12 +7782,15 @@ function renderSettings(){
       :r.persisted===false
         ?`<b class="bad">Not protected</b> — Safari clears storage after 7 days without a visit. Add The Lab to your home screen to fix this.`
         :`<b>Unknown</b> — this browser does not report storage status`;
-    if($("#stoUsed"))$("#stoUsed").textContent=r.usedMB?`Using ${r.usedMB} MB${r.quotaMB?` of about ${r.quotaMB} MB available`:""}`:"";
+    if($("#stoUsed"))$("#stoUsed").textContent=
+      r.usedMB?STOT().used(r.usedMB,r.quotaMB):"";
     const age=backupAge();
     if($("#stoBackup"))$("#stoBackup").innerHTML=age==null
       ?`<b class="bad">Never exported</b> — there is no copy of this outside the browser`
       :age===0?`Last export <b class="ok">today</b>`
       :`Last export <b class="${age>14?"bad":"ok"}">${age} days ago</b>`;
+    // same again: this lands after applyLang has been round
+    if(typeof applyLang==="function")applyLang();
   })();
   $("#setReset").onclick=()=>{if(confirm("Reset all data to defaults? Logs and sales will be cleared.")){localStorage.removeItem(KEY);S=load();applyTheme();renderAll();setTab("track");toast("Reset");}};
 }
@@ -8090,6 +8115,308 @@ es:{
 "vision":"visi\u00f3n",
 "wasting":"desgaste muscular",
 "weight loss":"p\u00e9rdida de peso",
+/* --- interface --- */
+"The count of atherogenic particles. Better predictor of heart risk than LDL alone.":"El recuento de part\u00edculas aterog\u00e9nicas. Predice el riesgo card\u00edaco mejor que el LDL por s\u00ed solo.",
+"Genetic, barely moves with lifestyle. Test once to know where you stand.":"Gen\u00e9tica, apenas se mueve con el estilo de vida. M\u00eddela una vez para saber d\u00f3nde est\u00e1s.",
+"Standard target. ApoB tells you more.":"Objetivo est\u00e1ndar. La ApoB dice m\u00e1s.",
+"Very high is not necessarily better — the curve flattens.":"Muy alto no es necesariamente mejor: la curva se aplana.",
+"Responds fast to carbs, alcohol and fat loss.":"Responde r\u00e1pido a los carbohidratos, al alcohol y a la p\u00e9rdida de grasa.",
+"Particle count rather than cholesterol carried.":"Recuento de part\u00edculas, no el colesterol transportado.",
+"Rises when B12, folate or B6 are low. Often fixable with diet.":"Sube cuando la B12, el folato o la B6 est\u00e1n bajos. A menudo se corrige con la dieta.",
+"The marker Tesamorelin and the GH-axis peptides can push up.":"El marcador que la tesamorelina y los p\u00e9ptidos del eje GH pueden elevar.",
+"Rises years before glucose does. One of the earliest warnings.":"Sube a\u00f1os antes que la glucosa. Una de las se\u00f1ales m\u00e1s tempranas.",
+"Insulin resistance score calculated from glucose and insulin.":"\u00cdndice de resistencia a la insulina calculado a partir de la glucosa y la insulina.",
+"High means gout risk and links to metabolic problems.":"Alto significa riesgo de gota y se asocia a problemas metab\u00f3licos.",
+"The pituitary's instruction to the thyroid. Rises first when thyroid slows.":"La orden de la hip\u00f3fisis a la tiroides. Es lo primero que sube cuando la tiroides se ralentiza.",
+"The storage hormone.":"La hormona de reserva.",
+"The active hormone. Drops in a big calorie deficit.":"La hormona activa. Baja en un d\u00e9ficit cal\u00f3rico grande.",
+"On TRT this reflects your protocol, not your natural output.":"En TRT esto refleja tu protocolo, no tu producci\u00f3n natural.",
+"The unbound fraction that actually does the work.":"La fracci\u00f3n libre, que es la que realmente hace el trabajo.",
+"Suppressed on TRT. The marker Kisspeptin moves.":"Suprimida en TRT. El marcador que mueve la kisspeptina.",
+"Also suppressed on TRT.":"Tambi\u00e9n suprimida en TRT.",
+"High can mean a pituitary issue and blunts libido.":"Alta puede indicar un problema hipofisario y apaga la libido.",
+"Adrenal output. Falls steadily with age.":"Producci\u00f3n suprarrenal. Cae de forma constante con la edad.",
+"Must be drawn in the morning to mean anything.":"Hay que extraerla por la ma\u00f1ana para que signifique algo.",
+"The number to watch on Tesamorelin, Sermorelin, CJC-1295 and Ipamorelin.":"El n\u00famero que hay que vigilar con tesamorelina, sermorelina, CJC-1295 e ipamorelina.",
+"Very individual. Test rather than guess the dose.":"Muy individual. Mide en lugar de adivinar la dosis.",
+"Low-normal can still cause symptoms.":"Un valor normal-bajo todav\u00eda puede dar s\u00edntomas.",
+"Works with B12 on homocysteine.":"Trabaja junto a la B12 sobre la homociste\u00edna.",
+"Iron stores. High can also just mean inflammation.":"Reservas de hierro. Alta tambi\u00e9n puede significar simplemente inflamaci\u00f3n.",
+"Never supplement iron without testing first.":"Nunca suplementes hierro sin medir antes.",
+"High can point to haemochromatosis.":"Alta puede apuntar a hemocromatosis.",
+"Red-cell magnesium beats serum, which barely moves.":"El magnesio eritrocitario es mejor que el s\u00e9rico, que apenas se mueve.",
+"Balance against copper — pushing one down pulls the other up.":"Equil\u00edbralo con el cobre: bajar uno sube el otro.",
+"Worth watching if you inject GHK-Cu or KLOW long term.":"Conviene vigilarlo si te inyectas GHK-Cu o KLOW a largo plazo.",
+"The most liver-specific of the enzymes.":"La m\u00e1s espec\u00edfica del h\u00edgado de todas las enzimas.",
+"Also rises from hard training, not just the liver.":"Tambi\u00e9n sube por entrenamiento duro, no solo por el h\u00edgado.",
+"Sensitive to alcohol and to oxidative stress.":"Sensible al alcohol y al estr\u00e9s oxidativo.",
+"Liver and bone both contribute.":"Contribuyen tanto el h\u00edgado como el hueso.",
+"Protein status and liver synthesis.":"Estado proteico y s\u00edntesis hep\u00e1tica.",
+"Runs high in muscular people and on creatine — not always kidney trouble.":"Sale alta en personas musculadas y con creatina: no siempre es un problema renal.",
+"Estimated filtration rate. The headline kidney number.":"Tasa de filtraci\u00f3n estimada. El n\u00famero renal principal.",
+"Rises with high protein intake and dehydration.":"Sube con una ingesta alta de prote\u00edna y con la deshidrataci\u00f3n.",
+"Kidney marker that is not thrown off by muscle mass.":"Marcador renal que la masa muscular no distorsiona.",
+"Watch closely on TRT or anything that raises red cells.":"Vig\u00edlalo de cerca en TRT o con cualquier cosa que suba los gl\u00f3bulos rojos.",
+"The number that decides whether you need to donate blood on TRT.":"El n\u00famero que decide si necesitas donar sangre en TRT.",
+"Low-normal is common and usually fine.":"Normal-bajo es frecuente y en general est\u00e1 bien.",
+"High can flag B12 or folate deficiency.":"Alto puede se\u00f1alar d\u00e9ficit de B12 o de folato.",
+"Drops on GLP-1s when you eat much less. A common cause of fatigue.":"Baja con los GLP-1 cuando comes mucho menos. Una causa frecuente de fatiga.",
+"General inflammation. One of the most useful single numbers here.":"Inflamaci\u00f3n general. Uno de los n\u00fameros m\u00e1s \u00fatiles de toda la lista.",
+"Clotting and inflammation together.":"Coagulaci\u00f3n e inflamaci\u00f3n a la vez.",
+"Positive suggests autoimmune activity and needs follow-up.":"Un resultado positivo sugiere actividad autoinmune y requiere seguimiento.",
+"Mostly from large fish. Included in the Function panel.":"Procede sobre todo de pescados grandes. Incluido en el panel Function.",
+"No level is genuinely safe — lower is always better.":"Ning\u00fan nivel es realmente seguro: cuanto m\u00e1s bajo, mejor.",
+"Add-on test. Rice and seafood are the usual sources.":"Prueba adicional. El arroz y el marisco son las fuentes habituales.",
+"Early kidney damage shows here before eGFR moves.":"El da\u00f1o renal temprano aparece aqu\u00ed antes de que se mueva el eGFR.",
+"Cutting saturated fat, raising soluble fibre (oats, beans, psyllium) and losing visceral fat all move ApoB. It responds well to diet before anything else.":"Reducir la grasa saturada, subir la fibra soluble (avena, legumbres, psilio) y perder grasa visceral mueven la ApoB. Responde bien a la dieta antes que a nada m\u00e1s.",
+"Lp(a) is largely genetic and barely moves with lifestyle. Knowing the number matters more than chasing it.":"La Lp(a) es en gran parte gen\u00e9tica y apenas se mueve con el estilo de vida. Importa m\u00e1s conocer el n\u00famero que perseguirlo.",
+"Triglycerides respond faster than any other lipid. Alcohol, refined carbs and excess calories are the usual three levers.":"Los triglic\u00e9ridos responden m\u00e1s r\u00e1pido que cualquier otro l\u00edpido. El alcohol, los carbohidratos refinados y el exceso de calor\u00edas son las tres palancas habituales.",
+"High triglycerides usually track with insulin resistance and alcohol intake. They also fall quickly — often within weeks of changing those two.":"Los triglic\u00e9ridos altos suelen ir de la mano de la resistencia a la insulina y del consumo de alcohol. Tambi\u00e9n bajan r\u00e1pido, a menudo en semanas si cambias esas dos cosas.",
+"Low HDL rarely travels alone — it usually sits alongside high triglycerides and insulin resistance, and the whole picture is what matters.":"El HDL bajo rara vez viaja solo: suele acompa\u00f1ar a triglic\u00e9ridos altos y resistencia a la insulina, y lo que importa es el cuadro completo.",
+"Homocysteine rises when B12, folate or B6 run low. Leafy greens, eggs and meat cover most of it.":"La homociste\u00edna sube cuando escasean la B12, el folato o la B6. Las verduras de hoja, los huevos y la carne cubren casi todo.",
+"Raised homocysteine is usually a B-vitamin problem and is one of the easier things to correct. Test B12 and folate alongside it rather than guessing.":"La homociste\u00edna elevada suele ser un problema de vitaminas B y es de las cosas m\u00e1s f\u00e1ciles de corregir. Mide B12 y folato junto a ella en lugar de adivinar.",
+"Sitting above optimal but in range is the earliest warning of drifting glucose control. Walking after meals and cutting liquid sugar both move it.":"Estar por encima de lo \u00f3ptimo pero dentro de rango es el aviso m\u00e1s temprano de que el control de la glucosa se est\u00e1 desviando. Caminar despu\u00e9s de comer y quitar el az\u00facar l\u00edquido lo mueven.",
+"An HbA1c in this territory needs a doctor, not a protocol. It is the number that defines prediabetes and diabetes, and the treatments with real evidence are prescription ones.":"Una HbA1c en este territorio necesita un m\u00e9dico, no un protocolo. Es el n\u00famero que define la prediabetes y la diabetes, y los tratamientos con evidencia real son de prescripci\u00f3n.",
+"Fasting glucose creeps up before HbA1c does. Sleep debt and stress raise it as much as food does.":"La glucosa en ayunas sube antes que la HbA1c. La falta de sue\u00f1o y el estr\u00e9s la elevan tanto como la comida.",
+"Out-of-range fasting glucose needs medical follow-up and a repeat test. Note that Tesamorelin and the GH-axis peptides can push this number up — if you run those, that is the first thing to review.":"Una glucosa en ayunas fuera de rango necesita seguimiento m\u00e9dico y repetir la prueba. Ten en cuenta que la tesamorelina y los p\u00e9ptidos del eje GH pueden subir este n\u00famero: si los usas, es lo primero que hay que revisar.",
+"Fasting insulin rises years before glucose does, so this is the early-warning number. It falls with fat loss and resistance training.":"La insulina en ayunas sube a\u00f1os antes que la glucosa, as\u00ed que este es el n\u00famero de aviso temprano. Baja con la p\u00e9rdida de grasa y el entrenamiento de fuerza.",
+"High fasting insulin is insulin resistance, whatever the glucose says. It is very responsive to losing visceral fat and to lifting.":"Una insulina en ayunas alta es resistencia a la insulina, diga lo que diga la glucosa. Responde muy bien a perder grasa visceral y a levantar pesas.",
+"Mildly raised hs-CRP is often sleep, alcohol, a recent hard session or body fat rather than disease. Retest when you are rested and not sore.":"Una hs-CRP levemente elevada suele ser sue\u00f1o, alcohol, una sesi\u00f3n dura reciente o grasa corporal, m\u00e1s que enfermedad. Repite la prueba descansado y sin agujetas.",
+"IGF-1 in the middle of the range is generally where you want it. Higher is not automatically better — the top of the range carries its own questions.":"El IGF-1 en la mitad del rango es generalmente donde lo quieres. M\u00e1s alto no es autom\u00e1ticamente mejor: la parte alta del rango tiene sus propias dudas.",
+"In range but not optimal. Sleep, body fat and resistance training move total testosterone more than most people expect.":"Dentro de rango pero no \u00f3ptimo. El sue\u00f1o, la grasa corporal y el entrenamiento de fuerza mueven la testosterona total m\u00e1s de lo que la mayor\u00eda espera.",
+"Testosterone outside range is a doctor conversation, not a self-managed one — and if you are already on TRT, this reflects your protocol and should be reviewed with whoever prescribes it.":"Una testosterona fuera de rango es una conversaci\u00f3n con un m\u00e9dico, no algo que gestionar por tu cuenta, y si ya est\u00e1s en TRT esto refleja tu protocolo y hay que revisarlo con quien te lo receta.",
+"Estradiol matters as much as testosterone on TRT. Symptoms usually tell you more than the number alone.":"El estradiol importa tanto como la testosterona en TRT. Los s\u00edntomas suelen decir m\u00e1s que el n\u00famero por s\u00ed solo.",
+"Estradiol out of range on TRT usually means the protocol needs adjusting. Too low causes joint pain, low libido and poor mood — it is not a case of lower being better.":"Un estradiol fuera de rango en TRT normalmente significa que hay que ajustar el protocolo. Demasiado bajo causa dolor articular, libido baja y mal \u00e1nimo: no es cuesti\u00f3n de que menos sea mejor.",
+"SHBG shifts with thyroid, insulin and liver status rather than being a target itself.":"La SHBG cambia con la tiroides, la insulina y el estado hep\u00e1tico, m\u00e1s que ser un objetivo en s\u00ed misma.",
+"Out-of-range SHBG changes how much of your testosterone is actually free, so read it alongside free testosterone rather than on its own.":"Una SHBG fuera de rango cambia cu\u00e1nta testosterona tienes realmente libre, as\u00ed que l\u00e9ela junto a la testosterona libre y no por separado.",
+"Haematocrit at the upper end is common on TRT. Hydration on the day of the draw affects it noticeably.":"Un hematocrito en la parte alta es frecuente en TRT. La hidrataci\u00f3n el d\u00eda de la extracci\u00f3n lo afecta de forma notable.",
+"Tracks with haematocrit. Read the two together.":"Va de la mano del hematocrito. L\u00e9elos juntos.",
+"Most people sit here. It is very individual, so dose against the test rather than a generic recommendation.":"Aqu\u00ed es donde est\u00e1 la mayor\u00eda. Es muy individual, as\u00ed que dosifica contra la anal\u00edtica y no contra una recomendaci\u00f3n gen\u00e9rica.",
+"Low vitamin D is extremely common and easy to correct, but the right dose varies enormously between people. Retest after eight to twelve weeks rather than assuming.":"La vitamina D baja es extremadamente com\u00fan y f\u00e1cil de corregir, pero la dosis adecuada var\u00eda enormemente entre personas. Repite la prueba a las ocho o doce semanas en lugar de suponer.",
+"Low-normal B12 can still cause symptoms, particularly if you eat little animal food.":"Una B12 normal-baja todav\u00eda puede dar s\u00edntomas, sobre todo si comes poco alimento de origen animal.",
+"Out-of-range B12 needs following up properly — it affects nerves and red cell production, and low levels also push homocysteine up.":"Una B12 fuera de rango necesita seguimiento en condiciones: afecta a los nervios y a la producci\u00f3n de gl\u00f3bulos rojos, y los niveles bajos adem\u00e1s suben la homociste\u00edna.",
+"Ferritin in the middle is comfortable. It rises with inflammation too, so read it next to hs-CRP.":"La ferritina en la mitad del rango es c\u00f3moda. Tambi\u00e9n sube con la inflamaci\u00f3n, as\u00ed que l\u00e9ela junto a la hs-CRP.",
+"Ferritin out of range matters in both directions: low means depleted iron stores, high can mean iron overload or inflammation. Never start iron on a guess — it is genuinely toxic in excess.":"Una ferritina fuera de rango importa en los dos sentidos: baja significa reservas de hierro agotadas, alta puede significar sobrecarga de hierro o inflamaci\u00f3n. Nunca empieces con hierro a ciegas: en exceso es realmente t\u00f3xico.",
+"TSH in the upper half of range with symptoms is worth a closer look including free T3 and T4.":"Una TSH en la mitad superior del rango con s\u00edntomas merece mirarse m\u00e1s de cerca, incluyendo T3 y T4 libres.",
+"Out-of-range TSH is a thyroid conversation with a doctor. Aggressive dieting and hard training can both push it around, so context matters.":"Una TSH fuera de rango es una conversaci\u00f3n de tiroides con un m\u00e9dico. Las dietas agresivas y el entrenamiento duro pueden moverla, as\u00ed que el contexto importa.",
+"Free T3 drops in a sustained calorie deficit. That is a normal adaptation, not necessarily thyroid disease.":"La T3 libre baja en un d\u00e9ficit cal\u00f3rico sostenido. Eso es una adaptaci\u00f3n normal, no necesariamente una enfermedad tiroidea.",
+"Low free T3 alongside a long deficit usually means the deficit, not the thyroid. Persistent abnormality needs proper assessment.":"Una T3 libre baja junto a un d\u00e9ficit largo normalmente significa el d\u00e9ficit, no la tiroides. Una alteraci\u00f3n persistente necesita una evaluaci\u00f3n en condiciones.",
+"Mildly raised ALT is often fatty liver, alcohol, or just a heavy training block.":"Una ALT levemente elevada suele ser h\u00edgado graso, alcohol, o simplemente un bloque de entrenamiento duro.",
+"Out-of-range liver enzymes need repeating and investigating. Review everything you take — oral compounds especially — with a doctor before adding anything else.":"Unas enzimas hep\u00e1ticas fuera de rango hay que repetirlas e investigarlas. Revisa con un m\u00e9dico todo lo que tomas, sobre todo los compuestos orales, antes de a\u00f1adir nada m\u00e1s.",
+"AST rises from hard training as well as from the liver, so read it next to ALT.":"La AST sube por entrenamiento duro adem\u00e1s de por el h\u00edgado, as\u00ed que l\u00e9ela junto a la ALT.",
+"Raised AST with a normal ALT often points at muscle rather than liver, particularly after heavy lifting. Repeat it rested.":"Una AST elevada con ALT normal suele apuntar al m\u00fasculo y no al h\u00edgado, sobre todo despu\u00e9s de levantar pesado. Rep\u00edtela descansado.",
+"GGT is sensitive to alcohol and to oxidative stress. It often falls within weeks of cutting back.":"La GGT es sensible al alcohol y al estr\u00e9s oxidativo. Suele bajar en semanas si reduces.",
+"High GGT is worth taking seriously as a liver and oxidative-stress signal, and alcohol is the first thing to examine.":"Una GGT alta merece tomarse en serio como se\u00f1al hep\u00e1tica y de estr\u00e9s oxidativo, y el alcohol es lo primero que hay que examinar.",
+"Slightly reduced eGFR in a muscular person on creatine is common and often not kidney disease.":"Un eGFR ligeramente reducido en una persona musculada que toma creatina es frecuente y muchas veces no es enfermedad renal.",
+"Reduced eGFR needs proper follow-up including cystatin C, which is not thrown off by muscle mass. Review anything that stresses the kidneys.":"Un eGFR reducido necesita seguimiento en condiciones, incluida la cistatina C, a la que la masa muscular no distorsiona. Revisa cualquier cosa que exija de m\u00e1s a los ri\u00f1ones.",
+"Creatinine runs high in muscular people and on creatine supplementation. Cystatin C is the cleaner measure.":"La creatinina sale alta en personas musculadas y con suplementaci\u00f3n de creatina. La cistatina C es la medida m\u00e1s limpia.",
+"Out-of-range creatinine should be confirmed with cystatin C before assuming a kidney problem, especially if you are lean and muscular.":"Una creatinina fuera de rango deber\u00eda confirmarse con cistatina C antes de dar por hecho un problema renal, sobre todo si est\u00e1s definido y musculado.",
+"Sodium at the low end is common when eating much less, particularly on GLP-1 drugs.":"Un sodio en la parte baja es frecuente cuando comes mucho menos, sobre todo con f\u00e1rmacos GLP-1.",
+"Red-cell magnesium is the better measure. Pumpkin seeds, spinach and dark chocolate are the easy sources.":"El magnesio eritrocitario es la mejor medida. Las semillas de calabaza, las espinacas y el chocolate negro son las fuentes f\u00e1ciles.",
+"Low magnesium affects sleep, cramps and blood pressure, and is one of the more common deficiencies in people training hard.":"El magnesio bajo afecta al sue\u00f1o, los calambres y la tensi\u00f3n, y es una de las carencias m\u00e1s frecuentes en quien entrena duro.",
+"Zinc and copper move against each other. Pushing one up over months usually pulls the other down.":"El zinc y el cobre se mueven en sentidos opuestos. Subir uno durante meses normalmente baja el otro.",
+"Out-of-range zinc should be read next to copper. If you inject GHK-Cu or KLOW long term, that is the first thing to check.":"Un zinc fuera de rango hay que leerlo junto al cobre. Si te inyectas GHK-Cu o KLOW a largo plazo, eso es lo primero que hay que comprobar.",
+"Worth watching if you use copper peptides regularly.":"Conviene vigilarlo si usas p\u00e9ptidos de cobre con regularidad.",
+"Copper out of range matters if you run GHK-Cu or KLOW — chronic systemic copper is the plausible cause and worth pausing to reassess with a doctor.":"Un cobre fuera de rango importa si usas GHK-Cu o KLOW: el cobre sist\u00e9mico cr\u00f3nico es la causa plausible y merece parar y reevaluar con un m\u00e9dico.",
+"Track the trend rather than any single value. Rate of change matters more than the number.":"Sigue la tendencia m\u00e1s que cualquier valor aislado. La velocidad de cambio importa m\u00e1s que el n\u00famero.",
+"A raised PSA needs medical follow-up. It is not automatically cancer — infection, recent cycling and recent ejaculation all raise it — but it does need proper assessment, and more so on TRT.":"Un PSA elevado necesita seguimiento m\u00e9dico. No es autom\u00e1ticamente c\u00e1ncer (una infecci\u00f3n, haber ido en bici hace poco y una eyaculaci\u00f3n reciente lo suben), pero s\u00ed necesita una evaluaci\u00f3n en condiciones, y m\u00e1s a\u00fan en TRT.",
+"Uric acid tracks with alcohol, fructose and metabolic health generally.":"El \u00e1cido \u00farico va de la mano del alcohol, la fructosa y la salud metab\u00f3lica en general.",
+"High uric acid means gout risk and often travels with insulin resistance. Alcohol and sugary drinks are the usual first targets.":"Un \u00e1cido \u00farico alto significa riesgo de gota y suele acompa\u00f1ar a la resistencia a la insulina. El alcohol y las bebidas azucaradas son los primeros objetivos habituales.",
+"Albumin near the top of range generally reflects good protein status and liver function.":"Una alb\u00famina cerca de la parte alta del rango refleja en general buen estado proteico y buena funci\u00f3n hep\u00e1tica.",
+"Low albumin can mean under-eating protein, inflammation or liver issues, and is worth investigating rather than supplementing around.":"Una alb\u00famina baja puede significar comer poca prote\u00edna, inflamaci\u00f3n o problemas hep\u00e1ticos, y merece investigarse en lugar de suplementar por encima.",
+"There is no genuinely safe level of lead. Lower is always better.":"No existe un nivel de plomo realmente seguro. Cuanto m\u00e1s bajo, mejor.",
+"Raised lead needs a doctor and a source hunt — old plumbing, old paint, some supplements and some imported goods are the common culprits.":"Un plomo elevado necesita un m\u00e9dico y buscar la fuente: tuber\u00edas viejas, pintura antigua, algunos suplementos y algunos productos importados son los culpables habituales.",
+"Mostly from large predatory fish. Swapping to smaller fish brings it down over months.":"Procede sobre todo de pescados grandes depredadores. Cambiar a pescados peque\u00f1os lo baja a lo largo de meses.",
+"High mercury usually means diet, typically tuna and other large fish. It clears slowly, so the fix is patience plus changing the source.":"Un mercurio alto normalmente significa dieta, t\u00edpicamente at\u00fan y otros pescados grandes. Se elimina despacio, as\u00ed que la soluci\u00f3n es paciencia m\u00e1s cambiar la fuente.",
+/* --- interface --- */
+"Fasted, before bed":"En ayunas, antes de dormir",
+"Three days. Everything that presses, then legs, then everything that pulls.":"Tres d\u00edas. Todo lo que empuja, luego piernas, luego todo lo que tira.",
+"Four-day body part":"Cuatro d\u00edas por grupo muscular",
+"Chest, back, arms, legs, rotating with no fixed rest days.":"Pecho, espalda, brazos, piernas, rotando sin d\u00edas de descanso fijos.",
+"You've logged sets in this session. Pick a different routine and they're gone. Continue?":"Ya has registrado series en esta sesi\u00f3n. Si eliges otra rutina se pierden. \u00bfContinuar?",
+"No cues recorded for this one yet.":"Todav\u00eda no hay indicaciones para este.",
+"No other versions of this movement":"No hay otras versiones de este movimiento",
+"Injection sites by how recently each was used":"Sitios de inyecci\u00f3n seg\u00fan hace cu\u00e1nto se us\u00f3 cada uno",
+"Recovered from the previous saved copy.":"Recuperado desde la copia guardada anterior.",
+"Could not save — device storage may be full":"No se pudo guardar: puede que el almacenamiento del dispositivo est\u00e9 lleno",
+"Couldn't read that file":"No se pudo leer ese archivo",
+"Notifications are blocked for this site in your browser settings":"Las notificaciones est\u00e1n bloqueadas para este sitio en los ajustes de tu navegador",
+"This browser cannot show notifications":"Este navegador no puede mostrar notificaciones",
+"Nothing due right now":"Ahora mismo no toca nada",
+" (and this browser has no service worker, so only while it is open)":" (y este navegador no tiene service worker, as\u00ed que solo mientras est\u00e9 abierto)",
+"Add The Lab to your home screen so the browser stops clearing your data":"A\u00f1ade The Lab a tu pantalla de inicio para que el navegador deje de borrar tus datos",
+" archived · settings saved for next time":" archivado \u00b7 ajustes guardados para la pr\u00f3xima vez",
+"Changes apply next time you log it":"Los cambios se aplican la pr\u00f3xima vez que lo registres",
+"have never been recorded":"nunca se han registrado",
+"has never been recorded":"nunca se ha registrado",
+"has not been measured in months":"no se ha medido en meses",
+"those are numbers":"esos son n\u00fameros",
+"that is a number":"eso es un n\u00famero",
+"nothing in the guides uses that word":"ninguna gu\u00eda usa esa palabra",
+" (still untested for you)":" (todav\u00eda sin medir en tu caso)",
+"What's running low. Refill or reorder before you run out.":"Lo que se est\u00e1 acabando. Rep\u00f3n o vuelve a pedir antes de quedarte sin nada.",
+"chicken and rice":"pollo y arroz",
+"Mechanism not well characterised.":"Mecanismo poco caracterizado.",
+"from animal, cell or small human data":"de datos en animales, en c\u00e9lulas o en humanos a peque\u00f1a escala",
+"with no data, or where the trial went the wrong way":"sin datos, o donde el ensayo sali\u00f3 al rev\u00e9s",
+"From the compound reference":"De la referencia de compuestos",
+"Add it to your list to open the full guide":"A\u00f1\u00e1delo a tu lista para abrir la gu\u00eda completa",
+"This one is where you want it. Whatever you are doing for it, keep doing it — the useful move is to leave it alone and retest on your normal schedule.":"Este est\u00e1 donde lo quieres. Sea lo que sea que est\u00e9s haciendo, sigue haci\u00e9ndolo: lo \u00fatil aqu\u00ed es dejarlo en paz y repetir la prueba en tu calendario normal.",
+"Inside the standard range but not in the tighter optimal band. This is the zone where diet, sleep, training and alcohol usually move the number more than anything you inject.":"Dentro del rango est\u00e1ndar pero no en la franja \u00f3ptima m\u00e1s estrecha. Esta es la zona donde la dieta, el sue\u00f1o, el entrenamiento y el alcohol suelen mover el n\u00famero m\u00e1s que nada que te inyectes.",
+"Outside the standard range. A single reading is not a diagnosis — the first step is to repeat the test before acting on it, and to take the result to a doctor.":"Fuera del rango est\u00e1ndar. Una sola lectura no es un diagn\u00f3stico: el primer paso es repetir la prueba antes de actuar, y llevar el resultado a un m\u00e9dico.",
+"Bleeding. Iron goes out with it, which is the one nutrient worth being deliberate about this week.":"Sangrado. Con \u00e9l se va hierro, que es el nutriente al que merece la pena prestar atenci\u00f3n esta semana.",
+"Oestrogen climbing after the bleed. Most people feel steadily better through this stretch.":"El estr\u00f3geno sube despu\u00e9s del sangrado. La mayor\u00eda se va sintiendo mejor a lo largo de este tramo.",
+"Oestrogen peaks and drops, LH surges. This is the window where pregnancy is possible.":"El estr\u00f3geno hace pico y cae, la LH se dispara. Esta es la ventana en la que el embarazo es posible.",
+"Progesterone up. Appetite, temperature and sleep disruption all tend to rise before the next bleed.":"Sube la progesterona. El apetito, la temperatura y las alteraciones del sue\u00f1o tienden a aumentar antes del siguiente sangrado.",
+"Log the first day of a period on the calendar and everything else here starts working.":"Registra el primer d\u00eda de una regla en el calendario y todo lo dem\u00e1s de aqu\u00ed empieza a funcionar.",
+"That is based on a 28 day default. Two logged periods and it starts using yours instead.":"Eso se basa en un valor por defecto de 28 d\u00edas. Con dos reglas registradas empieza a usar las tuyas.",
+"Estimated by counting back 14 days from the expected period, which holds up better than counting forward.":"Estimado contando 14 d\u00edas hacia atr\u00e1s desde la regla esperada, lo que funciona mejor que contar hacia delante.",
+"What you usually log in this phase":"Lo que sueles registrar en esta fase",
+"Training this week":"Entrenamiento esta semana",
+"Worth eating this week":"Qu\u00e9 conviene comer esta semana",
+"Iron, because you are losing some. Red meat, lentils, spinach with something acidic alongside it. If periods are heavy and you are tired, ferritin is the blood test that answers it.":"Hierro, porque est\u00e1s perdiendo algo. Carne roja, lentejas, espinacas con algo \u00e1cido al lado. Si las reglas son abundantes y est\u00e1s cansada, la ferritina es la anal\u00edtica que lo responde.",
+"Appetite and cravings genuinely rise here, it is not a willpower failure. Magnesium and calcium have modest trial support for premenstrual symptoms. Protein and fibre make the swing easier to ride.":"El apetito y los antojos suben de verdad aqu\u00ed, no es un fallo de fuerza de voluntad. El magnesio y el calcio tienen un apoyo modesto en ensayos para los s\u00edntomas premenstruales. La prote\u00edna y la fibra hacen el vaiv\u00e9n m\u00e1s llevadero.",
+"Nothing logged yet. Morning erections, energy and mood are the three that move first when a protocol is working or when sleep is not.":"Todav\u00eda no hay nada registrado. Las erecciones matutinas, la energ\u00eda y el \u00e1nimo son las tres cosas que se mueven primero cuando un protocolo funciona, o cuando el sue\u00f1o no.",
+"Your mood moved both ways":"Tu \u00e1nimo se movi\u00f3 en ambos sentidos",
+"What your mood log says":"Lo que dice tu registro de \u00e1nimo",
+"Why track this at all":"Por qu\u00e9 registrar esto",
+"Nothing here predicts a cycle, because there is not one. It is a baseline: the point is to see mood, drive and sleep move against what you are running, rather than to guess afterwards.":"Aqu\u00ed no se predice ning\u00fan ciclo, porque no lo hay. Es una l\u00ednea base: la idea es ver c\u00f3mo se mueven el \u00e1nimo, el deseo y el sue\u00f1o frente a lo que est\u00e1s usando, en lugar de adivinarlo despu\u00e9s.",
+"Cycle and mood tracking":"Registro de ciclo y \u00e1nimo",
+"Periods, ovulation, mood and symptoms, tracked alongside what you are running. Men get the same thing without the cycle. Off until you choose.":"Reglas, ovulaci\u00f3n, \u00e1nimo y s\u00edntomas, registrados junto a lo que est\u00e9s usando. Los hombres tienen lo mismo sin el ciclo. Desactivado hasta que elijas.",
+/* --- interface --- */
+"Before bed":"Antes de dormir",
+"Not due today":"Hoy no toca",
+"Last 14 days":"\u00daltimos 14 d\u00edas",
+"Each muscle gets trained once per rotation with a clear job per day, which makes it easy to see whether a session went well. It is the least complicated way to cover the whole body and the easiest to keep to when the week goes wrong.":"Cada m\u00fasculo se entrena una vez por rotaci\u00f3n con un cometido claro por d\u00eda, lo que hace f\u00e1cil ver si una sesi\u00f3n sali\u00f3 bien. Es la forma menos complicada de cubrir todo el cuerpo y la m\u00e1s f\u00e1cil de mantener cuando la semana se tuerce.",
+"Fewer muscles per session, so each gets more attention and more recovery before it comes round again. Low set counts and high effort: two to three working sets an exercise, eight to twelve reps, taken to or near failure with a slow lowering phase. Mostly machines and cables, because that is what lets you reach failure without a spotter. Rotate when you are ready rather than on fixed days.":"Menos m\u00fasculos por sesi\u00f3n, as\u00ed que cada uno recibe m\u00e1s atenci\u00f3n y m\u00e1s recuperaci\u00f3n antes de que vuelva a tocarle. Pocas series y mucho esfuerzo: dos o tres series efectivas por ejercicio, de ocho a doce repeticiones, llevadas al fallo o cerca con una fase exc\u00e9ntrica lenta. Sobre todo m\u00e1quinas y poleas, porque es lo que permite llegar al fallo sin ayuda. Rota cuando est\u00e9s listo, no en d\u00edas fijos.",
+"High ApoB is one of the strongest predictors of heart disease and it is very treatable. This is a conversation to have with a doctor sooner rather than later, because statins and similar drugs work far better here than anything in this app.":"Una ApoB alta es uno de los predictores m\u00e1s fuertes de enfermedad card\u00edaca y es muy tratable. Esta es una conversaci\u00f3n para tener con un m\u00e9dico cuanto antes, porque las estatinas y f\u00e1rmacos similares funcionan aqu\u00ed much\u00edsimo mejor que nada de lo que hay en esta app.",
+"Raised Lp(a) is inherited and does not respond much to diet. It does not mean something is wrong with how you live — it means your overall risk picture should be managed more aggressively. Worth telling a doctor, and worth mentioning to blood relatives.":"Una Lp(a) elevada es hereditaria y no responde mucho a la dieta. No significa que haya algo mal en c\u00f3mo vives: significa que tu cuadro de riesgo general deber\u00eda manejarse de forma m\u00e1s agresiva. Merece cont\u00e1rselo a un m\u00e9dico, y merece mencion\u00e1rselo a familiares de sangre.",
+"A high hs-CRP means something is inflamed. It can be as simple as a recent infection or a brutal training week, so repeat it before drawing conclusions — but persistent elevation is worth investigating properly.":"Una hs-CRP alta significa que algo est\u00e1 inflamado. Puede ser tan simple como una infecci\u00f3n reciente o una semana de entrenamiento brutal, as\u00ed que rep\u00edtela antes de sacar conclusiones, pero una elevaci\u00f3n persistente merece investigarse en condiciones.",
+"High haematocrit thickens the blood and raises clot risk. On TRT this is the number that decides whether you donate blood or adjust the dose, and it needs medical input. Anything that raises red cells further, EPO above all, compounds the risk.":"Un hematocrito alto espesa la sangre y aumenta el riesgo de trombos. En TRT este es el n\u00famero que decide si donas sangre o ajustas la dosis, y necesita criterio m\u00e9dico. Cualquier cosa que suba m\u00e1s los gl\u00f3bulos rojos, la EPO por encima de todo, multiplica el riesgo.",
+"Low sodium causes the fatigue, headaches and dizziness people usually blame on the drug itself. On a GLP-1 in a deficit, deliberately salting food is often the fix — but a genuinely out-of-range result needs medical review.":"Un sodio bajo causa la fatiga, los dolores de cabeza y los mareos que la gente suele achacar al propio f\u00e1rmaco. Con un GLP-1 en d\u00e9ficit, salar la comida a prop\u00f3sito suele ser la soluci\u00f3n, pero un resultado realmente fuera de rango necesita revisi\u00f3n m\u00e9dica.",
+"Go by how you feel on the day. Current evidence does not show cycle phase reliably changing what you can lift, and symptoms predict a session far better than the calendar does. Keep logging and this will fill in with your own pattern.":"Gu\u00edate por c\u00f3mo te sientas ese d\u00eda. La evidencia actual no muestra que la fase del ciclo cambie de forma fiable lo que puedes levantar, y los s\u00edntomas predicen una sesi\u00f3n mucho mejor que el calendario. Sigue registrando y esto se ir\u00e1 rellenando con tu propio patr\u00f3n.",
+/* --- interface --- */
+"Recovered your data from the backup copy in this browser (saved":"Recuper\u00e9 tus datos desde la copia de seguridad de este navegador (guardada",
+"Your split":"Tu divisi\u00f3n",
+"Your history":"Tu historial",
+"version of this movement.":"versi\u00f3n de este movimiento.",
+"sets where you'd already logged that many":"series donde ya hab\u00edas registrado esa cantidad",
+"Half-life about":"Vida media de unas",
+"before you lift.":"antes de entrenar.",
+"A session is logged for today and the case for this compound rests on stacking with training.":"Hay una sesi\u00f3n registrada hoy y lo que justifica este compuesto es combinarlo con el entrenamiento.",
+"is meant to go before training, and nothing is logged for today yet.":"va antes de entrenar, y hoy todav\u00eda no hay nada registrado.",
+"this compound is judged on.":"es por lo que se juzga este compuesto.",
+"Nothing matching it in your food log for 10 days.":"Nada que coincida en tu registro de comidas en 10 d\u00edas.",
+"days ago, past the":"d\u00edas, pasado el l\u00edmite de",
+"-day mark. Potency after that is a guess.":" d\u00edas. La potencia a partir de ah\u00ed es una suposici\u00f3n.",
+"left on the mixed vial.":"quedan en el vial reconstituido.",
+"Last backup was":"La \u00faltima copia fue hace",
+"ago. Export from Settings — it takes a second and it is the only copy outside this browser.":". Exporta desde Ajustes: tarda un segundo y es la \u00fanica copia fuera de este navegador.",
+"Both act on":"Ambos act\u00faan sobre",
+"You finished":"Has terminado",
+"Worth knowing before your first dose":"Conviene saberlo antes de la primera dosis",
+"Everything the app noticed across your peptides, training, food and bloodwork":"Todo lo que la app ha notado en tus p\u00e9ptidos, entrenamiento, comida y anal\u00edticas",
+"Summarised from published research. Not medical advice, and not a recommendation to start, stop or change a dose.":"Resumido a partir de investigaci\u00f3n publicada. No es consejo m\u00e9dico ni una recomendaci\u00f3n para empezar, parar o cambiar una dosis.",
+"· your stats":"\u00b7 tus datos",
+"· logged. Tap a spot, or skip.":"\u00b7 registrado. Toca un punto, o s\u00e1ltalo.",
+"scheduled doses · last 30 days":"dosis programadas \u00b7 \u00faltimos 30 d\u00edas",
+"Logged against scheduled, last 30 days":"Registradas frente a programadas, \u00faltimos 30 d\u00edas",
+"days left, restock soon":"d\u00edas restantes, rep\u00f3n pronto",
+"Nothing matches that name.":"Nada coincide con ese nombre.",
+"Too many peptides here? You can hide the ones you don't use in":"\u00bfDemasiados p\u00e9ptidos aqu\u00ed? Puedes ocultar los que no uses en",
+"(tap your avatar, top right).":"(toca tu avatar, arriba a la derecha).",
+"Pick your vial size":"Elige el tama\u00f1o de tu vial",
+"Desired dose":"Dosis deseada",
+"Add to my stack":"A\u00f1adir a mi stack",
+"Ranges are standard adult clinical values with commonly used optimal targets, not Function's exact bands. Replace them with your own report when you have one — every range is editable.":"Los rangos son valores cl\u00ednicos est\u00e1ndar de adulto con objetivos \u00f3ptimos de uso com\u00fan, no las franjas exactas de Function. Sustit\u00fayelos por los de tu propio informe cuando lo tengas: cada rango es editable.",
+"No detailed guide yet for this one. General principle: start low, stay hydrated, and let bloodwork and your doctor guide any changes.":"Todav\u00eda no hay una gu\u00eda detallada para este. Principio general: empieza bajo, mantente hidratado, y deja que la anal\u00edtica y tu m\u00e9dico gu\u00eden cualquier cambio.",
+"Remind me from":"Recordarme a partir de",
+"Checked whenever the app is open after this hour":"Se comprueba siempre que la app est\u00e9 abierta despu\u00e9s de esta hora",
+"It happens most in your":"Ocurre sobre todo en tu",
+/* --- interface --- */
+"Not scheduled today":"Hoy no programado",
+"It clears long before the next dose, so nothing builds up \u2014 each shot is a pulse, not a level. Timing within the day matters here; total weekly exposure does not.":"Se elimina mucho antes de la siguiente dosis, as\u00ed que no se acumula nada: cada pinchazo es un pulso, no un nivel. Aqu\u00ed importa el momento del d\u00eda; la exposici\u00f3n semanal total no.",
+/* --- interface --- */
+"2D structure from PubChem, compound":"Estructura 2D de PubChem, compuesto",
+"Short peptides are flexible chains rather than rigid shapes, so this is the chemical structure, not a snapshot of how it sits in solution.":"Los p\u00e9ptidos cortos son cadenas flexibles y no formas r\u00edgidas, as\u00ed que esto es la estructura qu\u00edmica, no una instant\u00e1nea de c\u00f3mo queda en soluci\u00f3n.",
+/* --- interface --- */
+"ACE-031 trials":"Ensayos de ACE-031",
+"AOD-9604 research":"Investigaci\u00f3n sobre AOD-9604",
+"Adipotide research":"Investigaci\u00f3n sobre adipotide",
+"All MOTS-c research":"Toda la investigaci\u00f3n sobre MOTS-c",
+"All elamipretide trials":"Todos los ensayos de elamipretida",
+"Anabolic steroid hepatotoxicity":"Hepatotoxicidad de los esteroides anab\u00f3licos",
+"Anabolic steroids and cardiac function":"Esteroides anab\u00f3licos y funci\u00f3n card\u00edaca",
+"Anastrozole label":"Ficha t\u00e9cnica del anastrozol",
+"Androgen receptor binding affinity":"Afinidad de uni\u00f3n al receptor de andr\u00f3genos",
+"Aromatase inhibition in men":"Inhibici\u00f3n de la aromatasa en hombres",
+"Aromatase inhibitors and bone":"Inhibidores de aromatasa y hueso",
+"BPC-157 research":"Investigaci\u00f3n sobre BPC-157",
+"Bremelanotide label":"Ficha t\u00e9cnica de la bremelanotida",
+"CJC-1295 research":"Investigaci\u00f3n sobre CJC-1295",
+"CagriSema trials":"Ensayos de CagriSema",
+"Cardiac effects in users":"Efectos card\u00edacos en usuarios",
+"Carnitine and TMAO":"Carnitina y TMAO",
+"Cerebrolysin trials":"Ensayos de cerebrolisina",
+"Cibinetide / ARA-290 trials":"Ensayos de cibinetida / ARA-290",
+"Cochrane and other reviews":"Cochrane y otras revisiones",
+"Copper peptide skin trials":"Ensayos cut\u00e1neos con p\u00e9ptidos de cobre",
+"DSIP clinical trials":"Ensayos cl\u00ednicos de DSIP",
+"DSIP research":"Investigaci\u00f3n sobre DSIP",
+"Dose research":"Investigaci\u00f3n sobre dosis",
+"Dose-response trial":"Ensayo de dosis-respuesta",
+"Epitalon / AEDG research":"Investigaci\u00f3n sobre epital\u00f3n / AEDG",
+"Erythropoietin label":"Ficha t\u00e9cnica de la eritropoyetina",
+"FDA approval package, elamipretide":"Expediente de aprobaci\u00f3n de la FDA, elamipretida",
+"GH secretagogue trials":"Ensayos de secretagogos de GH",
+"GHK-Cu research":"Investigaci\u00f3n sobre GHK-Cu",
+"Glutathione trials":"Ensayos de glutati\u00f3n",
+"IV glutathione research":"Investigaci\u00f3n sobre glutati\u00f3n intravenoso",
+"Ipamorelin research":"Investigaci\u00f3n sobre ipamorelina",
+"KPV peptide research":"Investigaci\u00f3n sobre el p\u00e9ptido KPV",
+"KPV research":"Investigaci\u00f3n sobre KPV",
+"Khavinson bioregulators":"Bioreguladores de Khavinson",
+"Khavinson peptide bioregulators":"Bioreguladores pept\u00eddicos de Khavinson",
+"Kisspeptin human studies":"Estudios en humanos con kisspeptina",
+"L-carnitine trials":"Ensayos de L-carnitina",
+"Larazotide trials":"Ensayos de larazotida",
+"MMPOWER-3 Phase 3 (Neurology)":"MMPOWER-3 fase 3 (Neurology)",
+"MOTS-c and ovarian cancer (2024)":"MOTS-c y c\u00e1ncer de ovario (2024)",
+"MOTS-c cardiac function":"MOTS-c y funci\u00f3n card\u00edaca",
+"Melatonin trials":"Ensayos de melatonina",
+"Methandrostenolone in LiverTox":"Metandrostenolona en LiverTox",
+"NAD trials":"Ensayos de NAD",
+"NAD+ and precursor trials":"Ensayos de NAD+ y sus precursores",
+"NNMT inhibitor research":"Investigaci\u00f3n sobre inhibidores de NNMT",
+"Oestradiol and sexual function":"Estradiol y funci\u00f3n sexual",
+"Oral steroids and HDL":"Esteroides orales y HDL",
+"Original metabolic study":"Estudio metab\u00f3lico original",
+"Pinealon / EDR research":"Investigaci\u00f3n sobre pineal\u00f3n / EDR",
+"Progestogenic activity of 19-nors":"Actividad progestag\u00e9nica de los 19-nor",
+"RECONNECT trials":"Ensayos RECONNECT",
+"ReCLAIM-2 in geographic atrophy":"ReCLAIM-2 en atrofia geogr\u00e1fica",
+"Research":"Investigaci\u00f3n",
+"Research and safety findings":"Investigaci\u00f3n y hallazgos de seguridad",
+"Retatrutide trials":"Ensayos de retatrutida",
+"Reverses cardiac dysfunction in old mice (eLife)":"Revierte la disfunci\u00f3n card\u00edaca en ratones viejos (eLife)",
+"STEP trials":"Ensayos STEP",
+"SURMOUNT / SURPASS trials":"Ensayos SURMOUNT / SURPASS",
+"Safety trials":"Ensayos de seguridad",
+"Selank research":"Investigaci\u00f3n sobre selank",
+"Semaglutide label":"Ficha t\u00e9cnica de la semaglutida",
+"Semax research":"Investigaci\u00f3n sobre semax",
+"Sermorelin research":"Investigaci\u00f3n sobre sermorelina",
+"Single dose improves ATPmax in older adults":"Una sola dosis mejora el ATPmax en adultos mayores",
+"Skin trials":"Ensayos cut\u00e1neos",
+"T4DM diabetes prevention":"T4DM, prevenci\u00f3n de la diabetes",
+"TRAVERSE cardiovascular safety":"TRAVERSE, seguridad cardiovascular",
+"Tesamorelin label":"Ficha t\u00e9cnica de la tesamorelina",
+"Testosterone cypionate label":"Ficha t\u00e9cnica del cipionato de testosterona",
+"Thymalfasin / Zadaxin research":"Investigaci\u00f3n sobre timalfasina / Zadaxin",
+"Thymalin research":"Investigaci\u00f3n sobre timalina",
+"Thymosin beta-4 trials":"Ensayos de timosina beta-4",
+"Tirzepatide label":"Ficha t\u00e9cnica de la tirzepatida",
+"Trenbolone cardiac effects in rodents":"Efectos card\u00edacos de la trembolona en roedores",
 /* --- alcohol --- */
 "Alcohol and anabolic steroids injure the liver by different routes, which is why the combination is worse than either number suggests. Steroids, particularly the oral ones, cause cholestatic injury: bile flow slows and bilirubin climbs. Alcohol causes fat accumulation first and inflammation after. One is a plumbing problem and the other is a chemical burn, and the liver is absorbing both at once. Enzymes rising on gear are expected; enzymes rising on gear plus a drinking week are the ones that turn into a hospital story.":"El alcohol y los esteroides anab\u00f3licos da\u00f1an el h\u00edgado por v\u00edas distintas, y por eso la combinaci\u00f3n es peor de lo que sugiere cualquiera de las dos cifras. Los esteroides, sobre todo los orales, causan da\u00f1o colest\u00e1sico: el flujo biliar se enlentece y la bilirrubina sube. El alcohol produce primero acumulaci\u00f3n de grasa y despu\u00e9s inflamaci\u00f3n. Uno es un problema de ca\u00f1er\u00edas y el otro una quemadura qu\u00edmica, y el h\u00edgado absorbe ambos a la vez. Que las enzimas suban con ciclo es esperable; que suban con ciclo m\u00e1s una semana de copas es lo que acaba en el hospital.",
 "This is the pairing to actually avoid. Methandrostenolone is 17-alpha-alkylated, a modification that exists purely to survive first-pass metabolism, and surviving it means the liver processes the drug repeatedly instead of once. Every published case of serious liver injury on this compound involves either a long run, a high dose, or alcohol. Drinking through a four week dbol cycle is the single most reliable way to turn a manageable rise in ALT into cholestatic jaundice, and the itching and dark urine that precede it are late signs, not early ones.":"Esta es la combinaci\u00f3n que conviene evitar de verdad. La metandrostenolona es 17-alfa-alquilada, una modificaci\u00f3n que existe solo para sobrevivir al primer paso hep\u00e1tico, y sobrevivirlo significa que el h\u00edgado procesa el f\u00e1rmaco una y otra vez en lugar de una sola. Todos los casos publicados de da\u00f1o hep\u00e1tico grave con este compuesto implican un ciclo largo, una dosis alta o alcohol. Beber durante un ciclo de cuatro semanas de dbol es la forma m\u00e1s fiable de convertir una subida manejable de ALT en ictericia colest\u00e1sica, y el picor y la orina oscura que la preceden son signos tard\u00edos, no tempranos.",
@@ -9058,6 +9385,12 @@ function tr(str,lc){
   const t=str.trim();
   if(NOTR.has(t))return null;
   if(d[t]!=null)return d[t];
+  /* Prose split across two lines in a template literal arrives with the
+     newline and the file's indentation inside it. Collapsing runs of
+     whitespace means a translation can be keyed by the sentence rather than
+     by how the source happened to be wrapped. */
+  const flat=t.replace(/\s+/g," ");
+  if(flat!==t&&d[flat]!=null)return d[flat];
   // composed lists ("Immune + Gut + Copper", "Chest, Triceps") translate part by part
   for(const sep of [" + ",", "," \u00b7 "]){
     if(t.includes(sep)){
@@ -9073,7 +9406,7 @@ function tr(str,lc){
       // $1..$9 fill from the capture groups; groups listed in deep are
       // themselves run back through tr(), so "7 exercises - Traps, Calves"
       // translates the muscle names too instead of only the wrapper
-      return rep.replace(/\$([1-9])/g,(_,d)=>{
+      const out=rep.replace(/\$([1-9])/g,(_,d)=>{
         const g=m[+d];
         if(g==null)return "";
         if(!deep||deep.indexOf(+d)<0)return g;
@@ -9083,12 +9416,23 @@ function tr(str,lc){
           return g.split(", ").map(x=>{const v=tr(x.trim(),lc);return v!=null?v:x.trim();}).join(", ");
         return g;
       });
+      /* A rule that fires on a phrase it only half understands produces
+         "Ensayos de NAD+ and precursor". These words are English and are not
+         also Spanish, so one surviving in the output means the rule did not
+         translate the string. Leave the English alone rather than shipping
+         half of each. */
+      if(/\b(and|the|with|for|from|about|into|over|after|before|your|you|this|that|which|what|when|research|trials|study|studies|improves|older|adults|single)\b/i.test(out))
+        continue;
+      return out;
     }
   }
   return null;
 }
 /* user-entered content and proper nouns live here — never touched */
-const TRSKIP=".gname,.pbn,.dn,.excn,.pname,.pexname,.altn,.rp,.lrn,.ddname,.rn,.molimg,.mono,.notr,"+
+/* .pbn does double duty: the peptide name inside a pepbox, which must never
+   be translated, and the band headers of the peptide list, which must be. Only
+   the first one is a name. */
+const TRSKIP=".gname,.pepbox .pbn,.dn,.excn,.pname,.pexname,.altn,.rp,.lrn,.ddname,.rn,.molimg,.mono,.notr,"+
   /* guide prose is translated by id through guideView, so the text walker must
      leave it alone rather than trying to match paragraphs against the UI dict */
   ".ddblock li,.ddlede,.ddsec p,.ddp,.ddkey li,.ddwarn li,.ddcol li,.ddalias,.akan";
@@ -9143,7 +9487,13 @@ function watchLang(){
    "#v-track","#v-gym","#v-food","#v-labs","#v-cal","#v-settings","#v-coach","#v-guide","#v-cycle"
   ].forEach(sel=>{
     const el=$(sel);
-    if(el)langObs.observe(el,{childList:true,subtree:true});
+    /* characterData as well as childList: the storage report writes its
+       lines with textContent, which replaces the text inside an existing node
+       rather than adding one, so a childList-only observer never saw it and
+       three lines of Settings stayed English on every Spanish load.
+       This cannot loop: applyLang caches each node's original text, so a
+       second pass computes the same value and writes nothing. */
+    if(el)langObs.observe(el,{childList:true,subtree:true,characterData:true});
   });
 }
 /* Languages offered in the picker. Arabic, Chinese and Russian are held back
@@ -9491,6 +9841,8 @@ function renderCoach(){
   if($("#ansMore",el))$("#ansMore",el).onclick=()=>{
     coachRes.moreOpen=!coachRes.moreOpen;renderCoach();};
   if($("#askAgain",el))$("#askAgain",el).onclick=()=>{coachQ="";coachRes=null;renderCoach();};
+  // built after applyLang has been round, so it applies the language itself
+  if(typeof applyLang==="function")applyLang();
 }
 function coachCard(r){
   const more=r.more||[],open=!!r.moreOpen;
