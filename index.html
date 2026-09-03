@@ -1632,6 +1632,80 @@
   /* light-theme specific softening */
   :root[data-theme="light"] .bodysvg,:root:not([data-theme="dark"]) .bodysvg{filter:drop-shadow(0 6px 16px rgba(14,26,24,.12))}
   @media(prefers-color-scheme:light){.bodysvg{filter:drop-shadow(0 6px 16px rgba(14,26,24,.12))}}
+  /* ================= lab glass ================= */
+  /* Three states, because "system" stamps no attribute at all: bare :root is
+     light, the media query covers system-dark, the attribute covers the
+     explicit toggle. A token defined in only one of them is the classic
+     unreadable-artifact bug. */
+  :root{--gpane:var(--panel);--gline:var(--line);--gedge:rgba(255,255,255,1);--gedge2:transparent;--gnav:color-mix(in srgb,var(--bg) 92%,transparent);--gsheet:var(--panel);--glow:transparent;--grid:transparent;--scan:transparent;--bloom1:transparent;--bloom2:transparent;}
+  @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--gpane:rgba(18,29,27,.72);--gline:rgba(120,220,205,.13);--gedge:rgba(190,255,245,.13);--gedge2:rgba(150,255,240,.34);--gnav:rgba(9,16,15,.70);--gsheet:rgba(15,24,22,.85);--glow:rgba(45,212,191,.42);--grid:rgba(120,240,220,.030);--scan:rgba(150,255,240,.016);--bloom1:rgba(20,150,135,.17);--bloom2:rgba(20,110,150,.10);}}
+  :root[data-theme="dark"]{--gpane:rgba(18,29,27,.72);--gline:rgba(120,220,205,.13);--gedge:rgba(190,255,245,.13);--gedge2:rgba(150,255,240,.34);--gnav:rgba(9,16,15,.70);--gsheet:rgba(15,24,22,.85);--glow:rgba(45,212,191,.42);--grid:rgba(120,240,220,.030);--scan:rgba(150,255,240,.016);--bloom1:rgba(20,150,135,.17);--bloom2:rgba(20,110,150,.10);}
+
+  /* The room. body's background propagates to the canvas, which leaves body
+     itself paintable, so a z-index:-1 pseudo-element lands on top of the flat
+     colour and under every bit of content. Fixed, so it does not scroll. */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background:
+      radial-gradient(120% 78% at 6% -8%, var(--bloom1), transparent 60%),
+      radial-gradient(96% 70% at 106% 108%, var(--bloom2), transparent 58%),
+      repeating-linear-gradient(60deg, var(--grid) 0 1px, transparent 1px 44px),
+      repeating-linear-gradient(-60deg, var(--grid) 0 1px, transparent 1px 44px),
+      repeating-linear-gradient(0deg, var(--scan) 0 1px, transparent 1px 3px);
+  }
+
+  /* Panels read as glass because the bloom behind them shows through, not
+     because each one is running a blur. */
+  .panel,.card{
+    background-color:var(--gpane);
+    background-image:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,0) 36%);
+    border-color:var(--gline);
+    box-shadow:inset 0 1px 0 var(--gedge),var(--shadow);
+  }
+  .panel{position:relative}
+  /* the tell of a glass edge: a highlight that is brightest mid-span and
+     dies before the corners, rather than a uniform 1px box */
+  .panel::after,.card::after{
+    content:"";position:absolute;left:14px;right:14px;top:0;height:1px;
+    background:linear-gradient(90deg,transparent,var(--gedge2),transparent);
+    pointer-events:none;
+  }
+
+  /* One of the two elements worth a real blur. */
+  .nav{
+    background:var(--gnav);
+    backdrop-filter:blur(20px) saturate(1.3);
+    -webkit-backdrop-filter:blur(20px) saturate(1.3);
+    border-top:1px solid var(--gline);
+    box-shadow:0 -1px 0 var(--gedge),0 -20px 44px -22px rgba(0,0,0,.85);
+  }
+  .nav button{position:relative}
+  .nav button.on .ni svg{filter:drop-shadow(0 0 7px var(--glow))}
+  .nav button.on::after{
+    content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+    width:20px;height:2px;border-radius:0 0 2px 2px;
+    background:var(--accent);box-shadow:0 0 10px var(--glow);
+  }
+
+  /* The other one. It sits over the whole app, so the blur is the point. */
+  .sheet{
+    background:var(--gsheet);
+    backdrop-filter:blur(24px) saturate(1.25);
+    -webkit-backdrop-filter:blur(24px) saturate(1.25);
+    border-color:var(--gline);
+    box-shadow:inset 0 1px 0 var(--gedge),0 -10px 60px rgba(0,0,0,.55);
+  }
+
+  /* Instrument labels. The mono uppercase was already there; it just needed
+     the tracking that makes it read as a readout rather than small text. */
+  .hd{letter-spacing:.15em}
+
+  .primary{
+    background:linear-gradient(180deg,var(--accent-hi),var(--accent));
+    box-shadow:0 1px 0 var(--gedge) inset,0 8px 22px -10px var(--glow);
+  }
+  .primary:active{transform:translateY(1px)}
+
 </style>
 
 <div class="app">
