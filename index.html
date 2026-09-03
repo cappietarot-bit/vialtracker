@@ -30,7 +30,7 @@
     --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   }
   @media(prefers-color-scheme:dark){:root{
-    --bg:#0b1211;--panel:#111b19;--panel2:#0e1615;--ink:#e6efec;--ink2:#a4b4af;--ink3:#6f807b;
+    --bg:#0b1211;--panel:rgba(17,27,25,.55);--panel2:rgba(14,22,21,.50);--ink:#e6efec;--ink2:#a4b4af;--ink3:#6f807b;
     --line:#1e2c29;--line2:#2a3b37;--accent:#2dd4bf;--accent-soft:#123430;--accent-ink:#7ff0e2;
     --good:#43c489;--good-soft:#123027;--warn:#e0a13a;--warn-soft:#33280f;--crit:#e2685a;--crit-soft:#361b18;
     --gold:#e0b25a;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 26px rgba(0,0,0,.35);
@@ -40,7 +40,7 @@
   :root[data-theme="light"]{--bg:#f2f5f3;--panel:#fff;--panel2:#eef2f0;--ink:#0e1a18;--ink2:#4a5a56;--ink3:#7a8a86;--line:#dde5e2;--line2:#c8d4cf;--accent:#0f9e8f;--accent-soft:#d6efeb;--accent-ink:#0a6b60;--good:#2f9e6b;--good-soft:#dcefe4;--warn:#c67d16;--warn-soft:#f7ead2;--crit:#cf4b3c;--crit-soft:#f8ddd8;--gold:#b8842a;--shadow:0 1px 2px rgba(14,26,24,.06),0 6px 20px rgba(14,26,24,.05);
     --mut:#b3c1bd;--skin1:#e6ecea;--skin2:#ccd8d4;--skinline:#aab9b4;
     --am-bg:#fdf7ea;--am-ink:#9d6f16;--am-line:#e7c98d;--pm-bg:#eef0fb;--pm-ink:#454f9c;--pm-line:#c3cae9;--glass:linear-gradient(180deg,rgba(255,255,255,.85),rgba(255,255,255,0) 60%);--hair:inset 0 1px 0 rgba(255,255,255,1);--accent-hi:#19c0aa;--accent-lo:#0b8d7e;--btn-ink:#ffffff;--ring:rgba(15,158,143,.28);--shadow-lg:0 2px 4px rgba(14,26,24,.05),0 18px 40px -12px rgba(14,26,24,.18);}
-  :root[data-theme="dark"]{--bg:#0b1211;--panel:#111b19;--panel2:#0e1615;--ink:#e6efec;--ink2:#a4b4af;--ink3:#6f807b;--line:#1e2c29;--line2:#2a3b37;--accent:#2dd4bf;--accent-soft:#123430;--accent-ink:#7ff0e2;--good:#43c489;--good-soft:#123027;--warn:#e0a13a;--warn-soft:#33280f;--crit:#e2685a;--crit-soft:#361b18;--gold:#e0b25a;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 26px rgba(0,0,0,.35);
+  :root[data-theme="dark"]{--bg:#0b1211;--panel:rgba(17,27,25,.55);--panel2:rgba(14,22,21,.50);--ink:#e6efec;--ink2:#a4b4af;--ink3:#6f807b;--line:#1e2c29;--line2:#2a3b37;--accent:#2dd4bf;--accent-soft:#123430;--accent-ink:#7ff0e2;--good:#43c489;--good-soft:#123027;--warn:#e0a13a;--warn-soft:#33280f;--crit:#e2685a;--crit-soft:#361b18;--gold:#e0b25a;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 26px rgba(0,0,0,.35);
     --mut:#657b76;--skin1:#445752;--skin2:#2b3b37;--skinline:#546c66;
     --am-bg:#211a0d;--am-ink:#e8b96b;--am-line:#5c4620;--pm-bg:#141a2f;--pm-ink:#9fadea;--pm-line:#2f3a68;--glass:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,0) 45%);--hair:inset 0 1px 0 rgba(255,255,255,.09);--accent-hi:#45ecd6;--accent-lo:#14b5a2;--btn-ink:#04201d;--ring:rgba(45,212,191,.35);--shadow-lg:0 2px 6px rgba(0,0,0,.45),0 22px 48px -14px rgba(0,0,0,.7);}
   *{box-sizing:border-box}
@@ -1648,14 +1648,42 @@
   .bgx{background:transparent;color:var(--ink3);border:1px solid var(--line2);
     border-radius:9px;padding:9px 13px;font-size:12.5px}
 
+  /* Corner ticks. Inset past the radius so the curve does not clip them, and
+     drawn as four background slivers rather than four elements. */
+  .bigcard::before,.gcard::before,.askbox::before,
+  .ansbox::before,.reccard::before{
+    content:"";position:absolute;inset:7px;pointer-events:none;
+    background:
+      linear-gradient(var(--brk),var(--brk)) 0 0/13px 1.5px no-repeat,
+      linear-gradient(var(--brk),var(--brk)) 0 0/1.5px 13px no-repeat,
+      linear-gradient(var(--brk),var(--brk)) 100% 0/13px 1.5px no-repeat,
+      linear-gradient(var(--brk),var(--brk)) 100% 0/1.5px 13px no-repeat,
+      linear-gradient(var(--brk),var(--brk)) 0 100%/13px 1.5px no-repeat,
+      linear-gradient(var(--brk),var(--brk)) 0 100%/1.5px 13px no-repeat,
+      linear-gradient(var(--brk),var(--brk)) 100% 100%/13px 1.5px no-repeat,
+      linear-gradient(var(--brk),var(--brk)) 100% 100%/1.5px 13px no-repeat;
+  }
+  /* Section labels stop being small grey text and become readouts. */
+  .hd,.sect,.lbl,.sub2{color:var(--accent-ink)}
+  /* The lit rule under the title bar. */
+  .top,header,.appbar{position:relative}
+  .top::after,header::after,.appbar::after{
+    content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;
+    background:linear-gradient(90deg,transparent,var(--accent),transparent);
+    box-shadow:0 0 12px var(--glow);opacity:.85;pointer-events:none;
+  }
+  /* Anything that is a number worth reading gets lit. */
+  .big,.num,.ring,.kpi,.stat{text-shadow:0 0 14px var(--glow)}
+  .fab{box-shadow:0 0 0 1px var(--gline),0 8px 26px -6px var(--glow)}
+
   /* ================= lab glass ================= */
   /* Three states, because "system" stamps no attribute at all: bare :root is
      light, the media query covers system-dark, the attribute covers the
      explicit toggle. A token defined in only one of them is the classic
      unreadable-artifact bug. */
-  :root{--gpane:var(--panel);--gline:var(--line);--gedge:rgba(255,255,255,1);--gedge2:transparent;--gnav:color-mix(in srgb,var(--bg) 92%,transparent);--gsheet:var(--panel);--glow:transparent;--grid:transparent;--scan:transparent;--bloom1:transparent;--bloom2:transparent;}
-  @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--gpane:rgba(18,29,27,.72);--gline:rgba(120,220,205,.13);--gedge:rgba(190,255,245,.13);--gedge2:rgba(150,255,240,.34);--gnav:rgba(9,16,15,.70);--gsheet:rgba(15,24,22,.85);--glow:rgba(45,212,191,.42);--grid:rgba(120,240,220,.030);--scan:rgba(150,255,240,.016);--bloom1:rgba(20,150,135,.17);--bloom2:rgba(20,110,150,.10);}}
-  :root[data-theme="dark"]{--gpane:rgba(18,29,27,.72);--gline:rgba(120,220,205,.13);--gedge:rgba(190,255,245,.13);--gedge2:rgba(150,255,240,.34);--gnav:rgba(9,16,15,.70);--gsheet:rgba(15,24,22,.85);--glow:rgba(45,212,191,.42);--grid:rgba(120,240,220,.030);--scan:rgba(150,255,240,.016);--bloom1:rgba(20,150,135,.17);--bloom2:rgba(20,110,150,.10);}
+  :root{--gpane:var(--panel);--gline:var(--line);--gedge:rgba(255,255,255,1);--gedge2:transparent;--gnav:color-mix(in srgb,var(--bg) 92%,transparent);--gsheet:var(--panel);--glow:transparent;--grid:transparent;--scan:transparent;--bloom1:transparent;--bloom2:transparent;--brk:transparent;}
+  @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--gpane:rgba(11,22,21,.52);--gline:rgba(110,235,215,.28);--gedge:rgba(190,255,245,.20);--gedge2:rgba(170,255,246,.85);--gnav:rgba(6,13,12,.62);--gsheet:rgba(10,19,18,.78);--glow:rgba(45,212,191,.75);--grid:rgba(125,245,225,.075);--scan:rgba(150,255,240,.030);--bloom1:rgba(22,195,175,.40);--bloom2:rgba(28,140,205,.26);--brk:rgba(90,240,220,.55);}}
+  :root[data-theme="dark"]{--gpane:rgba(11,22,21,.52);--gline:rgba(110,235,215,.28);--gedge:rgba(190,255,245,.20);--gedge2:rgba(170,255,246,.85);--gnav:rgba(6,13,12,.62);--gsheet:rgba(10,19,18,.78);--glow:rgba(45,212,191,.75);--grid:rgba(125,245,225,.075);--scan:rgba(150,255,240,.030);--bloom1:rgba(22,195,175,.40);--bloom2:rgba(28,140,205,.26);--brk:rgba(90,240,220,.55);}
 
   /* The room. body's background propagates to the canvas, which leaves body
      itself paintable, so a z-index:-1 pseudo-element lands on top of the flat
@@ -1672,16 +1700,17 @@
 
   /* Panels read as glass because the bloom behind them shows through, not
      because each one is running a blur. */
-  .panel,.card{
-    background-color:var(--gpane);
+  .panel,.card,.bigcard,.gcard,.askbox,.ansbox,.tcard,.rcard,.mealcard,
+  .stat,.stobox,.reccard,.guide,.exrow,.seg,.ddblock,.daysheet{
     background-image:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,0) 36%);
     border-color:var(--gline);
     box-shadow:inset 0 1px 0 var(--gedge),var(--shadow);
   }
-  .panel{position:relative}
+  .panel,.bigcard,.gcard,.askbox,.ansbox,.tcard,.reccard{position:relative}
   /* the tell of a glass edge: a highlight that is brightest mid-span and
      dies before the corners, rather than a uniform 1px box */
-  .panel::after,.card::after{
+  .panel::after,.card::after,.bigcard::after,.gcard::after,
+  .askbox::after,.ansbox::after,.tcard::after,.reccard::after{
     content:"";position:absolute;left:14px;right:14px;top:0;height:1px;
     background:linear-gradient(90deg,transparent,var(--gedge2),transparent);
     pointer-events:none;
