@@ -1676,6 +1676,9 @@
   .big,.num,.ring,.kpi,.stat{text-shadow:0 0 14px var(--glow)}
   .fab{box-shadow:0 0 0 1px var(--gline),0 8px 26px -6px var(--glow)}
 
+  /* the mesh is the ground for a screen with no photograph; where there
+     is one it is just a wireframe drawn over the art */
+  html:root.hasbg{--grid:transparent;--scan:transparent}
   .bgimg{position:fixed;inset:0;z-index:-2;pointer-events:none;
     background-position:center top;background-size:cover;
     background-repeat:no-repeat;opacity:0;transition:opacity .5s ease}
@@ -10110,12 +10113,14 @@ function setBg(t){
   const names=userSex()==="f"?["bg-"+t+"-f.webp","bg-"+t+".webp"]
                              :["bg-"+t+".webp"];
   (function tryAt(i){
-    if(i>=names.length){bg.classList.remove("on");return;}
+    if(i>=names.length){bg.classList.remove("on");
+      document.documentElement.classList.remove("hasbg");return;}
     const url=names[i];
     if(_bgSeen[url]===false)return tryAt(i+1);
     const paint=()=>{bg.style.backgroundImage=
-      `linear-gradient(rgba(11,18,17,.34),rgba(11,18,17,.62)),url("${url}")`;
-      bg.classList.add("on");};
+      `linear-gradient(rgba(11,18,17,.20),rgba(11,18,17,.50)),url("${url}")`;
+      bg.classList.add("on");
+      document.documentElement.classList.add("hasbg");};
     if(_bgSeen[url])return paint();
     const im=new Image();
     im.onload=()=>{_bgSeen[url]=true;paint();};
