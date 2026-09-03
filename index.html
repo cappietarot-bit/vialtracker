@@ -6286,7 +6286,8 @@ function openAdd(){
   draw("");
   $("#catSearch").oninput=e=>draw(e.target.value);
   $("#catSearch").focus();
-  if(!S.settings.seenTip){S.settings.seenTip=true;save();setTimeout(showTip,350);}
+  if(S.settings.agreed&&!S.settings.seenTip){
+    S.settings.seenTip=true;save();setTimeout(showTip,350);}
 }
 function showTip(){
   const t=document.createElement("div");t.className="tip";
@@ -7517,6 +7518,28 @@ function renderGuide(){
   $$("[data-deep]",el).forEach(b=>b.onclick=e=>{e.stopPropagation();deepDive(b.dataset.deep);});
   $$("[data-ginfo]",el).forEach(b=>b.onclick=e=>{e.stopPropagation();infoPop(b.dataset.ginfo);});
 }
+/* Shown once, before the app is usable, and acknowledged. */
+let gateUp=false;
+function supervisionGate(){
+  if(S.settings.agreed)return;
+  gateUp=true;
+  $("#sheet").innerHTML=`<h3>${L("Read this before you use it")}</h3>
+    <div class="msub">${L("Once, then it stays out of your way")}</div>
+    <div style="font-size:13.5px;line-height:1.65;color:var(--ink2)">
+      <p style="margin:0 0 11px">${L("The Lab records what you take and summarises published research about it. That is all it does. It is not medical advice, not a diagnosis, and not a recommendation to start, stop or change anything.")}</p>
+      <p style="margin:0 0 11px"><b>${L("Do not run anything in here without medical supervision.")}</b> ${L("Several of the compounds covered are prescription-only or controlled, and some cause real harm without monitoring. A doctor who knows your history is the person to decide what you take and how much.")}</p>
+      <p style="margin:0 0 11px">${L("Get bloodwork. It is the only way to know what is actually happening, and this app is far more useful with it than without.")}</p>
+      <p style="margin:0 0 14px">${L("If something is going wrong, stop and get seen. Nothing here is worth a liver.")}</p>
+    </div>
+    <button class="primary" id="agreeBtn">${L("I understand")}</button>`;
+  $("#modal").classList.add("on");
+  $("#agreeBtn").onclick=()=>{
+    S.settings.agreed=true;save();
+    gateUp=false;
+    closeModal();
+    if(!S.settings.seenTip){S.settings.seenTip=true;save();setTimeout(showTip,350);}
+  };
+}
 function showDisclaimer(){
   $("#sheet").innerHTML=`<h3>This is not medical advice</h3><div class="msub">Please read</div>
     <div style="font-size:13.5px;line-height:1.65;color:var(--ink2)">
@@ -8484,6 +8507,14 @@ es:{
 "The modification itself has essentially no published pharmacology, so whether it does what the name implies is unverified. The parent peptide's evidence is regional and rarely replicated independently. No Western approval, no controlled trial of the analogue, no established dose, and nasal or injected use in people rests entirely on user reports.":"La modificaci\u00f3n en s\u00ed no tiene pr\u00e1cticamente farmacolog\u00eda publicada, as\u00ed que si hace lo que su nombre implica est\u00e1 sin verificar. La evidencia del p\u00e9ptido original es regional y rara vez se replica de forma independiente. Sin aprobaci\u00f3n occidental, sin ensayo controlado del an\u00e1logo, sin dosis establecida, y el uso nasal o inyectado en personas se apoya enteramente en reportes de usuarios.",
 "A stabilised semax variant with the same intent: resist enzymatic breakdown and last longer. The parent is an approved medicine in Russia for stroke and cognitive indications with decades of use, works through BDNF and the melanocortin system, and has a genuinely interesting mechanism for a short peptide.":"Una variante estabilizada de semax con la misma intenci\u00f3n: resistir la degradaci\u00f3n enzim\u00e1tica y durar m\u00e1s. El original es un medicamento aprobado en Rusia para ictus e indicaciones cognitivas con d\u00e9cadas de uso, act\u00faa a trav\u00e9s del BDNF y del sistema melanocort\u00ednico, y tiene un mecanismo genuinamente interesante para un p\u00e9ptido corto.",
 "As with the selank analogue, the modified version has almost no published data of its own, so its pharmacokinetics are an assumption. The parent's trial base sits almost entirely in one country and has not been replicated to modern standards elsewhere. No established dose for the analogue, and long-term effects of chronic BDNF modulation are unknown.":"Como con el an\u00e1logo de selank, la versi\u00f3n modificada casi no tiene datos publicados propios, as\u00ed que su farmacocin\u00e9tica es una suposici\u00f3n. La base de ensayos del original se encuentra casi por completo en un solo pa\u00eds y no se ha replicado con est\u00e1ndares modernos en otros sitios. Sin dosis establecida para el an\u00e1logo, y los efectos a largo plazo de la modulaci\u00f3n cr\u00f3nica del BDNF son desconocidos.",
+/* --- interface --- */
+"Read this before you use it":"L\u00e9elo antes de usarla",
+"Once, then it stays out of your way":"Una vez, y luego no vuelve a molestarte",
+"The Lab records what you take and summarises published research about it. That is all it does. It is not medical advice, not a diagnosis, and not a recommendation to start, stop or change anything.":"The Lab registra lo que tomas y resume la investigaci\u00f3n publicada al respecto. Eso es todo lo que hace. No es consejo m\u00e9dico, ni un diagn\u00f3stico, ni una recomendaci\u00f3n para empezar, parar o cambiar nada.",
+"Do not run anything in here without medical supervision.":"No uses nada de lo que hay aqu\u00ed sin supervisi\u00f3n m\u00e9dica.",
+"Several of the compounds covered are prescription-only or controlled, and some cause real harm without monitoring. A doctor who knows your history is the person to decide what you take and how much.":"Varios de los compuestos que se tratan son de prescripci\u00f3n o est\u00e1n controlados, y algunos hacen da\u00f1o real sin seguimiento. Un m\u00e9dico que conozca tu historial es quien debe decidir qu\u00e9 tomas y cu\u00e1nto.",
+"Get bloodwork. It is the only way to know what is actually happening, and this app is far more useful with it than without.":"Hazte anal\u00edticas. Es la \u00fanica forma de saber qu\u00e9 est\u00e1 pasando de verdad, y esta app es mucho m\u00e1s \u00fatil con ellas que sin ellas.",
+"If something is going wrong, stop and get seen. Nothing here is worth a liver.":"Si algo va mal, para y que te vean. Nada de lo que hay aqu\u00ed vale un h\u00edgado.",
 /* --- alcohol --- */
 "Alcohol and anabolic steroids injure the liver by different routes, which is why the combination is worse than either number suggests. Steroids, particularly the oral ones, cause cholestatic injury: bile flow slows and bilirubin climbs. Alcohol causes fat accumulation first and inflammation after. One is a plumbing problem and the other is a chemical burn, and the liver is absorbing both at once. Enzymes rising on gear are expected; enzymes rising on gear plus a drinking week are the ones that turn into a hospital story.":"El alcohol y los esteroides anab\u00f3licos da\u00f1an el h\u00edgado por v\u00edas distintas, y por eso la combinaci\u00f3n es peor de lo que sugiere cualquiera de las dos cifras. Los esteroides, sobre todo los orales, causan da\u00f1o colest\u00e1sico: el flujo biliar se enlentece y la bilirrubina sube. El alcohol produce primero acumulaci\u00f3n de grasa y despu\u00e9s inflamaci\u00f3n. Uno es un problema de ca\u00f1er\u00edas y el otro una quemadura qu\u00edmica, y el h\u00edgado absorbe ambos a la vez. Que las enzimas suban con ciclo es esperable; que suban con ciclo m\u00e1s una semana de copas es lo que acaba en el hospital.",
 "This is the pairing to actually avoid. Methandrostenolone is 17-alpha-alkylated, a modification that exists purely to survive first-pass metabolism, and surviving it means the liver processes the drug repeatedly instead of once. Every published case of serious liver injury on this compound involves either a long run, a high dose, or alcohol. Drinking through a four week dbol cycle is the single most reliable way to turn a manageable rise in ALT into cholestatic jaundice, and the itching and dark urine that precede it are late signs, not early ones.":"Esta es la combinaci\u00f3n que conviene evitar de verdad. La metandrostenolona es 17-alfa-alquilada, una modificaci\u00f3n que existe solo para sobrevivir al primer paso hep\u00e1tico, y sobrevivirlo significa que el h\u00edgado procesa el f\u00e1rmaco una y otra vez en lugar de una sola. Todos los casos publicados de da\u00f1o hep\u00e1tico grave con este compuesto implican un ciclo largo, una dosis alta o alcohol. Beber durante un ciclo de cuatro semanas de dbol es la forma m\u00e1s fiable de convertir una subida manejable de ALT en ictericia colest\u00e1sica, y el picor y la orina oscura que la preceden son signos tard\u00edos, no tempranos.",
@@ -10019,7 +10050,7 @@ function quickSet(){
   if(curLang()!=="en")applyLang();
 }
 function closeModal(){$("#modal").classList.remove("on");}
-$("#modal").onclick=e=>{if(e.target.id==="modal")closeModal();};
+$("#modal").onclick=e=>{if(e.target.id==="modal"&&!gateUp)closeModal();};
 $("#dayOverlay").onclick=e=>{if(e.target.id==="dayOverlay")closeDay();};
 function renderAll(){renderTrack();}
 let tT;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(tT);tT=setTimeout(()=>t.classList.remove("on"),1900);}
@@ -10059,6 +10090,8 @@ applyLabRanges();initTips();renderTrack();syncNative();applyLang();watchLang();s
 if(cycS().periods.length){const before=JSON.stringify(cycS().periods);
   if(JSON.stringify(cycNormalise())!==before)save();}
 initSW();startReminderLoop();
+/* the one thing that has to be seen before anything else */
+setTimeout(supervisionGate,700);
 /* If localStorage came back empty, something cleared it — pull the data back
    from the mirror before the user starts typing over a blank app. Then ask the
    browser not to do it again. */
