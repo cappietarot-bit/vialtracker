@@ -1696,15 +1696,25 @@
     background-position:center top;background-size:cover;
     background-repeat:no-repeat;
   }
+  /* Same treatment for the exercise player: it is the same kind of surface,
+     a fixed full-viewport panel that covers the per-tab layer. Scrim is a
+     little heavier here because a running set is the one screen you have to
+     read at a glance, mid-rep, without looking for the number. */
+  .player{
+    background-image:linear-gradient(rgba(11,18,17,.30),rgba(11,18,17,.62)),
+      var(--playerbg);
+    background-position:center top;background-size:cover;
+    background-repeat:no-repeat;
+  }
 
   /* ================= lab glass ================= */
   /* Three states, because "system" stamps no attribute at all: bare :root is
      light, the media query covers system-dark, the attribute covers the
      explicit toggle. A token defined in only one of them is the classic
      unreadable-artifact bug. */
-  :root{--gpane:var(--panel);--gline:var(--line);--gedge:rgba(255,255,255,1);--gedge2:transparent;--gnav:color-mix(in srgb,var(--bg) 92%,transparent);--gsheet:var(--panel);--glow:transparent;--grid:transparent;--scan:transparent;--bloom1:transparent;--bloom2:transparent;--brk:transparent;--deepbg:none;}
-  @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--gpane:rgba(11,22,21,.52);--gline:rgba(110,235,215,.28);--gedge:rgba(190,255,245,.20);--gedge2:rgba(170,255,246,.85);--gnav:rgba(6,13,12,.62);--gsheet:rgba(10,19,18,.78);--glow:rgba(45,212,191,.75);--grid:rgba(125,245,225,.075);--scan:rgba(150,255,240,.030);--bloom1:rgba(22,195,175,.40);--bloom2:rgba(28,140,205,.26);--brk:rgba(90,240,220,.55);--deepbg:url("bg-deep.webp");}}
-  :root[data-theme="dark"]{--gpane:rgba(11,22,21,.52);--gline:rgba(110,235,215,.28);--gedge:rgba(190,255,245,.20);--gedge2:rgba(170,255,246,.85);--gnav:rgba(6,13,12,.62);--gsheet:rgba(10,19,18,.78);--glow:rgba(45,212,191,.75);--grid:rgba(125,245,225,.075);--scan:rgba(150,255,240,.030);--bloom1:rgba(22,195,175,.40);--bloom2:rgba(28,140,205,.26);--brk:rgba(90,240,220,.55);--deepbg:url("bg-deep.webp");}
+  :root{--gpane:var(--panel);--gline:var(--line);--gedge:rgba(255,255,255,1);--gedge2:transparent;--gnav:color-mix(in srgb,var(--bg) 92%,transparent);--gsheet:var(--panel);--glow:transparent;--grid:transparent;--scan:transparent;--bloom1:transparent;--bloom2:transparent;--brk:transparent;--deepbg:none;--playerbg:none;}
+  @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--gpane:rgba(11,22,21,.52);--gline:rgba(110,235,215,.28);--gedge:rgba(190,255,245,.20);--gedge2:rgba(170,255,246,.85);--gnav:rgba(6,13,12,.62);--gsheet:rgba(10,19,18,.78);--glow:rgba(45,212,191,.75);--grid:rgba(125,245,225,.075);--scan:rgba(150,255,240,.030);--bloom1:rgba(22,195,175,.40);--bloom2:rgba(28,140,205,.26);--brk:rgba(90,240,220,.55);--deepbg:url("bg-deep.webp");--playerbg:url("bg-gym.webp");}}
+  :root[data-theme="dark"]{--gpane:rgba(11,22,21,.52);--gline:rgba(110,235,215,.28);--gedge:rgba(190,255,245,.20);--gedge2:rgba(170,255,246,.85);--gnav:rgba(6,13,12,.62);--gsheet:rgba(10,19,18,.78);--glow:rgba(45,212,191,.75);--grid:rgba(125,245,225,.075);--scan:rgba(150,255,240,.030);--bloom1:rgba(22,195,175,.40);--bloom2:rgba(28,140,205,.26);--brk:rgba(90,240,220,.55);--deepbg:url("bg-deep.webp");--playerbg:url("bg-gym.webp");}
 
   /* The room. body's background propagates to the canvas, which leaves body
      itself paintable, so a z-index:-1 pseudo-element lands on top of the flat
