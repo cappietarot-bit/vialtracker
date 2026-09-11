@@ -1707,6 +1707,16 @@
     background-repeat:no-repeat;
   }
 
+  /* reference deep dives: a compound you are reading about, not running */
+  .ddref{display:inline-block;margin-top:7px;font-family:var(--mono);font-size:9.5px;
+    letter-spacing:.12em;text-transform:uppercase;color:#fff;
+    border:1px solid rgba(255,255,255,.5);border-radius:99px;padding:2px 9px}
+  .ddadd{width:100%;margin:0 0 14px;background:var(--accent-soft);color:var(--accent-ink);
+    border:1px solid var(--gline);border-radius:11px;padding:10px;font-weight:700;font-size:13px}
+  #deepBody.isref .ddyours,#deepBody.isref .ddcard.lvl{display:none}
+  .catg{margin-left:auto;flex:none;background:transparent;color:var(--accent-ink);
+    border:1px solid var(--line2);border-radius:99px;padding:4px 11px;font-size:11px;font-weight:700}
+
   /* ================= lab glass ================= */
   /* Three states, because "system" stamps no attribute at all: bare :root is
      light, the media query covers system-dark, the attribute covers the
@@ -2034,7 +2044,7 @@ testcyp:{
  pair:["protein","iron","b"],
  nutr:{food:"No. Testosterone is a hormone, not a nutrient, and nothing eaten raises it into the range this produces.",boost:"Protein and total calories matter because the drug raises the ceiling on muscle growth without providing the material. Adequate dietary fat supports endogenous steroid synthesis and helps absorption of the fat-soluble vitamins. Zinc and vitamin D deficiency both associate with lower natural testosterone, so correcting a genuine deficiency helps, though supplementing beyond that does nothing.",reach:"Sleep and body composition move natural testosterone more than any supplement does. Restricting sleep to five hours a night lowers it measurably in a week, and losing excess fat reduces aromatase activity. Neither approaches what an injection does, but both matter for what your own production looks like underneath."},
  cyc:{run:"Continuous",off:"None if it is replacement",note:"As replacement it is not a cycle, it is a permanent medication, and the decision to start is a decision to keep going or to accept the recovery period on stopping. Used above replacement in blocks, the recovery gets slower with each longer run, and the honest question is not how long to run but what the exit looks like."},
- src:[{n:"Testosterone cypionate label",u:"https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=testosterone+cypionate"},{n:"Dose-response trial",u:"https://pubmed.ncbi.nlm.nih.gov/11701431/"},{n:"TRAVERSE cardiovascular safety",u:"https://pubmed.ncbi.nlm.nih.gov/37326322/"},{n:"T4DM diabetes prevention",u:"https://pubmed.ncbi.nlm.nih.gov/33échec"}]
+ src:[{n:"Testosterone cypionate label",u:"https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=testosterone+cypionate"},{n:"Dose-response trial",u:"https://pubmed.ncbi.nlm.nih.gov/11701431/"},{n:"TRAVERSE cardiovascular safety",u:"https://pubmed.ncbi.nlm.nih.gov/37326322/"},{n:"T4DM diabetes prevention",u:"https://pubmed.ncbi.nlm.nih.gov/33338415/"}]
 },
 
 
@@ -3125,7 +3135,23 @@ const EXDB={
 };
 /* Names whose guide key isn't a prefix of the name — without these the lookup
    silently misses and the peptide loses its deep dive. */
-const GUIDEALIAS={"5amino1mq":"amino","thymosinalpha1":"ta1","thymosinalpha":"ta1",
+const GUIDEALIAS={
+  /* gear pages: an alias whose guide does not exist yet is ignored, so each
+     name routes the moment its page lands */
+  "testosteroneenanthate":"testenanth","testenanthate":"testenanth","teste":"testenanth",
+  "testosteronepropionate":"testprop","testprop":"testprop","testp":"testprop",
+  "sustanon250":"sustanon","sust":"sustanon",
+  "nandrolonedecanoate":"nandrolonedec","nandrolone":"nandrolonedec","deca":"nandrolonedec",
+  "nandrolonephenylpropionate":"npp",
+  "trenboloneenanthate":"trenenanth","trenenanthate":"trenenanth","trene":"trenenanth",
+  "drostanolone":"masteron","drostanolonepropionate":"masteron","mast":"masteron",
+  "methenolone":"primobolan","methenoloneenanthate":"primobolan","primo":"primobolan",
+  "equipoise":"boldenone","boldenoneundecylenate":"boldenone",
+  "oxandrolone":"anavar","var":"anavar",
+  "stanozolol":"winstrol","winny":"winstrol",
+  "oxymetholone":"anadrol","drol":"anadrol",
+  "chlorodehydromethyltestosterone":"turinabol","tbol":"turinabol",
+  "methasterone":"superdrol","fluoxymesterone":"halotestin","halo":"halotestin","5amino1mq":"amino","thymosinalpha1":"ta1","thymosinalpha":"ta1",
   "bpc157tb500":"bpc","wolverine":"bpc","cjc1295nodac":"cjc","cjc1295":"cjc",
   "kisspeptin10":"kiss","kisspeptin":"kiss","ara290":"ara","lcarnitine":"lcar",
   "aod9604":"aod","ghkcu":"ghkcu","tb500":"tb500","thymosinbeta4":"tb500",
@@ -5960,8 +5986,19 @@ function ddFold(cls,title,note,summary,body){
     <div class="ddfb">${body}</div>
   </div>`;
 }
+/* Open a guide for something that is not in your stack. The deep dive was
+   built around a tracked vial, so this hands it a stand-in record with only a
+   name and a guide key; the panels about your own vial hide themselves. */
+function refDive(key){
+  if(!key||!GUIDES[key])return;
+  const mine=pepFor(key);
+  if(mine){deepDive(mine.id);return;}
+  const name=guideName(key),it=LUCKY[name]||{};
+  deepDive({id:"ref:"+key,name,cat:it.c||"",guideKey:key,dose:0,unit:"mg",
+    sched:{t:"daily"},vialMg:0,remaining:0,time:"am",status:"off",ref:true});
+}
 function deepDive(id){
-  const p=pById(id);if(!p)return;
+  const p=(id&&typeof id==="object")?id:pById(id);if(!p)return;
   const g=guideView(p);if(!g)return;
   const ev=g.ev||[];
   const bucket=t=>ev.filter(e=>e[0]===t).map(e=>e[1]);
@@ -5988,13 +6025,14 @@ function deepDive(id){
     <div class="ddhero" style="background:${pepPaint(p)}">
       <div class="ddscrim"></div>
       <div class="ddhx"><div class="ddname">${p.name}</div>
-        <div class="ddcls">${g.cls||pepFamNames(p)}</div>
+        <div class="ddcls">${g.cls||pepFamNames(p)}</div>${p.ref?`<div class="ddref">${L("Not in your stack")}</div>`:""}
 </div>
       <span class="ddtier ${g.tier||"pre"}">${TIERN[g.tier]||"Limited evidence"}</span>
     </div>
     ${g.danger?`<div class="ddanger"><span class="dgi">!</span>
       <div><b>High risk</b> ${g.danger}</div></div>`:""}
     <div class="ddwrap">
+      ${p.ref&&LUCKY[p.name]?`<button class="ddadd" id="ddAdd">${L("Add to my stack")}</button>`:""}
       ${(g.key||[]).length?`<div class="ddkey">
         <div class="ddkh">Get this right</div>
         <ul>${g.key.map(k=>`<li>${k}</li>`).join("")}</ul></div>`:""}
@@ -6107,6 +6145,9 @@ function deepDive(id){
     b.setAttribute("aria-expanded",String(!open));
     b.closest(".ddfold").classList.toggle("on",!open);
   });
+  $("#deepBody").classList.toggle("isref",!!p.ref);
+  const ddAdd=$("#ddAdd");
+  if(ddAdd)ddAdd.onclick=()=>{closeDeep();openAdd();pickSize(p.name);};
   $("#deepView").classList.add("on");
   applyLang();
   $("#deepView").scrollTop=0;
@@ -6449,6 +6490,11 @@ function openAdd(){
       const also=pepAlias({name:n}).slice(0,3).join(" · ");
       row.innerHTML=`<div><div class="cn">${n}</div>${also?`<div class="calso">${also}</div>`:""}</div>
         <div class="cc" style="color:${col};border-color:${col}44">${(PFAM[fam]||PFAM.other).n}</div>`;
+      // read before you add: anything that has a guide opens it in place
+      const gk=guideKeyFor(n);
+      if(gk&&GUIDES[gk]){const gb=document.createElement("button");
+        gb.className="catg";gb.textContent=L("Guide");
+        gb.onclick=e=>{e.stopPropagation();refDive(gk);};row.appendChild(gb);}
       row.onclick=()=>pickSize(n);list.appendChild(row);});
     if(!list.children.length)list.innerHTML=`<div class="empty-note">Nothing matches that name.</div>`;};
   draw("");
@@ -8693,6 +8739,9 @@ es:{
 "days ago.":"d\u00edas.",
 "Save a backup":"Guardar una copia",
 "Later":"M\u00e1s tarde",
+/* --- interface --- */
+"Not in your stack":"No est\u00e1 en tu stack",
+"Guide":"Gu\u00eda",
 /* --- alcohol --- */
 "Alcohol and anabolic steroids injure the liver by different routes, which is why the combination is worse than either number suggests. Steroids, particularly the oral ones, cause cholestatic injury: bile flow slows and bilirubin climbs. Alcohol causes fat accumulation first and inflammation after. One is a plumbing problem and the other is a chemical burn, and the liver is absorbing both at once. Enzymes rising on gear are expected; enzymes rising on gear plus a drinking week are the ones that turn into a hospital story.":"El alcohol y los esteroides anab\u00f3licos da\u00f1an el h\u00edgado por v\u00edas distintas, y por eso la combinaci\u00f3n es peor de lo que sugiere cualquiera de las dos cifras. Los esteroides, sobre todo los orales, causan da\u00f1o colest\u00e1sico: el flujo biliar se enlentece y la bilirrubina sube. El alcohol produce primero acumulaci\u00f3n de grasa y despu\u00e9s inflamaci\u00f3n. Uno es un problema de ca\u00f1er\u00edas y el otro una quemadura qu\u00edmica, y el h\u00edgado absorbe ambos a la vez. Que las enzimas suban con ciclo es esperable; que suban con ciclo m\u00e1s una semana de copas es lo que acaba en el hospital.",
 "This is the pairing to actually avoid. Methandrostenolone is 17-alpha-alkylated, a modification that exists purely to survive first-pass metabolism, and surviving it means the liver processes the drug repeatedly instead of once. Every published case of serious liver injury on this compound involves either a long run, a high dose, or alcohol. Drinking through a four week dbol cycle is the single most reliable way to turn a manageable rise in ALT into cholestatic jaundice, and the itching and dark urine that precede it are late signs, not early ones.":"Esta es la combinaci\u00f3n que conviene evitar de verdad. La metandrostenolona es 17-alfa-alquilada, una modificaci\u00f3n que existe solo para sobrevivir al primer paso hep\u00e1tico, y sobrevivirlo significa que el h\u00edgado procesa el f\u00e1rmaco una y otra vez en lugar de una sola. Todos los casos publicados de da\u00f1o hep\u00e1tico grave con este compuesto implican un ciclo largo, una dosis alta o alcohol. Beber durante un ciclo de cuatro semanas de dbol es la forma m\u00e1s fiable de convertir una subida manejable de ALT en ictericia colest\u00e1sica, y el picor y la orina oscura que la preceden son signos tard\u00edos, no tempranos.",
@@ -10112,7 +10161,7 @@ function renderCoach(){
   $$("[data-q]",el).forEach(b=>b.onclick=()=>{coachQ=b.dataset.q;coachRes=coachAnswer(coachQ);renderCoach();});
   $$("[data-cgo]",el).forEach(b=>b.onclick=()=>{
     const p=pepFor(b.dataset.cgo);
-    if(p)deepDive(p.id);else toast("Add it to your list to open the full guide");});
+    refDive(b.dataset.cgo);});
   $("#cDisc",el).onclick=showDisclaimer;
   if($("#ansMore",el))$("#ansMore",el).onclick=()=>{
     coachRes.moreOpen=!coachRes.moreOpen;renderCoach();};
