@@ -1854,7 +1854,7 @@ const LUCKY={
 "Retatrutide":{c:"GLP-1",s:[5,10,15,20,30,40,50,60]},"Tirzepatide":{c:"GLP-1",s:[5,10,15,20,30,40,50,60,80,100]},
 "Semaglutide":{c:"GLP-1",s:[2,5,10,15,20,30,40,50]},"Cagrilintide":{c:"GLP-1",s:[5,10]},"Cagri+Sema":{c:"GLP-1",s:[5,10]},
 "Tesamorelin":{c:"GH axis",s:[5,10,15,20]},"Sermorelin":{c:"GH axis",s:[5,10]},"Ipamorelin":{c:"GH axis",s:[2,5,10]},
-"CJC-1295 no DAC":{c:"GH axis",s:[2,5,10]},"CJC-1295 DAC":{c:"GH axis",s:[2,5]},"CJC/Ipamorelin":{c:"GH axis",s:[10]},
+"CJC-1295 no DAC":{c:"GH axis",s:[2,5,10]},"CJC-1295 DAC":{c:"GH axis",s:[2,5]},"CJC/Ipamorelin":{c:"GH axis",s:[10]},"Tesa/Ipa/CJC 10/3/3":{c:"GH axis",s:[16]},
 "GHRP-2":{c:"GH axis",s:[5,10,15]},"GHRP-6":{c:"GH axis",s:[5,10]},"Hexarelin":{c:"GH axis",s:[2,5]},"MK-677":{c:"GH axis",s:[5]},
 "IGF-1 LR3":{c:"GH axis",s:[1]},"MOTS-c":{c:"Mitochondria",s:[10,15,20,40]},"SS-31":{c:"Mitochondria",s:[5,10,50]},
 "NAD+":{c:"Mitochondria",s:[100,500,1000]},"5-Amino-1MQ":{c:"Metabolic",s:[5,10,50]},"AICAR":{c:"Metabolic",s:[50,100]},
@@ -2424,7 +2424,7 @@ function mk(id,name,cat,dose,unit,sched,vial,rem,timing,flag){
 /* beginner low-end starting dose per peptide: [dose, unit, morning/night] */
 const LOWDOSE={
 "Retatrutide":[1,"mg","am"],"Tirzepatide":[2.5,"mg","am"],"Semaglutide":[.25,"mg","am"],"Cagrilintide":[.5,"mg","am"],
-"Tesamorelin":[.5,"mg","pm"],"Sermorelin":[.1,"mg","pm"],"Ipamorelin":[.2,"mg","pm"],"CJC-1295 no DAC":[.1,"mg","pm"],
+"Tesamorelin":[.5,"mg","pm"],"Sermorelin":[.1,"mg","pm"],"Ipamorelin":[.2,"mg","pm"],"CJC-1295 no DAC":[.1,"mg","pm"],"Tesa/Ipa/CJC 10/3/3":[.8,"mg","pm"],
 "MOTS-c":[5,"mg","am"],"SS-31":[5,"mg","am"],"NAD+":[50,"mg","am"],"5-Amino-1MQ":[5,"mg","am"],
 "GHK-Cu":[1,"mg","am"],"BPC-157":[.25,"mg","am"],"TB-500":[2,"mg","am"],"BPC-157/TB-500":[.5,"mg","am"],
 "KLOW":[4,"mg","am"],"GLOW":[4,"mg","am"],"KPV":[.25,"mg","am"],"Glutathione":[200,"mg","am"],
@@ -2474,7 +2474,7 @@ const PMAP={
   "bpc157tb500":["regen","regen"],wolverine:["regen","regen"],
   glow:["copper","regen","regen"],
   klow:["immune","gut","copper","regen"],
-  tesamorelin:["gh"],sermorelin:["gh"],ipamorelin:["gh"],cjc1295nodac:["gh"],
+  tesamorelin:["gh"],sermorelin:["gh"],ipamorelin:["gh"],cjc1295nodac:["gh"],tesaipacjc1033:["gh"],
   kisspeptin10:["gh"],kisspeptin:["gh"],
   thymosinalpha1:["immune"],kpv:["immune"],vip:["immune"],
   epithalon:["pineal"],pinealon:["pineal"],
@@ -2492,7 +2492,7 @@ const PMAP={
 /* the proper name and the names people actually use — a forum post says
    GLP-3, a trial paper says LY3437943, a box says Zepbound. All of them
    should find the same card. */
-const ALIAS={"retatrutide": ["LY3437943", "GLP-3", "Reta", "triple G"], "tirzepatide": ["Mounjaro", "Zepbound", "LY3298176", "Tirz"], "semaglutide": ["Ozempic", "Wegovy", "Rybelsus", "Sema"], "cagrilintide": ["AM833", "Cagri"], "cagrisema": ["CagriSema", "cagrilintide + semaglutide"], "tesamorelin": ["Egrifta", "TH9507", "Tesa", "Egrifta SV"], "sermorelin": ["Geref", "GRF (1-29)", "GHRH (1-29)", "GRF 1-29"], "ipamorelin": ["NNC 26-0161", "Ipa"], "cjc1295nodac": ["Modified GRF (1-29)", "Mod GRF", "CJC-1295 without DAC", "Mod GRF 1-29"], "ss31": ["Elamipretide", "Forzinity", "MTP-131", "Bendavia"], "motsc": ["Mitochondrial ORF of the 12S rRNA type-c", "MOTS-c"], "nad": ["Nicotinamide adenine dinucleotide", "NAD+", "NAD"], "5amino1mq": ["5-amino-1-methylquinolinium", "5A1MQ", "NNMT inhibitor"], "bpc157": ["Body Protection Compound 157", "Pentadecapeptide BPC 157", "PL 14736", "BPC"], "tb500": ["Thymosin Beta-4 fragment", "TB4", "Tb-500", "Thymosin Beta-4", "TB 500"], "ghkcu": ["Copper tripeptide-1", "Gly-His-Lys-Cu", "GHK copper", "Cu-GHK"], "ahkcu": ["Ala-His-Lys-Cu", "AHK copper peptide"], "kpv": ["Lys-Pro-Val", "alpha-MSH (11-13)", "Lysine-proline-valine", "alpha-MSH 11-13"], "glutathione": ["GSH", "L-glutathione", "gamma-glutamyl-cysteinyl-glycine"], "thymosinalpha1": ["Zadaxin", "Thymalfasin", "Talpha1", "TA-1", "Ta1"], "epithalon": ["Epitalon", "AEDG", "Ala-Glu-Asp-Gly", "Epithalamin (the extract)", "Epithalamin"], "pinealon": ["EDR", "Glu-Asp-Arg", "EDR peptide", "Pinealon"], "dsip": ["Delta Sleep-Inducing Peptide"], "ara290": ["Cibinetide", "ARA290", "EPO helix-B peptide", "ARA 290"], "kisspeptin10": ["KP-10", "Metastin (1-54) fragment", "Kiss1", "Metastin"], "lcarnitine": ["Levocarnitine", "L-carnitine L-tartrate", "LCLT", "Carnitor", "L-carnitine tartrate"], "aod9604": ["hGH fragment 176-191", "AOD", "AOD9604"], "pt141": ["Bremelanotide", "Vyleesi", "PT141", "PT 141"], "mt2": ["Melanotan II", "MT-II"], "selank": ["TP-7", "tuftsin analogue", "Selanc"], "semax": ["ACTH (4-10) analogue", "Met-Glu-His-Phe-Pro-Gly-Pro", "ACTH 4-10 analogue", "Semaks"], "dihexa": ["N-hexanoic-Tyr-Ile-(6) aminohexanoic amide", "PNB-0408"], "cerebrolysin": ["FPF-1070", "Cere", "Cerebrolysin", "FPF 1070"], "melatonin": ["N-acetyl-5-methoxytryptamine", "Circadin", "Slenyto"], "ace031": ["Ramatercept", "ActRIIB-Fc", "soluble activin receptor IIB", "ACE 031"], "adipotide": ["FTPP", "prohibitin-targeting peptidomimetic", "Prohibitin-targeting peptide-1"], "epo": ["Erythropoietin", "Epoetin alfa", "Procrit", "Epogen", "Aranesp", "Retacrit", "Darbepoetin"], "thymalin": ["Thymus polypeptide extract", "Thymalinum", "Thymus extract", "Timalin"], "klow": ["KPV + Larazotide + GHK-Cu + BPC-157/TB-500"], "glow": ["GHK-Cu + BPC-157 + TB-500"], "wolverine": ["BPC-157 + TB-500"], "bpc157tb500": ["Wolverine blend", "BPC-157 + TB-500"], "vip": ["Vasoactive Intestinal Peptide"], "larazotide": ["Larazotide acetate", "AT-1001", "INN-202"], "hexarelin": ["Examorelin", "EP-23905"], "ghrp2": ["Pralmorelin", "GHRP-2"], "ghrp6": ["GHRP-6", "growth hormone releasing peptide 6"], "hcg": ["Human chorionic gonadotropin", "Pregnyl", "Ovidrel", "Novarel"], "bacwater": ["Bacteriostatic water", "0.9% benzyl alcohol water"], "aceticacid": ["Acetic acid", "dilute acetic acid diluent"], "testosteronecypionate": ["Depo-Testosterone", "Test C", "Test Cyp", "Testosterone"], "testosteroneenanthate": ["Delatestryl", "Xyosted", "Test E"], "testosteronepropionate": ["Testoviron", "Test P"], "testosteroneundecanoate": ["Aveed", "Nebido", "Jatenzo"], "sustanon": ["Sustanon 250", "Omnadren", "Test blend"], "nandrolonedecanoate": ["Deca-Durabolin", "Deca"], "nandrolonephenylpropionate": ["Durabolin", "NPP"], "trenboloneacetate": ["Finaplix", "Tren A", "Trenbolone", "Tren", "Tren Ace"], "trenboloneenanthate": ["Tren E"], "drostanolone": ["Masteron", "Drolban"], "methenolone": ["Primobolan", "Primo", "Nibal"], "boldenone": ["Equipoise", "EQ", "Boldenone undecylenate"], "oxandrolone": ["Anavar", "Oxandrin", "Var"], "stanozolol": ["Winstrol", "Winny", "Stromba"], "methandrostenolone": ["Dianabol", "Dbol", "Averbol", "Methandienone"], "oxymetholone": ["Anadrol", "Anapolon"], "turinabol": ["Oral Turinabol", "Tbol", "Chlorodehydromethyltestosterone"], "superdrol": ["Methasterone", "Sdrol"], "fluoxymesterone": ["Halotestin", "Halo"], "anastrozole": ["Arimidex", "Arimidex AI"], "exemestane": ["Aromasin"], "letrozole": ["Femara"], "tamoxifen": ["Nolvadex", "Soltamox"], "clomiphene": ["Clomid", "Serophene"], "enclomiphene": ["Androxal", "Enclomiphene citrate"], "hmg": ["Menopur", "Human menopausal gonadotropin"], "cabergoline": ["Dostinex", "Caber"], "raloxifene": ["Evista"], "testcyp": ["Depo-Testosterone", "Testosterone cypionate", "Test C"], "testc": ["Depo-Testosterone", "Testosterone cypionate"], "test": ["Testosterone", "Test Cyp", "Test E"], "dianabol": ["Dbol", "D-bol", "Methandrostenolone", "Methandienone", "Averbol"], "trenacetate": ["Trenbolone", "Tren", "Tren Ace"]};
+const ALIAS={"retatrutide": ["LY3437943", "GLP-3", "Reta", "triple G"], "tirzepatide": ["Mounjaro", "Zepbound", "LY3298176", "Tirz"], "semaglutide": ["Ozempic", "Wegovy", "Rybelsus", "Sema"], "cagrilintide": ["AM833", "Cagri"], "cagrisema": ["CagriSema", "cagrilintide + semaglutide"], "tesamorelin": ["Egrifta", "TH9507", "Tesa", "Egrifta SV"], "sermorelin": ["Geref", "GRF (1-29)", "GHRH (1-29)", "GRF 1-29"], "ipamorelin": ["NNC 26-0161", "Ipa"], "cjc1295nodac": ["Modified GRF (1-29)", "Mod GRF", "CJC-1295 without DAC", "Mod GRF 1-29"], "tesaipacjc1033": ["Tesamorelin + Ipamorelin + CJC-1295", "Tesa Ipa CJC blend", "10/3/3 blend"], "ss31": ["Elamipretide", "Forzinity", "MTP-131", "Bendavia"], "motsc": ["Mitochondrial ORF of the 12S rRNA type-c", "MOTS-c"], "nad": ["Nicotinamide adenine dinucleotide", "NAD+", "NAD"], "5amino1mq": ["5-amino-1-methylquinolinium", "5A1MQ", "NNMT inhibitor"], "bpc157": ["Body Protection Compound 157", "Pentadecapeptide BPC 157", "PL 14736", "BPC"], "tb500": ["Thymosin Beta-4 fragment", "TB4", "Tb-500", "Thymosin Beta-4", "TB 500"], "ghkcu": ["Copper tripeptide-1", "Gly-His-Lys-Cu", "GHK copper", "Cu-GHK"], "ahkcu": ["Ala-His-Lys-Cu", "AHK copper peptide"], "kpv": ["Lys-Pro-Val", "alpha-MSH (11-13)", "Lysine-proline-valine", "alpha-MSH 11-13"], "glutathione": ["GSH", "L-glutathione", "gamma-glutamyl-cysteinyl-glycine"], "thymosinalpha1": ["Zadaxin", "Thymalfasin", "Talpha1", "TA-1", "Ta1"], "epithalon": ["Epitalon", "AEDG", "Ala-Glu-Asp-Gly", "Epithalamin (the extract)", "Epithalamin"], "pinealon": ["EDR", "Glu-Asp-Arg", "EDR peptide", "Pinealon"], "dsip": ["Delta Sleep-Inducing Peptide"], "ara290": ["Cibinetide", "ARA290", "EPO helix-B peptide", "ARA 290"], "kisspeptin10": ["KP-10", "Metastin (1-54) fragment", "Kiss1", "Metastin"], "lcarnitine": ["Levocarnitine", "L-carnitine L-tartrate", "LCLT", "Carnitor", "L-carnitine tartrate"], "aod9604": ["hGH fragment 176-191", "AOD", "AOD9604"], "pt141": ["Bremelanotide", "Vyleesi", "PT141", "PT 141"], "mt2": ["Melanotan II", "MT-II"], "selank": ["TP-7", "tuftsin analogue", "Selanc"], "semax": ["ACTH (4-10) analogue", "Met-Glu-His-Phe-Pro-Gly-Pro", "ACTH 4-10 analogue", "Semaks"], "dihexa": ["N-hexanoic-Tyr-Ile-(6) aminohexanoic amide", "PNB-0408"], "cerebrolysin": ["FPF-1070", "Cere", "Cerebrolysin", "FPF 1070"], "melatonin": ["N-acetyl-5-methoxytryptamine", "Circadin", "Slenyto"], "ace031": ["Ramatercept", "ActRIIB-Fc", "soluble activin receptor IIB", "ACE 031"], "adipotide": ["FTPP", "prohibitin-targeting peptidomimetic", "Prohibitin-targeting peptide-1"], "epo": ["Erythropoietin", "Epoetin alfa", "Procrit", "Epogen", "Aranesp", "Retacrit", "Darbepoetin"], "thymalin": ["Thymus polypeptide extract", "Thymalinum", "Thymus extract", "Timalin"], "klow": ["KPV + Larazotide + GHK-Cu + BPC-157/TB-500"], "glow": ["GHK-Cu + BPC-157 + TB-500"], "wolverine": ["BPC-157 + TB-500"], "bpc157tb500": ["Wolverine blend", "BPC-157 + TB-500"], "vip": ["Vasoactive Intestinal Peptide"], "larazotide": ["Larazotide acetate", "AT-1001", "INN-202"], "hexarelin": ["Examorelin", "EP-23905"], "ghrp2": ["Pralmorelin", "GHRP-2"], "ghrp6": ["GHRP-6", "growth hormone releasing peptide 6"], "hcg": ["Human chorionic gonadotropin", "Pregnyl", "Ovidrel", "Novarel"], "bacwater": ["Bacteriostatic water", "0.9% benzyl alcohol water"], "aceticacid": ["Acetic acid", "dilute acetic acid diluent"], "testosteronecypionate": ["Depo-Testosterone", "Test C", "Test Cyp", "Testosterone"], "testosteroneenanthate": ["Delatestryl", "Xyosted", "Test E"], "testosteronepropionate": ["Testoviron", "Test P"], "testosteroneundecanoate": ["Aveed", "Nebido", "Jatenzo"], "sustanon": ["Sustanon 250", "Omnadren", "Test blend"], "nandrolonedecanoate": ["Deca-Durabolin", "Deca"], "nandrolonephenylpropionate": ["Durabolin", "NPP"], "trenboloneacetate": ["Finaplix", "Tren A", "Trenbolone", "Tren", "Tren Ace"], "trenboloneenanthate": ["Tren E"], "drostanolone": ["Masteron", "Drolban"], "methenolone": ["Primobolan", "Primo", "Nibal"], "boldenone": ["Equipoise", "EQ", "Boldenone undecylenate"], "oxandrolone": ["Anavar", "Oxandrin", "Var"], "stanozolol": ["Winstrol", "Winny", "Stromba"], "methandrostenolone": ["Dianabol", "Dbol", "Averbol", "Methandienone"], "oxymetholone": ["Anadrol", "Anapolon"], "turinabol": ["Oral Turinabol", "Tbol", "Chlorodehydromethyltestosterone"], "superdrol": ["Methasterone", "Sdrol"], "fluoxymesterone": ["Halotestin", "Halo"], "anastrozole": ["Arimidex", "Arimidex AI"], "exemestane": ["Aromasin"], "letrozole": ["Femara"], "tamoxifen": ["Nolvadex", "Soltamox"], "clomiphene": ["Clomid", "Serophene"], "enclomiphene": ["Androxal", "Enclomiphene citrate"], "hmg": ["Menopur", "Human menopausal gonadotropin"], "cabergoline": ["Dostinex", "Caber"], "raloxifene": ["Evista"], "testcyp": ["Depo-Testosterone", "Testosterone cypionate", "Test C"], "testc": ["Depo-Testosterone", "Testosterone cypionate"], "test": ["Testosterone", "Test Cyp", "Test E"], "dianabol": ["Dbol", "D-bol", "Methandrostenolone", "Methandienone", "Averbol"], "trenacetate": ["Trenbolone", "Tren", "Tren Ace"]};
 function pepAlias(p){return ALIAS[pepKey(p&&p.name)]||[];}
 /* does this peptide answer to the typed text, by name or by any alias? */
 function pepMatches(name,q){
@@ -2802,7 +2802,22 @@ function dueOn(p,d){const s=p.sched;if(p.status!=="active")return false;
 function doseMg(p){return p.unit==="mcg"?p.dose/1000:p.dose;}
 function weeklyMg(p){const s=p.sched,d=doseMg(p);if(s.t==="daily")return d*7;if(s.t==="week")return d*s.days.length;return d;}
 function daysLeft(p){const w=weeklyMg(p);if(!w)return null;return Math.floor(p.remaining/(w/7));}
-function doseLabel(p){return p.label||`${p.dose} ${p.unit}`;}
+/* Fixed-ratio blends are drawn as one number, but what matters is how much
+   of each part is in the pin. Parts are [short name, share, unit to show]. */
+const BLENDRATIO={
+  tesaipacjc1033:{tot:16,parts:[["tesa",10,"mg"],["ipa",3,"mcg"],["CJC",3,"mcg"]]}
+};
+function blendSplit(p){
+  const r=BLENDRATIO[pepKey(p&&p.name)];
+  if(!r||!p.dose||p.unit!=="mg")return "";
+  return r.parts.map(([n,sh,u])=>{const mg=p.dose*sh/r.tot;
+    return u==="mcg"?`${Math.round(mg*1000)} mcg ${n}`:`${round(mg,2)} mg ${n}`;}).join(" \u00b7 ");
+}
+function doseLabel(p){
+  if(p.label)return p.label;
+  const b=blendSplit(p);
+  return `${p.dose} ${p.unit}`+(b?` (${b})`:"");
+}
 function reconUnits(p){if(!p.bacMl||!p.vialMg)return null;const conc=p.vialMg/p.bacMl;return round(doseMg(p)/conc*100,1);}
 /* pick a bac-water volume that lands the dose on a clean, even unit mark */
 function suggestBac(vialMg,doseMg){const opts=[0.5,1,1.5,2,2.5,3,4,5];let best=null;
@@ -4114,7 +4129,7 @@ const TARGETS={
 const PTARGET={
  retatrutide:["glp1r","gipr","gcgr"], semaglutide:["glp1r"], tirzepatide:["glp1r","gipr"],
  cagrilintide:["amylin"], cagrisema:["amylin","glp1r"],
- tesamorelin:["ghrhr"], sermorelin:["ghrhr"], cjc1295nodac:["ghrhr"], ipamorelin:["ghsr"],
+ tesamorelin:["ghrhr"], sermorelin:["ghrhr"], cjc1295nodac:["ghrhr"],tesaipacjc1033:["ghrhr","ghsr"], ipamorelin:["ghsr"],
  kisspeptin10:["kiss1r"], kisspeptin:["kiss1r"],
  pt141:["mc4r"], mt2:["mc4r"],
  ace031:["actriib"], epo:["epor"],
@@ -4131,7 +4146,8 @@ const BLEND={
  klow:["KPV","Larazotide","GHK-Cu","BPC-157","TB-500"],
  glow:["GHK-Cu","BPC-157","TB-500"],
  wolverine:["BPC-157","TB-500"],
- bpc157tb500:["BPC-157","TB-500"]
+ bpc157tb500:["BPC-157","TB-500"],
+  tesaipacjc1033:["Tesamorelin","Ipamorelin","CJC-1295 no DAC"]
 };
 /* Strings the insight engine and the coach starters splice together at
    runtime never reach tr() as a text node, so they are translated here
