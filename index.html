@@ -1717,6 +1717,34 @@
   .catg{margin-left:auto;flex:none;background:transparent;color:var(--accent-ink);
     border:1px solid var(--line2);border-radius:99px;padding:4px 11px;font-size:11px;font-weight:700}
 
+  .gspec{display:grid;grid-template-columns:1fr;gap:10px;margin-top:4px}
+  @media(min-width:520px){.gspec{grid-template-columns:1fr 1fr 1fr}}
+  .gcol{border-radius:13px;padding:10px;background:var(--panel2);
+    border:1px solid var(--line)}
+  .gcol.good{border-color:color-mix(in srgb,var(--good) 40%,var(--line))}
+  .gcol.warn{border-color:color-mix(in srgb,var(--warn) 40%,var(--line))}
+  .gcol.crit{border-color:color-mix(in srgb,var(--crit) 40%,var(--line))}
+  .gcol .gch{display:flex;align-items:center;gap:6px;font-weight:700;font-size:12.5px;
+    text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px}
+  .gcol.good .gch .dot{background:var(--good)}
+  .gcol.warn .gch .dot{background:var(--warn)}
+  .gcol.crit .gch .dot{background:var(--crit)}
+  .gchip{display:block;width:100%;text-align:left;background:var(--panel);
+    border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-bottom:6px}
+  .gchip:last-child{margin-bottom:0}
+  .gcn{display:block;font-weight:700;font-size:13px}
+  .gcu{display:block;font-size:11.5px;color:var(--ink3);margin-top:1px;line-height:1.35}
+  .ganc{margin-bottom:14px}
+  .ganc:last-of-type{margin-bottom:0}
+  .gah{font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:7px}
+  .achip{display:flex;justify-content:space-between;align-items:center;gap:8px;
+    width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);
+    border-radius:10px;padding:8px 10px;margin-bottom:5px}
+  .achip:last-child{margin-bottom:0}
+  .acn{font-weight:700;font-size:12.5px;flex:none}
+  .acu{font-size:11.5px;color:var(--ink3);text-align:right}
+.ddanger.gonly{position:static}
+
   /* ================= lab glass ================= */
   /* Three states, because "system" stamps no attribute at all: bare :root is
      light, the media query covers system-dark, the attribute covers the
@@ -1825,6 +1853,7 @@
   <div class="install" id="installBar"></div>
   <div class="bgimg" id="bgimg"></div>
   <div class="bguard" id="bguard"></div>
+  <div class="deepview" id="gearView"><div id="gearBody"></div></div>
   <div class="dayoverlay" id="dayOverlay"></div>
   <div class="player" id="player"></div>
   <div class="deepview" id="deepView">
@@ -1961,6 +1990,27 @@ api:{n:"Apigenin",f:"chamomile, parsley, celery",a:"Traditionally an evening, ca
      none  = no completed human efficacy trial
    `ev` lists individual findings with their own grade, so a compound with one
    strong result and three weak ones reads that way instead of averaging out. */
+const GEARTIER={
+ testcyp:{t:1,u:"The reference compound. Most human data of anything here."},
+ testenanth:{t:1,u:"Same hormone as cypionate, the ester most trials used."},
+ testprop:{t:1,u:"Short ester, daily injections, clears in days if needed."},
+ sustanon:{t:1,u:"Four testosterone esters in one shot, fast on then long."},
+ anavar:{t:1,u:"The most human-trialled oral. Withdrawn by the FDA in 2023."},
+ primobolan:{t:1,u:"Comparatively mild reputation. Know which form you have."},
+ nandrolonedec:{t:2,u:"Real trials for muscle wasting. Joint comfort, low libido."},
+ npp:{t:2,u:"Same hormone as Deca, short ester, faster in and out."},
+ masteron:{t:2,u:"Old breast-cancer drug. Dry look, no water, hard on hair."},
+ boldenone:{t:2,u:"Veterinary horse drug. No human trial has ever been run."},
+ turinabol:{t:2,u:"East German state-doping compound. Never a consented trial."},
+ winstrol:{t:2,u:"Still FDA-approved, for a condition with nothing to do with muscle."},
+ dianabol:{t:2,u:"The original mass-building oral, from the 1960s."},
+ anadrol:{t:3,u:"Strongest oral for muscle. Also the most liver-toxic in trials."},
+ trenacetate:{t:3,u:"No human trial, ever. Short ester, at least it clears fast."},
+ trenenanth:{t:3,u:"Same as acetate, weeks-long tail if it goes wrong."},
+ halotestin:{t:3,u:"Its own FDA label lists aggression as a side effect."},
+ superdrol:{t:3,u:"Sold as a supplement until liver injury case reports ended that."}
+};
+const GEARTIERN={1:"Mild",2:"Moderate",3:"Most aggressive"};
 const TIERN={human:"Human trials",pre:"Preclinical / limited",none:"No human efficacy data"};
 const GUIDES={
 hcg:{
@@ -4673,13 +4723,15 @@ const CQTPL={
   working:a=>`Is ${a} working yet?`,
   when:a=>`When should I take ${a}?`,
   eat:a=>`What do I need to eat with ${a}?`,
-  miss:"Am I missing doses?", tired:"Why am I tired?"},
+  miss:"Am I missing doses?", tired:"Why am I tired?",
+  gear:"How do steroids compare?"},
  es:{both:(a,b)=>`\u00bfPuedo tomar ${a} y ${b} juntos?`,
   blood:a=>`\u00bfQu\u00e9 anal\u00edtica deber\u00eda hacerme con ${a}?`,
   working:a=>`\u00bfEst\u00e1 funcionando ya ${a}?`,
   when:a=>`\u00bfCu\u00e1ndo debo tomar ${a}?`,
   eat:a=>`\u00bfQu\u00e9 necesito comer con ${a}?`,
-  miss:"\u00bfMe estoy saltando dosis?", tired:"\u00bfPor qu\u00e9 estoy cansado?"}
+  miss:"\u00bfMe estoy saltando dosis?", tired:"\u00bfPor qu\u00e9 estoy cansado?",
+  gear:"\u00bfC\u00f3mo se comparan los esteroides?"}
 };
 /* pairs that are deliberate, not accidents */
 const SYNERGY=[["ghrhr","ghsr"],["amylin","glp1r"]];
@@ -6297,6 +6349,20 @@ function coachAlco(q){
    Scoped like every other answer: if the question names a compound, only that
    compound's entries; otherwise what is currently tracked, because a general
    question about drinking is a question about drinking on this stack. */
+const GEARQW=["steroid","steroids","gear","anabolic","aas","strongest","lightest","mildest","compare gear","esteroide","esteroides","anabolico","anabolicos","mas fuerte","mas suave"];
+function coachGear(q){
+  const t=" "+cFold(q)+" ";
+  return GEARQW.some(w=>t.indexOf(" "+cFold(w)+" ")>=0);
+}
+/* Answered as its own page rather than a card: a tiered comparison with
+   graphics does not fit an answer block, and Ryan asked for exactly the
+   page deepDive() already knows how to be. */
+function ciGear(q){
+  if(!coachGear(q))return null;
+  return {title:L("Steroids, compared"),
+    blocks:[{kind:"plain",text:`<button class="ansmore" id="ansGear">${L("Open the comparison")} \u203a</button>`}],
+    sources:[]};
+}
 function ciAlcohol(q,keys){
   if(!coachAlco(q))return null;
   const fams=k=>PMAP[pepKey(guideName(k))]||[];
@@ -6385,7 +6451,7 @@ function coachAnswer(q){
   const keys=coachPeps(q);
   // most specific first: a question naming a peptide and a nutrient is a
   // nutrition question, not a stacking question that happens to contain "with"
-  const handlers=[ciMeds,ciComp,ciAlcohol,ciMood,ciNutrition,ciLabs,ciAdherence,
+  const handlers=[ciMeds,ciGear,ciComp,ciAlcohol,ciMood,ciNutrition,ciLabs,ciAdherence,
     ciSideEffect,ciLevel,ciDose,ciTiming,ciStack];
   for(const h of handlers){
     let r=null;try{r=h(q,keys);}catch(e){}
@@ -6464,6 +6530,81 @@ function refDive(key){
   deepDive({id:"ref:"+key,name,cat:it.c||"",guideKey:key,dose:0,unit:"mg",
     sched:{t:"daily"},vialMg:0,remaining:0,time:"am",status:"off",ref:true});
 }
+/* ---------- steroid comparison overview ---------- */
+function gearChip(k){
+  const p=(pById?null:null); // no-op, kept for symmetry with pepBox callers
+  const n=guideName(k);
+  return `<button class="gchip" data-cgo="${k}">
+    <span class="gcn">${n}</span><span class="gcu">${L(GEARTIER[k].u)}</span></button>`;
+}
+function gearTierCol(t){
+  const KIND={1:"good",2:"warn",3:"crit"}[t];
+  const keys=Object.keys(GEARTIER).filter(k=>GEARTIER[k].t===t);
+  return `<div class="gcol ${KIND}">
+    <div class="gch"><span class="dot"></span>${L(GEARTIERN[t])}</div>
+    ${keys.map(gearChip).join("")}
+  </div>`;
+}
+function ancGroup(title,items){
+  return `<div class="ganc">
+    <div class="gah">${L(title)}</div>
+    ${items.map(([k,u])=>`<button class="achip" data-cgo="${k}">
+      <span class="acn">${guideName(k)}</span><span class="acu">${L(u)}</span></button>`).join("")}
+  </div>`;
+}
+function gearOverview(){
+  $("#gearBody").innerHTML=`
+    <div class="ddhero" style="background:linear-gradient(100deg,var(--crit),var(--warn) 55%,var(--good))">
+      <div class="ddscrim"></div>
+      <div class="ddhx"><div class="ddname">${L("Steroids, compared")}</div>
+        <div class="ddcls">${L("Mild to most aggressive, what each is for, and what counters the effects")}</div></div>
+    </div>
+    <div class="ddwrap">
+      <div class="ddanger gonly"><span class="dgi">!</span>
+        <div><b>${L("Not medical advice")}</b> ${L("This is a map, not a diagnosis. It exists so you can speak from an informed position, not so you can skip the conversation.")}</div></div>
+
+      <div class="ddsec"><h4>${L("How side effects actually scale")}</h4>
+        <p>${L("Every compound below binds the same androgen receptor testosterone does, so several effects move together: more receptor activity generally means faster gains, and a dose-dependent hit to cholesterol and red blood cell count. Three things vary independently of that shared mechanism and explain most of the real difference between them: whether it converts to oestrogen, which drives water retention and mood swings; whether it is an oral that survives the liver by being modified to do so, which drives liver-specific risk the injectables mostly don't carry; and whether it binds the progesterone receptor the way the 19-nor compounds do, which drives a distinct set of sexual side effects that blocking oestrogen doesn't fix.")}</p></div>
+
+      <div class="ddcard"><div class="ddch"><span class="dot"></span>${L("The spectrum")}</div>
+        <div class="gspec">${[1,2,3].map(gearTierCol).join("")}</div>
+        <p class="ddp sm">${L("Tap any name for its full guide: trial evidence, dosing, and what to actually watch for.")}</p></div>
+
+      <div class="ddledger">
+        <div class="ddcol good"><h5>${L("Typical at a measured dose")}</h5>
+          <ul><li>${L("Faster recovery, strength and, on the aromatising ones, some water retention")}</li>
+          <li>${L("Skin gets oilier; blood pressure and cholesterol drift the wrong way")}</li></ul></div>
+        <div class="ddcol bad"><h5>${L("More likely at high dose or long use")}</h5>
+          <ul><li>${L("Haematocrit climbs enough to matter; natural production shuts down")}</li>
+          <li>${L("Hair loss in anyone predisposed; liver strain on the oral compounds specifically")}</li></ul></div>
+      </div>
+      <p class="ddp sm anecnote">${L("The most aggressive tier is different in kind, not just degree: none of those four have ever had a human trial, so there is no dose anyone has shown to be low-risk, at any duration.")}</p>
+
+      <div class="ddcard"><div class="ddch"><span class="dot"></span>${L("Countering the effects")}</div>
+        ${ancGroup("Aromatase inhibitors — lower how much converts to oestrogen",[
+          ["anastrozole","The one most commonly used"],
+          ["letrozole","The strongest. Easy to overshoot"],
+          ["exemestane","Steroidal, permanent per dose, its own trial in young men"]])}
+        ${ancGroup("SERMs — block oestrogen at one tissue, or restart the axis",[
+          ["tamoxifen","Best gynecomastia evidence, standard restart drug"],
+          ["raloxifene","Real trial data in men, head-to-head vs tamoxifen"],
+          ["clomiphene","Longest human safety record, 3 years continuous"],
+          ["enclomiphene","Clomiphene's isolated isomer, fewer mood effects"]])}
+        ${ancGroup("Keeping the testes working while suppressed",[
+          ["hcg","Acts at the testes directly. The best-evidenced option for this"],
+          ["kiss","One step upstream, in the brain. See the note below"]])}
+        ${ancGroup("Prolactin — only relevant with the 19-nor compounds",[
+          ["cabergoline","Real, dose-dependent heart valve risk of its own"]])}
+        <p class="ddp sm anecnote">${L("Kisspeptin and hCG are not interchangeable. hCG has trial data for this exact ongoing-suppression use; kisspeptin's human trials are for raising LH in general, not specifically for staying fertile through months of exogenous testosterone. hCG is the better-evidenced choice for that particular job.")}</p></div>
+
+      <p class="ddfoot">${L("Not medical advice, and not a recommendation to start, stop or change anything. Built so a conversation with a doctor can start from an informed place.")}</p>
+    </div>`;
+  $$("[data-cgo]",$("#gearBody")).forEach(b=>b.onclick=()=>refDive(b.dataset.cgo));
+  $("#gearView").classList.add("on");
+  applyLang();
+  $("#gearView").scrollTop=0;
+}
+function closeGear(){$("#gearView").classList.remove("on");}
 function deepDive(id){
   const p=(id&&typeof id==="object")?id:pById(id);if(!p)return;
   const g=guideView(p);if(!g)return;
@@ -8144,7 +8285,7 @@ function renderGuide(){
         return `<button class="adhbtn" id="gAdh" aria-label="Adherence">
           <span class="spark">${last.map((m,i)=>`<i class="${m.hit?"":"m"}" style="height:${5+i}px"></i>`).join("")}</span>
           ${pct}%</button>`;})()}
-      <button class="mini" id="pepSortBtn">${pepSort==="colour"?"◐ Colour":"A–Z"}</button></div>
+      <button class="mini" id="pepSortBtn">${pepSort==="colour"?"◐ Colour":"A–Z"}</button><button class="mini" id="gearBtn">${L("Compare")}</button></div>
     ${toTake?`<div class="duehead"><b class="tnum">${toTake}</b> <span>still to take today</span></div>`:
       list.some(p=>dueNow(p))?`<div class="duehead done"><span>All of today's shots logged</span></div>`:""}
     <button class="disclaimer" id="discBtn">⚠ Not medical advice — tap to read</button>`;
@@ -8198,6 +8339,7 @@ function renderGuide(){
   $$("[data-gref]",el).forEach(b=>b.onclick=e=>{e.stopPropagation();refill(b.dataset.gref);renderGuide();});
   $$("[data-deep]",el).forEach(b=>b.onclick=e=>{e.stopPropagation();deepDive(b.dataset.deep);});
   $$("[data-ginfo]",el).forEach(b=>b.onclick=e=>{e.stopPropagation();infoPop(b.dataset.ginfo);});
+  if($("#gearBtn",el))$("#gearBtn",el).onclick=gearOverview;
 }
 /* Shown once, before the app is usable, and acknowledged. */
 let gateUp=false;
@@ -9283,6 +9425,62 @@ es:{
 "hCG monotherapy trial, hypogonadal symptoms":"Ensayo de hCG en monoterapia, s\u00edntomas de hipogonadismo",
 "Safety of hCG monotherapy after prior testosterone use":"Seguridad de la hCG en monoterapia tras el uso previo de testosterona",
 "Gonadotropin therapy for hypogonadotropic hypogonadism (review)":"Terapia con gonadotropinas para el hipogonadismo hipogonadotr\u00f3pico (revisi\u00f3n)",
+/* --- interface --- */
+"Steroids, compared":"Esteroides, comparados",
+"Mild to most aggressive, what each is for, and what counters the effects":"De suave a m\u00e1s agresivo, para qu\u00e9 sirve cada uno, y qu\u00e9 contrarresta los efectos",
+"Not medical advice":"No es consejo m\u00e9dico",
+"This is a map, not a diagnosis. It exists so you can speak from an informed position, not so you can skip the conversation.":"Esto es un mapa, no un diagn\u00f3stico. Existe para que puedas hablar desde una posici\u00f3n informada, no para que te saltes la conversaci\u00f3n.",
+"How side effects actually scale":"C\u00f3mo escalan en realidad los efectos secundarios",
+"Every compound below binds the same androgen receptor testosterone does, so several effects move together: more receptor activity generally means faster gains, and a dose-dependent hit to cholesterol and red blood cell count. Three things vary independently of that shared mechanism and explain most of the real difference between them: whether it converts to oestrogen, which drives water retention and mood swings; whether it is an oral that survives the liver by being modified to do so, which drives liver-specific risk the injectables mostly don't carry; and whether it binds the progesterone receptor the way the 19-nor compounds do, which drives a distinct set of sexual side effects that blocking oestrogen doesn't fix.":"Todos los compuestos de abajo se unen al mismo receptor de andr\u00f3genos que la testosterona, as\u00ed que varios efectos se mueven juntos: m\u00e1s actividad del receptor suele significar ganancias m\u00e1s r\u00e1pidas, y un golpe al colesterol y al recuento de gl\u00f3bulos rojos que depende de la dosis. Tres cosas var\u00edan de forma independiente a ese mecanismo compartido y explican la mayor parte de la diferencia real entre ellos: si se convierte en estr\u00f3geno, que impulsa la retenci\u00f3n de l\u00edquidos y los cambios de \u00e1nimo; si es un oral que sobrevive al h\u00edgado por estar modificado para eso, que impulsa un riesgo espec\u00edficamente hep\u00e1tico que los inyectables en su mayor\u00eda no llevan; y si se une al receptor de progesterona como hacen los compuestos 19-nor, que impulsa un conjunto propio de efectos sexuales que bloquear el estr\u00f3geno no arregla.",
+"The spectrum":"El espectro",
+"Tap any name for its full guide: trial evidence, dosing, and what to actually watch for.":"Toca cualquier nombre para ver su gu\u00eda completa: evidencia de ensayos, dosis, y qu\u00e9 vigilar de verdad.",
+"Typical at a measured dose":"T\u00edpico con una dosis medida",
+"Faster recovery, strength and, on the aromatising ones, some water retention":"Recuperaci\u00f3n y fuerza m\u00e1s r\u00e1pidas y, en los que aromatizan, algo de retenci\u00f3n de l\u00edquidos",
+"Skin gets oilier; blood pressure and cholesterol drift the wrong way":"La piel se vuelve m\u00e1s grasa; la tensi\u00f3n arterial y el colesterol van en la direcci\u00f3n equivocada",
+"More likely at high dose or long use":"M\u00e1s probable con dosis altas o uso prolongado",
+"Haematocrit climbs enough to matter; natural production shuts down":"El hematocrito sube lo suficiente como para importar; la producci\u00f3n natural se apaga",
+"Hair loss in anyone predisposed; liver strain on the oral compounds specifically":"Ca\u00edda del pelo en quien tenga predisposici\u00f3n; carga hep\u00e1tica en concreto en los compuestos orales",
+"The most aggressive tier is different in kind, not just degree: none of those four have ever had a human trial, so there is no dose anyone has shown to be low-risk, at any duration.":"El nivel m\u00e1s agresivo es distinto en naturaleza, no solo en grado: ninguno de esos cuatro ha tenido nunca un ensayo en humanos, as\u00ed que nadie ha demostrado que ninguna dosis sea de bajo riesgo, con ninguna duraci\u00f3n.",
+"Countering the effects":"Contrarrestar los efectos",
+"Aromatase inhibitors — lower how much converts to oestrogen":"Inhibidores de la aromatasa \u2014 bajan cu\u00e1nto se convierte en estr\u00f3geno",
+"The one most commonly used":"El que m\u00e1s se usa",
+"The strongest. Easy to overshoot":"El m\u00e1s fuerte. F\u00e1cil de pasarse",
+"Steroidal, permanent per dose, its own trial in young men":"Esteroideo, permanente por dosis, con su propio ensayo en hombres j\u00f3venes",
+"SERMs — block oestrogen at one tissue, or restart the axis":"SERM \u2014 bloquean el estr\u00f3geno en un tejido, o reactivan el eje",
+"Best gynecomastia evidence, standard restart drug":"La mejor evidencia en ginecomastia, f\u00e1rmaco est\u00e1ndar de reactivaci\u00f3n",
+"Real trial data in men, head-to-head vs tamoxifen":"Datos de ensayos reales en hombres, comparado directamente con tamoxifeno",
+"Longest human safety record, 3 years continuous":"El historial de seguridad en humanos m\u00e1s largo, 3 a\u00f1os continuos",
+"Clomiphene's isolated isomer, fewer mood effects":"El is\u00f3mero aislado del clomifeno, menos efectos sobre el \u00e1nimo",
+"Keeping the testes working while suppressed":"Mantener los test\u00edculos funcionando mientras est\u00e1n suprimidos",
+"Acts at the testes directly. The best-evidenced option for this":"Act\u00faa directamente en los test\u00edculos. La opci\u00f3n con mejor evidencia para esto",
+"One step upstream, in the brain. See the note below":"Un paso m\u00e1s arriba, en el cerebro. Ver la nota de abajo",
+"Prolactin — only relevant with the 19-nor compounds":"Prolactina \u2014 solo relevante con los compuestos 19-nor",
+"Real, dose-dependent heart valve risk of its own":"Un riesgo propio, real y dependiente de la dosis, sobre las v\u00e1lvulas del coraz\u00f3n",
+"Kisspeptin and hCG are not interchangeable. hCG has trial data for this exact ongoing-suppression use; kisspeptin's human trials are for raising LH in general, not specifically for staying fertile through months of exogenous testosterone. hCG is the better-evidenced choice for that particular job.":"La kisspeptina y la hCG no son intercambiables. La hCG tiene datos de ensayos para este uso exacto durante una supresi\u00f3n continuada; los ensayos en humanos de la kisspeptina son para subir la LH en general, no espec\u00edficamente para mantener la fertilidad durante meses de testosterona ex\u00f3gena. La hCG es la opci\u00f3n con mejor evidencia para ese trabajo en concreto.",
+"Not medical advice, and not a recommendation to start, stop or change anything. Built so a conversation with a doctor can start from an informed place.":"No es consejo m\u00e9dico, ni una recomendaci\u00f3n para empezar, parar o cambiar nada. Est\u00e1 hecho para que una conversaci\u00f3n con un m\u00e9dico pueda partir de un lugar informado.",
+"Compare":"Comparar",
+"How do steroids compare?":"\u00bfC\u00f3mo se comparan los esteroides?",
+"Open the comparison":"Abrir la comparaci\u00f3n",
+"Mild":"Suave",
+"Most aggressive":"M\u00e1s agresivo",
+"The reference compound. Most human data of anything here.":"El compuesto de referencia. Los datos en humanos m\u00e1s amplios de todos.",
+"Same hormone as cypionate, the ester most trials used.":"La misma hormona que el cipionato, el \u00e9ster que usaron la mayor\u00eda de los ensayos.",
+"Short ester, daily injections, clears in days if needed.":"\u00c9ster corto, inyecciones diarias, se elimina en d\u00edas si hace falta.",
+"Four testosterone esters in one shot, fast on then long.":"Cuatro \u00e9steres de testosterona en una inyecci\u00f3n, r\u00e1pido al principio y luego largo.",
+"The most human-trialled oral. Withdrawn by the FDA in 2023.":"El oral m\u00e1s probado en humanos. Retirado por la FDA en 2023.",
+"Comparatively mild reputation. Know which form you have.":"Fama comparativamente suave. Averigua qu\u00e9 forma tienes.",
+"Real trials for muscle wasting. Joint comfort, low libido.":"Ensayos reales para el desgaste muscular. Alivio articular, libido baja.",
+"Same hormone as Deca, short ester, faster in and out.":"La misma hormona que el Deca, \u00e9ster corto, entra y sale m\u00e1s r\u00e1pido.",
+"Old breast-cancer drug. Dry look, no water, hard on hair.":"Antiguo f\u00e1rmaco contra el c\u00e1ncer de mama. Aspecto seco, sin agua, duro con el pelo.",
+"Veterinary horse drug. No human trial has ever been run.":"F\u00e1rmaco veterinario para caballos. Nunca se ha hecho un ensayo en humanos.",
+"East German state-doping compound. Never a consented trial.":"Compuesto del dopaje estatal de Alemania del Este. Nunca un ensayo consentido.",
+"Still FDA-approved, for a condition with nothing to do with muscle.":"Todav\u00eda aprobado por la FDA, para una condici\u00f3n que no tiene nada que ver con el m\u00fasculo.",
+"The original mass-building oral, from the 1960s.":"El oral original para ganar masa, de los a\u00f1os sesenta.",
+"Strongest oral for muscle. Also the most liver-toxic in trials.":"El oral m\u00e1s fuerte para el m\u00fasculo. Tambi\u00e9n el m\u00e1s t\u00f3xico para el h\u00edgado en los ensayos.",
+"No human trial, ever. Short ester, at least it clears fast.":"Nunca un ensayo en humanos. \u00c9ster corto, al menos se elimina r\u00e1pido.",
+"Same as acetate, weeks-long tail if it goes wrong.":"Igual que el acetato, con una cola de semanas si algo va mal.",
+"Its own FDA label lists aggression as a side effect.":"Su propia ficha de la FDA incluye la agresividad como efecto secundario.",
+"Sold as a supplement until liver injury case reports ended that.":"Se vend\u00eda como suplemento hasta que los casos de lesi\u00f3n hep\u00e1tica acabaron con eso.",
 /* --- alcohol --- */
 "Alcohol and anabolic steroids injure the liver by different routes, which is why the combination is worse than either number suggests. Steroids, particularly the oral ones, cause cholestatic injury: bile flow slows and bilirubin climbs. Alcohol causes fat accumulation first and inflammation after. One is a plumbing problem and the other is a chemical burn, and the liver is absorbing both at once. Enzymes rising on gear are expected; enzymes rising on gear plus a drinking week are the ones that turn into a hospital story.":"El alcohol y los esteroides anab\u00f3licos da\u00f1an el h\u00edgado por v\u00edas distintas, y por eso la combinaci\u00f3n es peor de lo que sugiere cualquiera de las dos cifras. Los esteroides, sobre todo los orales, causan da\u00f1o colest\u00e1sico: el flujo biliar se enlentece y la bilirrubina sube. El alcohol produce primero acumulaci\u00f3n de grasa y despu\u00e9s inflamaci\u00f3n. Uno es un problema de ca\u00f1er\u00edas y el otro una quemadura qu\u00edmica, y el h\u00edgado absorbe ambos a la vez. Que las enzimas suban con ciclo es esperable; que suban con ciclo m\u00e1s una semana de copas es lo que acaba en el hospital.",
 "This is the pairing to actually avoid. Methandrostenolone is 17-alpha-alkylated, a modification that exists purely to survive first-pass metabolism, and surviving it means the liver processes the drug repeatedly instead of once. Every published case of serious liver injury on this compound involves either a long run, a high dose, or alcohol. Drinking through a four week dbol cycle is the single most reliable way to turn a manageable rise in ALT into cholestatic jaundice, and the itching and dark urine that precede it are late signs, not early ones.":"Esta es la combinaci\u00f3n que conviene evitar de verdad. La metandrostenolona es 17-alfa-alquilada, una modificaci\u00f3n que existe solo para sobrevivir al primer paso hep\u00e1tico, y sobrevivirlo significa que el h\u00edgado procesa el f\u00e1rmaco una y otra vez en lugar de una sola. Todos los casos publicados de da\u00f1o hep\u00e1tico grave con este compuesto implican un ciclo largo, una dosis alta o alcohol. Beber durante un ciclo de cuatro semanas de dbol es la forma m\u00e1s fiable de convertir una subida manejable de ALT en ictericia colest\u00e1sica, y el picor y la orina oscura que la preceden son signos tard\u00edos, no tempranos.",
@@ -10676,6 +10874,7 @@ function coachStarters(){
   if(t.length)out.push(Q.blood(t[0].name));
   if(t.length)out.push(Q.working(t[0].name));
   if(t.length>1)out.push(Q.when(t[1].name));
+  out.push(Q.gear);
   out.push(Q.miss);
   if(t.length)out.push(Q.eat(t[t.length-1].name));
   out.push(Q.tired);
@@ -10706,6 +10905,7 @@ function renderCoach(){
   $("#cDisc",el).onclick=showDisclaimer;
   if($("#ansMore",el))$("#ansMore",el).onclick=()=>{
     coachRes.moreOpen=!coachRes.moreOpen;renderCoach();};
+  if($("#ansGear",el))$("#ansGear",el).onclick=gearOverview;
   if($("#askAgain",el))$("#askAgain",el).onclick=()=>{coachQ="";coachRes=null;renderCoach();};
   // built after applyLang has been round, so it applies the language itself
   if(typeof applyLang==="function")applyLang();
@@ -10908,6 +11108,7 @@ const PUBLIC=!!window.VIALBACK_PUBLIC;
 
 /* init */
 $("#deepClose").onclick=closeDeep;
+$("#gearView").onclick=e=>{if(e.target.id==="gearView")closeGear();};
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("#deepView").classList.contains("on"))closeDeep();});
 if(!S.foods.length&&S.meals.length){const seen={};
   S.meals.forEach(m=>{const k=foodKey(m.name);if(!seen[k]){seen[k]=1;saveFoodItem(m);}});save();}
