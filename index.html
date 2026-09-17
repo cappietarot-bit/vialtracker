@@ -1733,6 +1733,24 @@
   .acu{font-size:12.5px;color:var(--ink3);text-align:right}
 .ddanger.gonly{position:static}
 
+  /* 1. routine day titles, bigger */
+  .rn{font-size:19px}
+
+  /* 2. the two Add food buttons, 40% over their shared 15px base -- an id
+     each, not a class, so no other .primary/.ackbtn button moves with them */
+  #addMeal,#dAddFood{font-size:21px}
+
+  /* 3. Workout and Peptides only: smaller chrome, same text. Scoped through
+     .wcard/.pcard so the Food and injection-site cards on the same stack,
+     which share these classes, are untouched. */
+  .bigcard.wcard,.bigcard.pcard{padding:10px;gap:9px}
+  .wcard .bcart{width:50px;height:78px;padding:4px}
+  .pcard .bcring{width:56px}
+  .pcard .ring2{width:50px;height:50px}
+  .wcard .bcbtns,.pcard .bcbtns{gap:6px;padding-top:8px}
+  .wcard .bcgo,.pcard .bcgo{padding:9px 13px}
+  .wcard .bcedit{width:34px}
+
   /* ================= lab glass ================= */
   /* Three states, because "system" stamps no attribute at all: bare :root is
      light, the media query covers system-dark, the attribute covers the
